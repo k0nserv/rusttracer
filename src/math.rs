@@ -46,7 +46,7 @@ impl Vector3 {
 
 // This declares two lifetime references. One for the right hand side(a) and
 // another for self(b). Since Add is implemented for &'a Vector this means
-// self is actually a Vector3 reference. I think that's how it work anyway...
+// self is actually a Vector3 reference. I think that's how it works anyway...
 impl<'a, 'b> Add<&'b Vector3> for &'a Vector3 {
     type Output = Vector3;
 
