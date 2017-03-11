@@ -1,8 +1,8 @@
 const EPSILON: f64 = 0.001;
 
-use std::ops::Add;
+use std::ops::{Add, Sub, Mul};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
     pub x: f64,
     pub y: f64,
@@ -51,14 +51,26 @@ impl Vector3 {
 
 // Operators
 
+macro_rules! define_scalar_add {
+    ($T: ty) => (
+        impl Add<$T> for Vector3 {
+            type Output = Vector3;
 
-// This declares two lifetime references. One for the right hand side(a) and
-// another for self(b). Since Add is implemented for &'a Vector this means
-// self is actually a Vector3 reference. I think that's how it works anyway...
-impl<'a, 'b> Add<&'b Vector3> for &'a Vector3 {
+            fn add(self, other: $T) -> Vector3 {
+                Vector3 {
+                    x: self.x + (other as f64),
+                    y: self.y + (other as f64),
+                    z: self.z + (other as f64),
+                }
+            }
+        }
+    )
+}
+
+impl Add for Vector3 {
     type Output = Vector3;
 
-    fn add(self, other: &'b Vector3) -> Vector3 {
+    fn add(self, other: Vector3) -> Vector3 {
         Vector3 {
             x: self.x + other.x,
             y: self.y + other.y,
@@ -67,14 +79,95 @@ impl<'a, 'b> Add<&'b Vector3> for &'a Vector3 {
     }
 }
 
-impl Add for Vector3 {
+define_scalar_add!(f64);
+define_scalar_add!(f32);
+define_scalar_add!(i8);
+define_scalar_add!(i16);
+define_scalar_add!(i32);
+define_scalar_add!(i64);
+define_scalar_add!(u8);
+define_scalar_add!(u16);
+define_scalar_add!(u32);
+define_scalar_add!(u64);
+
+macro_rules! define_scalar_sub {
+    ($T: ty) => (
+        impl Sub<$T> for Vector3 {
+            type Output = Vector3;
+
+            fn sub(self, other: $T) -> Vector3 {
+                Vector3 {
+                    x: self.x - (other as f64),
+                    y: self.y - (other as f64),
+                    z: self.z - (other as f64),
+                }
+            }
+        }
+    )
+}
+
+impl Sub for Vector3 {
     type Output = Vector3;
 
-    fn add(self, other: Vector3) -> Vector3 {
-        &self + &other
+    fn sub(self, other: Vector3) -> Vector3 {
+        Vector3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
     }
 }
 
+define_scalar_sub!(f64);
+define_scalar_sub!(f32);
+define_scalar_sub!(i8);
+define_scalar_sub!(i16);
+define_scalar_sub!(i32);
+define_scalar_sub!(i64);
+define_scalar_sub!(u8);
+define_scalar_sub!(u16);
+define_scalar_sub!(u32);
+define_scalar_sub!(u64);
+
+
+macro_rules! define_scalar_mul {
+    ($T: ty) => (
+        impl Mul<$T> for Vector3 {
+            type Output = Vector3;
+
+            fn mul(self, other: $T) -> Vector3 {
+                Vector3 {
+                    x: self.x * (other as f64),
+                    y: self.y * (other as f64),
+                    z: self.z * (other as f64),
+                }
+            }
+        }
+    )
+}
+
+impl Mul for Vector3 {
+    type Output = Vector3;
+
+    fn mul(self, other: Vector3) -> Vector3 {
+        Vector3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
+        }
+    }
+}
+
+define_scalar_mul!(f64);
+define_scalar_mul!(f32);
+define_scalar_mul!(i8);
+define_scalar_mul!(i16);
+define_scalar_mul!(i32);
+define_scalar_mul!(i64);
+define_scalar_mul!(u8);
+define_scalar_mul!(u16);
+define_scalar_mul!(u32);
+define_scalar_mul!(u64);
 
 
 #[cfg(test)]
@@ -220,5 +313,101 @@ mod tests {
 
         assert_eq_vector3!(result, expected, EPSILON);
         assert_eq_within_bound!(result.length(), 1.0, EPSILON);
+    }
+
+    #[test]
+    fn test_addition() {
+        let vec1 = Vector3 {
+            x: 1.0,
+            y: 5.0,
+            z: 3.0,
+        };
+
+        let vec2 = Vector3 {
+            x: 3.2,
+            y: 3.1,
+            z: 2.1,
+        };
+
+        let expected1 = Vector3 {
+            x: 4.2,
+            y: 8.1,
+            z: 5.1,
+        };
+
+        let expected2 = Vector3 {
+            x: 11.0,
+            y: 15.0,
+            z: 13.0,
+        };
+
+        assert_eq_vector3!(vec1 + vec2, expected1, EPSILON);
+
+        let result: Vector3 = vec1 + 10;
+        assert_eq_vector3!(result, expected2, EPSILON);
+    }
+
+    #[test]
+    fn test_subtraction() {
+        let vec1 = Vector3 {
+            x: 1.0,
+            y: 5.0,
+            z: 3.0,
+        };
+
+        let vec2 = Vector3 {
+            x: 3.2,
+            y: 3.1,
+            z: 2.1,
+        };
+
+        let expected1 = Vector3 {
+            x: -2.2,
+            y: 1.9,
+            z: 0.9,
+        };
+
+        let expected2 = Vector3 {
+            x: -19.0,
+            y: -15.0,
+            z: -17.0,
+        };
+
+
+        assert_eq_vector3!(vec1 - vec2, expected1, EPSILON);
+
+        let result: Vector3 = vec1 - 20.0;
+        assert_eq_vector3!(result, expected2, EPSILON);
+    }
+
+    #[test]
+    fn test_multiplication() {
+        let vec1 = Vector3 {
+            x: 1.0,
+            y: 5.0,
+            z: 3.0,
+        };
+
+        let vec2 = Vector3 {
+            x: 3.2,
+            y: 3.1,
+            z: 2.1,
+        };
+
+        let expected1 = Vector3 {
+            x: 3.2,
+            y: 15.5,
+            z: 6.3,
+        };
+        let expected2 = Vector3 {
+            x: 20.0,
+            y: 100.0,
+            z: 60.0,
+        };
+
+        assert_eq_vector3!(vec1 * vec2, expected1, EPSILON);
+
+        let result: Vector3 = vec1 * 20.0;
+        assert_eq_vector3!(result, expected2, EPSILON);
     }
 }
