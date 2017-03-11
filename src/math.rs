@@ -1,12 +1,12 @@
 const EPSILON: f64 = 0.001;
 
-use std::ops::{Add};
+use std::ops::Add;
 
 #[derive(Debug)]
 pub struct Vector3 {
     pub x: f64,
     pub y: f64,
-    pub z: f64
+    pub z: f64,
 }
 
 impl Vector3 {
@@ -19,25 +19,33 @@ impl Vector3 {
         let y0 = self.z * other.x - self.x * other.z;
         let z0 = self.x * other.y - self.y * other.x;
 
-        return Vector3 {
+        Vector3 {
             x: x0,
             y: y0,
-            z: z0
-        };
+            z: z0,
+        }
     }
 
     pub fn length(&self) -> f64 {
-        return self.dot(&self).sqrt();
+        self.dot(&self).sqrt()
     }
 
     pub fn normalize(&self) -> Self {
         let l = self.length();
 
         if l == 0.0 {
-            return Vector3 { x: 0.0, y: 0.0, z: 0.0 };
+            return Vector3 {
+                       x: 0.0,
+                       y: 0.0,
+                       z: 0.0,
+                   };
         }
 
-        return Vector3 { x: self.x / l, y: self.y / l, z: self.z / l };
+        Vector3 {
+            x: self.x / l,
+            y: self.y / l,
+            z: self.z / l,
+        }
     }
 }
 
@@ -51,7 +59,11 @@ impl<'a, 'b> Add<&'b Vector3> for &'a Vector3 {
     type Output = Vector3;
 
     fn add(self, other: &'b Vector3) -> Vector3 {
-        return Vector3 { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z };
+        Vector3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
     }
 }
 
@@ -59,7 +71,7 @@ impl Add for Vector3 {
     type Output = Vector3;
 
     fn add(self, other: Vector3) -> Vector3 {
-        return &self + &other;
+        &self + &other
     }
 }
 
@@ -89,7 +101,7 @@ mod tests {
         let vec = Vector3 {
             x: 2.0,
             y: 1.0,
-            z: 0.0
+            z: 0.0,
         };
 
         assert_eq_within_bound!(vec.x, 2.0, EPSILON);
@@ -102,13 +114,13 @@ mod tests {
         let vec1 = Vector3 {
             x: 3.52,
             y: 8.23,
-            z: 29.0
+            z: 29.0,
         };
 
         let vec2 = Vector3 {
             x: 0.0,
             y: 1.3,
-            z: -3.23
+            z: -3.23,
         };
 
         assert_eq_within_bound!(vec1.dot(&vec2), -82.971, EPSILON);
@@ -120,30 +132,60 @@ mod tests {
         let vec1 = Vector3 {
             x: 2.4,
             y: 9.3,
-            z: -1.3
+            z: -1.3,
         };
 
         let vec2 = Vector3 {
             x: -2.3,
             y: 2.5,
-            z: -3.5
+            z: -3.5,
         };
 
-       let result1 = vec1.cross(&vec2);
-       let result2 = vec2.cross(&vec1);
+        let result1 = vec1.cross(&vec2);
+        let result2 = vec2.cross(&vec1);
 
-       assert_eq_vector3!(result1, Vector3 { x: -29.3, y: 11.39, z: 27.39 }, EPSILON);
-       assert_eq_vector3!(result2, Vector3 { x: 29.3, y: -11.39, z: -27.39 }, EPSILON);
+        assert_eq_vector3!(result1,
+                           Vector3 {
+                               x: -29.3,
+                               y: 11.39,
+                               z: 27.39,
+                           },
+                           EPSILON);
+        assert_eq_vector3!(result2,
+                           Vector3 {
+                               x: 29.3,
+                               y: -11.39,
+                               z: -27.39,
+                           },
+                           EPSILON);
     }
 
     #[test]
     fn test_length() {
-        let vectors = vec![
-            (Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0),
-            (Vector3 { x: 2.3, y: -2.1, z: 2.1 }, 3.756327994),
-            (Vector3 { x: 1.0, y: 0.0, z: 0.0 }, 1.0),
-            (Vector3 { x: 0.802, y: 0.267, z: 0.534 }, 1.0)
-        ];
+        let vectors = vec![(Vector3 {
+                                x: 0.0,
+                                y: 0.0,
+                                z: 0.0,
+                            },
+                            0.0),
+                           (Vector3 {
+                                x: 2.3,
+                                y: -2.1,
+                                z: 2.1,
+                            },
+                            3.756327994),
+                           (Vector3 {
+                                x: 1.0,
+                                y: 0.0,
+                                z: 0.0,
+                            },
+                            1.0),
+                           (Vector3 {
+                                x: 0.802,
+                                y: 0.267,
+                                z: 0.534,
+                            },
+                            1.0)];
 
         for (vec, length) in vectors {
             assert_eq_within_bound!(vec.length(), length, EPSILON);
@@ -155,7 +197,7 @@ mod tests {
         let vec = Vector3 {
             x: 0.0,
             y: 0.0,
-            z: 0.0
+            z: 0.0,
         };
 
         assert_eq_vector3!(vec.normalize(), vec, EPSILON);
@@ -166,11 +208,15 @@ mod tests {
         let vec = Vector3 {
             x: 4.0,
             y: 63.0,
-            z: 0.5
+            z: 0.5,
         };
 
         let result = vec.normalize();
-        let expected = Vector3 { x: 0.063362486, y: 0.99795915, z: 0.007920311 };
+        let expected = Vector3 {
+            x: 0.063362486,
+            y: 0.99795915,
+            z: 0.007920311,
+        };
 
         assert_eq_vector3!(result, expected, EPSILON);
         assert_eq_within_bound!(result.length(), 1.0, EPSILON);
