@@ -26,9 +26,22 @@ fn main() {
         Err(_) => false,
     };
 
-    let material = Material::new(Color::new(29, 86, 140), Color::black(), 0.0);
-    let sphere = Sphere::new(Vector3::new(0.0, 0.0, 15.0), 1.0, material);
-    let objects: Vec<&Shape> = vec![&sphere];
+    let m1 = Material::new(Color::new(29, 86, 140), Color::black(), 0.0);
+    let s1 = Sphere::new(Vector3::new(0.0, 0.0, 15.0), 1.0, m1);
+
+    let m2 = Material::new(Color::new(140, 10, 29), Color::black(), 0.0);
+    let s2 = Sphere::new(Vector3::new(-3.0, 0.0, 15.0), 1.0, m2);
+
+    let m3 = Material::new(Color::new(10, 145, 29), Color::black(), 0.0);
+    let s3 = Sphere::new(Vector3::new(3.0, 0.0, 15.0), 1.0, m3);
+
+    let m4 = Material::new(Color::new(10, 145, 120), Color::black(), 0.0);
+    let s4 = Sphere::new(Vector3::new(1.5, 2.0, 15.0), 0.5, m4);
+
+    let m5 = Material::new(Color::new(190, 145, 29), Color::black(), 0.0);
+    let s5 = Sphere::new(Vector3::new(-1.5, 2.0, 15.0), 0.5, m5);
+
+    let objects: Vec<&Shape> = vec![&s1, &s2, &s3, &s4, &s5];
     let scene = Scene::new(&objects, Color::black());
     let camera = Camera::new(0.785398163, WIDTH, HEIGHT);
 
