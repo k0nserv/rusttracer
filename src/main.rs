@@ -26,7 +26,7 @@ fn main() {
         Err(_) => false,
     };
 
-    let material = Material::new(Color::red(), Color::black(), 0.0);
+    let material = Material::new(Color::new(29, 86, 140), Color::black(), 0.0);
     let sphere = Sphere::new(Vector3::new(0.0, 0.0, 15.0), 1.0, material);
     let objects: Vec<&Shape> = vec![&sphere];
     let scene = Scene::new(&objects, Color::black());
