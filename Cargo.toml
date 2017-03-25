@@ -5,3 +5,4 @@ authors = ["Hugo Tunius <h@tunius.se>"]
 
 [dependencies]
 image = "*"
+crossbeam = "*"

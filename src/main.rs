@@ -3,6 +3,7 @@ extern crate image;
 extern crate rusttracer;
 
 use std::path::Path;
+use std::env;
 
 use rusttracer::math::Vector3;
 use rusttracer::{Scene, Color, Camera, Material, Renderer};
@@ -12,18 +13,35 @@ const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 1920;
 const HEIGHT: u32 = 1080;
 const BUFFER_SIZE: usize = (WIDTH * HEIGHT * 3) as usize;
+const DEFAULT_NUMBER_OF_THREADS: u32 = 4;
 
 fn main() {
+    let num_threads = match env::var("NUM_THREADS") {
+        Ok(threads) => threads.parse::<u32>().unwrap_or(DEFAULT_NUMBER_OF_THREADS),
+        Err(_) => DEFAULT_NUMBER_OF_THREADS,
+    };
+
+    let benchmark = match env::var("BENCHMARK") {
+        Ok(s) => s.parse::<bool>().unwrap_or(false),
+        Err(_) => false,
+    };
+
     let material = Material::new(Color::red(), Color::black(), 0.0);
     let sphere = Sphere::new(Vector3::new(0.0, 0.0, 15.0), 1.0, material);
     let objects: Vec<&Shape> = vec![&sphere];
     let scene = Scene::new(&objects, Color::black());
     let camera = Camera::new(0.785398163, WIDTH, HEIGHT);
 
-    let renderer = Renderer::new(&scene, &camera);
+    let renderer = Renderer::new(&scene, &camera, num_threads);
+
+
+    if benchmark {
+        for i in 0..100 {
+            let x: Vec<Color> = renderer.render(MAX_DEPTH);
+        }
+    }
 
     let result: Vec<Color> = renderer.render(MAX_DEPTH);
-
     let mut buffer: [u8; BUFFER_SIZE] = [0x8C; BUFFER_SIZE];
 
     for (index, pixel) in result.iter().enumerate() {
