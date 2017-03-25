@@ -1,4 +1,4 @@
-const EPSILON: f64 = 0.001;
+pub const EPSILON: f64 = 0.001;
 
 use std::ops::{Add, Sub, Mul};
 
@@ -10,8 +10,17 @@ pub struct Vector3 {
 }
 
 impl Vector3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Vector3 {
+        Vector3 { x: x, y: y, z: z }
+    }
+
+    pub fn at_origin() -> Vector3 {
+        Vector3::new(0.0, 0.0, 0.0)
+    }
+
+
     pub fn dot(&self, other: &Self) -> f64 {
-        return self.x * other.x + self.y * other.y + self.z * other.z;
+        self.x * other.x + self.y * other.y + self.z * other.z
     }
 
     pub fn cross(&self, other: &Self) -> Self {
@@ -170,24 +179,24 @@ define_scalar_mul!(u32);
 define_scalar_mul!(u64);
 
 
+macro_rules! assert_eq_within_bound {
+    ($x:expr, $y: expr, $bound: expr) => (
+        assert!($x >= $y - $bound && $x <= $y + $bound, "{} is not equal to {} within bound {}", $x, $y, $bound);
+    );
+}
+
+macro_rules! assert_eq_vector3 {
+    ($x:expr, $y: expr, $bound: expr) => (
+        assert_eq_within_bound!($x.x, $y.x, $bound);
+        assert_eq_within_bound!($x.y, $y.y, $bound);
+        assert_eq_within_bound!($x.z, $y.z, $bound);
+    );
+}
+
 #[cfg(test)]
 mod tests {
-    use super::Vector3;
-    use super::EPSILON;
+    use super::{Vector3, EPSILON};
 
-    macro_rules! assert_eq_within_bound {
-        ($x:expr, $y: expr, $bound: expr) => (
-            assert!($x >= $y - $bound && $x <= $y + $bound, "{} is not equal to {} within bound {}", $x, $y, $bound);
-        );
-    }
-
-    macro_rules! assert_eq_vector3 {
-        ($x:expr, $y: expr, $bound: expr) => (
-            assert_eq_within_bound!($x.x, $y.x, $bound);
-            assert_eq_within_bound!($x.y, $y.y, $bound);
-            assert_eq_within_bound!($x.z, $y.z, $bound);
-        );
-    }
 
     #[test]
     fn test_constructor() {
@@ -200,6 +209,19 @@ mod tests {
         assert_eq_within_bound!(vec.x, 2.0, EPSILON);
         assert_eq_within_bound!(vec.y, 1.0, EPSILON);
         assert_eq_within_bound!(vec.z, 0.0, EPSILON);
+    }
+
+    #[test]
+    fn test_at_origin() {
+        let vec = Vector3::at_origin();
+
+        assert_eq_vector3!(vec,
+                           Vector3 {
+                               x: 0.0,
+                               y: 0.0,
+                               z: 0.0,
+                           },
+                           EPSILON);
     }
 
     #[test]
