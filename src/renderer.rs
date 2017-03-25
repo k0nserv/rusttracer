@@ -83,7 +83,7 @@ impl<'a> Renderer<'a> {
             for x in 0..width {
                 let index = y * width + x;
                 let global_y = segment_offset + y;
-                let ray = self.camera.create_ray(x as u32, global_y as u32);
+                let ray = self.camera.create_ray(x as u32, self.camera.height - global_y as u32);
                 colors[index as usize] = self.trace(ray, max_depth);
             }
         }
