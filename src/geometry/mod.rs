@@ -1,4 +1,7 @@
+pub mod plane;
 pub mod sphere;
+
+pub use self::plane::Plane;
 pub use self::sphere::Sphere;
 
 use intersection::Intersection;

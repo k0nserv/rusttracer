@@ -7,7 +7,7 @@ use std::env;
 
 use rusttracer::math::Vector3;
 use rusttracer::{Scene, Color, Camera, Material, Renderer, SuperSampling};
-use rusttracer::geometry::{Shape, Sphere};
+use rusttracer::geometry::{Shape, Sphere, Plane};
 
 const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 1920;
@@ -26,6 +26,11 @@ fn main() {
         Err(_) => false,
     };
 
+    let floor_material = Material::new(Color::white(), Color::black(), 0.0);
+    let floor = Plane::new(Vector3::new(0.0, -15.0, 0.0),
+                           Vector3::new(0.0, 1.0, 0.0),
+                           floor_material);
+
     let m1 = Material::new(Color::new(29, 86, 140), Color::black(), 0.0);
     let s1 = Sphere::new(Vector3::new(0.0, 0.0, 15.0), 1.0, m1);
 
@@ -41,7 +46,13 @@ fn main() {
     let m5 = Material::new(Color::new(190, 145, 29), Color::black(), 0.0);
     let s5 = Sphere::new(Vector3::new(-1.5, 2.0, 15.0), 0.5, m5);
 
-    let objects: Vec<&Shape> = vec![&s1, &s2, &s3, &s4, &s5];
+    let m6 = Material::new(Color::new(150, 10, 120), Color::black(), 0.0);
+    let s6 = Sphere::new(Vector3::new(1.5, -2.0, 15.0), 0.5, m6);
+
+    let m7 = Material::new(Color::new(190, 20, 29), Color::black(), 0.0);
+    let s7 = Sphere::new(Vector3::new(-1.5, -2.0, 15.0), 0.5, m7);
+
+    let objects: Vec<&Shape> = vec![&s1, &s2, &s3, &s4, &s5, &s6, &s7, &floor];
     let scene = Scene::new(&objects, Color::black());
     let camera = Camera::new(0.785398163, WIDTH, HEIGHT);
 
