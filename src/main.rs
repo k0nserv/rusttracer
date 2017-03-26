@@ -64,6 +64,8 @@ fn main() {
         for i in 0..10 {
             let x: Vec<Color> = renderer.render(MAX_DEPTH);
         }
+
+        return;
     }
 
     let result: Vec<Color> = renderer.render(MAX_DEPTH);
