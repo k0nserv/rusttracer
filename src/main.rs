@@ -1,4 +1,5 @@
 extern crate image;
+extern crate time;
 
 extern crate rusttracer;
 
@@ -74,10 +75,9 @@ fn main() {
         buffer[(index * 3) + 2] = pixel.b();
     }
 
-
-
-
-    image::save_buffer(&Path::new("image.png"),
+    let timestamp = time::get_time().sec;
+    let filename = format!("images/{}.png", timestamp);
+    image::save_buffer(&Path::new(&filename),
                        &buffer[..],
                        WIDTH,
                        HEIGHT,

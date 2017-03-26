@@ -6,3 +6,4 @@ authors = ["Hugo Tunius <h@tunius.se>"]
 [dependencies]
 image = "*"
 crossbeam = "*"
+time="0.1"
