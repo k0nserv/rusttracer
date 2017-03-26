@@ -47,21 +47,21 @@ impl<'a> Renderer<'a> {
             self.render_segment(0, &range, max_depth)
         } else {
             let thread_segments = self.segments();
-            let mut i = 0;
+            let mut rxs = vec![];
 
-            let rxs = thread_segments.iter()
-                .map(|&(start, end, offset)| {
-                    let (tx, rx) = mpsc::channel();
-                    let range = start..end;
+            crossbeam::scope(|scope| {
+                rxs = thread_segments.iter()
+                    .map(|&(start, end, offset)| {
+                        let (tx, rx) = mpsc::channel();
+                        let range = start..end;
 
-                    crossbeam::scope(|scope| {
                         scope.spawn(move || {
                                         tx.send(self.render_segment(offset, &range, max_depth));
                                     });
-                    });
-                    rx
-                })
-                .collect::<Vec<_>>();
+                        rx
+                    })
+                    .collect::<Vec<_>>();
+            });
 
 
             rxs.iter().flat_map(|rx| rx.recv().unwrap()).collect()
