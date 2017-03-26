@@ -55,7 +55,7 @@ fn main() {
     }
 
     let result: Vec<Color> = renderer.render(MAX_DEPTH);
-    let mut buffer: [u8; BUFFER_SIZE] = [0x8C; BUFFER_SIZE];
+    let mut buffer = vec![0x8C; BUFFER_SIZE];
 
     for (index, pixel) in result.iter().enumerate() {
         buffer[(index * 3) + 0] = pixel.r();
