@@ -9,9 +9,15 @@ use std::ops::Range;
 use std::thread;
 use std::sync::mpsc;
 
+pub enum SuperSampling {
+    Off,
+    On(u32),
+}
+
 pub struct Renderer<'a> {
     scene: &'a Scene<'a>,
     camera: &'a Camera,
+    super_sampling: SuperSampling,
     num_threads: u32,
 }
 
@@ -19,13 +25,18 @@ unsafe impl<'a> Sync for Renderer<'a> {}
 unsafe impl<'a> Send for Renderer<'a> {}
 
 impl<'a> Renderer<'a> {
-    pub fn new(scene: &'a Scene<'a>, camera: &'a Camera, num_threads: u32) -> Renderer<'a> {
+    pub fn new(scene: &'a Scene<'a>,
+               camera: &'a Camera,
+               super_sampling: SuperSampling,
+               num_threads: u32)
+               -> Renderer<'a> {
         assert!(camera.height % num_threads == 0,
                 "camera.height should be devisble by num_threads");
 
         Renderer {
             scene: scene,
             camera: camera,
+            super_sampling: super_sampling,
             num_threads: num_threads,
         }
     }
@@ -81,10 +92,42 @@ impl<'a> Renderer<'a> {
 
         for y in segment_range.clone() {
             for x in 0..width {
-                let index = y * width + x;
+                let samples = match self.super_sampling {
+                    SuperSampling::Off => 1,
+                    SuperSampling::On(samples) => samples,
+                };
+
+                let mut sample_colors = vec![Color::black(); (samples * samples) as usize];
                 let global_y = segment_offset + y;
-                let ray = self.camera.create_ray(x as u32, self.camera.height - global_y as u32);
-                colors[index as usize] = self.trace(ray, max_depth);
+
+                for xSample in 0..samples {
+                    for ySample in 0..samples {
+                        let ray = self.camera.create_ray(x as u32,
+                                                         self.camera.height - global_y as u32,
+                                                         xSample,
+                                                         ySample,
+                                                         samples);
+                        sample_colors[(ySample * samples + xSample) as usize] =
+                            self.trace(ray, max_depth);
+                    }
+                }
+
+
+                let index = y * width + x;
+
+                let mut sum_r: f64 = 0.0;
+                let mut sum_g: f64 = 0.0;
+                let mut sum_b: f64 = 0.0;
+
+                for color in &sample_colors {
+                    sum_r += color.r_f64();
+                    sum_g += color.g_f64();
+                    sum_b += color.b_f64();
+                }
+
+                colors[index as usize] = Color::new_f64(sum_r / sample_colors.len() as f64,
+                                                        sum_g / sample_colors.len() as f64,
+                                                        sum_b / sample_colors.len() as f64);
             }
         }
 

@@ -31,9 +31,12 @@ impl Camera {
         }
     }
 
-    pub fn create_ray(&self, x: u32, y: u32) -> Ray {
-        let px = ((x as f64) * 2.0) / self.widthf - 1.0;
-        let py = ((y as f64) * 2.0) / self.heightf - 1.0;
+    pub fn create_ray(&self, x: u32, y: u32, xSample: u32, ySample: u32, samples: u32) -> Ray {
+        let samplesf = samples as f64;
+        let sample_width = self.widthf * samplesf;
+        let sample_height = self.heightf * samplesf;
+        let px = (((x * samples + xSample) as f64) * 2.0) / sample_width - 1.0;
+        let py = (((y * samples + ySample) as f64) * 2.0) / sample_height - 1.0;
 
         let direction = Vector3::new((px as f64) * self.x0, (py as f64) * self.y0, 1.0);
 

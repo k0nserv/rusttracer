@@ -16,9 +16,20 @@ impl Color {
         Color { data: result }
     }
 
+    pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
+        Color::new(Color::clamp((r * 255.0) as i16),
+                   Color::clamp((g * 255.0) as i16),
+                   Color::clamp((b * 255.0) as i16))
+    }
+
     #[inline(always)]
     pub fn r(&self) -> u8 {
         ((self.data & 0x000000FF) >> 0) as u8
+    }
+
+    #[inline(always)]
+    pub fn r_f64(&self) -> f64 {
+        self.r() as f64 / 255.0
     }
 
     #[inline(always)]
@@ -27,8 +38,18 @@ impl Color {
     }
 
     #[inline(always)]
+    pub fn g_f64(&self) -> f64 {
+        self.g() as f64 / 255.0
+    }
+
+    #[inline(always)]
     pub fn b(&self) -> u8 {
         ((self.data & 0x00FF0000) >> 16) as u8
+    }
+
+    #[inline(always)]
+    pub fn b_f64(&self) -> f64 {
+        self.b() as f64 / 255.0
     }
 
     #[inline(always)]

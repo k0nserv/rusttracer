@@ -6,7 +6,7 @@ use std::path::Path;
 use std::env;
 
 use rusttracer::math::Vector3;
-use rusttracer::{Scene, Color, Camera, Material, Renderer};
+use rusttracer::{Scene, Color, Camera, Material, Renderer, SuperSampling};
 use rusttracer::geometry::{Shape, Sphere};
 
 const MAX_DEPTH: u32 = 5;
@@ -45,11 +45,11 @@ fn main() {
     let scene = Scene::new(&objects, Color::black());
     let camera = Camera::new(0.785398163, WIDTH, HEIGHT);
 
-    let renderer = Renderer::new(&scene, &camera, num_threads);
+    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2), num_threads);
 
 
     if benchmark {
-        for i in 0..100 {
+        for i in 0..10 {
             let x: Vec<Color> = renderer.render(MAX_DEPTH);
         }
     }

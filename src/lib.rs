@@ -14,4 +14,4 @@ pub use self::color::Color;
 pub use self::ray::Ray;
 pub use self::camera::Camera;
 pub use self::material::Material;
-pub use self::renderer::Renderer;
+pub use self::renderer::{Renderer, SuperSampling};
