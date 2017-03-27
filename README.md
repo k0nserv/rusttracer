@@ -26,6 +26,12 @@ NUM_THREADS=4 BENCHMARK=true target/release/rusttracer
 
 The benchmark is fairly naive and currently just renders the scene setup in `main.rs` several times.
 
-## First render
+## Renders
+
+This was the first render produced.
 
 ![](docs/first-render.png)
+
+This was rendered a while later, at this point there was support for diffuse colors, specular highlights, reflection, colored lights, and super sampling. This is 2560x1440 at 4x4 super sampling
+
+![](docs/bit-later-render.png)
