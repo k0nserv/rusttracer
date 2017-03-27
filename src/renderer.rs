@@ -8,9 +8,7 @@ use intersection::Intersection;
 use material::Material;
 use math::EPSILON;
 
-
 use std::ops::Range;
-use std::thread;
 use std::sync::mpsc;
 
 pub enum SuperSampling {
@@ -60,7 +58,7 @@ impl<'a> Renderer<'a> {
                         let range = start..end;
 
                         scope.spawn(move || {
-                                        tx.send(self.render_segment(offset, &range, max_depth));
+                                        let _ = tx.send(self.render_segment(offset, &range, max_depth));
                                     });
                         rx
                     })
@@ -104,14 +102,14 @@ impl<'a> Renderer<'a> {
                 let mut sample_colors = vec![Color::black(); (samples * samples) as usize];
                 let global_y = segment_offset + y;
 
-                for xSample in 0..samples {
-                    for ySample in 0..samples {
+                for x_sample in 0..samples {
+                    for y_sample in 0..samples {
                         let ray = self.camera.create_ray(x as u32,
                                                          self.camera.height - global_y as u32,
-                                                         xSample,
-                                                         ySample,
+                                                         x_sample,
+                                                         y_sample,
                                                          samples);
-                        sample_colors[(ySample * samples + xSample) as usize] =
+                        sample_colors[(y_sample * samples + x_sample) as usize] =
                             self.trace(ray, max_depth);
                     }
                 }

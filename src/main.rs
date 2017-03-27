@@ -62,7 +62,7 @@ fn main() {
 
     if benchmark {
         for _ in 0..10 {
-            let x: Vec<Color> = renderer.render(MAX_DEPTH);
+            let _ = renderer.render(MAX_DEPTH);
         }
 
         return;
