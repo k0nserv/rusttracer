@@ -59,9 +59,13 @@ fn main() {
     let objects: Vec<&Shape> = vec![&s1, &floor, &back];
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3];
     let scene = Scene::new(&objects, &lights, Color::black());
-    let camera = Camera::new(0.873, WIDTH, HEIGHT);
+    let camera = Camera::new(0.873,
+                             WIDTH,
+                             HEIGHT,
+                             Vector3::new(-10.0, 5.0, 10.0),
+                             s1.origin,
+                             Vector3::new(0.0, 1.0, 0.0));
 
-    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(4), num_threads);
 
     if benchmark {
         for _ in 0..10 {
