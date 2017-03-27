@@ -3,6 +3,7 @@ use geometry::Shape;
 use material::Material;
 use intersection::Intersection;
 use ray::Ray;
+use math::EPSILON;
 
 pub struct Plane {
     pub origin: Vector3,
@@ -24,17 +25,17 @@ impl Shape for Plane {
     fn intersect(&self, ray: Ray) -> Option<Intersection> {
         let denominator = self.normal.dot(&ray.direction);
 
-        if denominator.abs() < 1e-5 {
+        if denominator.abs() <= EPSILON {
             return None;
         }
 
-        let t = (self.origin - ray.origin).dot(&self.normal) / denominator;
+        let t = ((self.origin - ray.origin).dot(&self.normal)) / denominator;
 
-        if t >= 1e-5 {
-            let intersectionPoint = ray.origin + ray.direction * t;
+        if t >= 0.0 {
+            let intersection_point = ray.origin + ray.direction * t;
 
             let intersection =
-                Intersection::new(t, self, intersectionPoint, ray, self.normal, false);
+                Intersection::new(t, self, intersection_point, ray, self.normal, false);
 
             return Some(intersection);
         }

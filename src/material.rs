@@ -4,15 +4,25 @@ use color::Color;
 pub struct Material {
     pub ambient_color: Color,
     pub diffuse_color: Color,
-    pub reflection: f64,
+    pub specular_color: Color,
+    pub reflection_coefficient: Option<f64>,
 }
 
 impl Material {
-    pub fn new(ambient_color: Color, diffuse_color: Color, reflection: f64) -> Material {
+    pub fn new(ambient_color: Color,
+               diffuse_color: Color,
+               specular_color: Color,
+               reflection_coefficient: Option<f64>)
+               -> Material {
         Material {
             ambient_color: ambient_color,
             diffuse_color: diffuse_color,
-            reflection: reflection,
+            specular_color: specular_color,
+            reflection_coefficient: reflection_coefficient,
         }
+    }
+
+    pub fn is_reflective(&self) -> bool {
+        self.reflection_coefficient.is_some()
     }
 }

@@ -1,4 +1,4 @@
-pub const EPSILON: f64 = 0.001;
+pub const EPSILON: f64 = 1e-5;
 
 use std::ops::{Add, Sub, Mul};
 
@@ -33,6 +33,10 @@ impl Vector3 {
             y: y0,
             z: z0,
         }
+    }
+
+    pub fn reflect(&self, normal: &Self) -> Self {
+        *self - *normal * (2.0 * self.dot(&normal))
     }
 
     pub fn length(&self) -> f64 {

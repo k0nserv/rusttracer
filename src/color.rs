@@ -102,15 +102,27 @@ impl Sub for Color {
     }
 }
 
+impl Mul for Color {
+    type Output = Color;
+
+    fn mul(self, other: Color) -> Color {
+        let r = self.r_f64() * other.r_f64();
+        let g = self.g_f64() * other.g_f64();
+        let b = self.b_f64() * other.b_f64();
+
+        Color::new_f64(r, g, b)
+    }
+}
+
 impl Mul<f64> for Color {
     type Output = Color;
 
     fn mul(self, other: f64) -> Color {
-        let r = Color::clamp(((self.r() as f64) * other) as i16);
-        let g = Color::clamp(((self.g() as f64) * other) as i16);
-        let b = Color::clamp(((self.b() as f64) * other) as i16);
+        let r = self.r_f64() * other;
+        let g = self.g_f64() * other;
+        let b = self.b_f64() * other;
 
-        Color::new(r, g, b)
+        Color::new_f64(r, g, b)
     }
 }
 

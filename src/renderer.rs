@@ -4,6 +4,10 @@ use color::Color;
 use scene::Scene;
 use camera::Camera;
 use ray::Ray;
+use intersection::Intersection;
+use material::Material;
+use math::EPSILON;
+
 
 use std::ops::Range;
 use std::thread;
@@ -143,9 +147,75 @@ impl<'a> Renderer<'a> {
         let possible_hit = self.scene.intersect(ray);
 
         if let Some(hit) = possible_hit {
-            result = hit.shape.material().ambient_color;
+            result = self.shade(&hit, ray);
+
+            if hit.shape.material().is_reflective() {
+                result = result + self.reflect(&hit, ray, depth);
+            }
         }
 
         result
+    }
+
+    fn shade(&self, intersection: &Intersection, original_ray: Ray) -> Color {
+        let material: &Material = intersection.shape.material();
+        let mut result = material.ambient_color;
+
+        for light in self.scene.lights {
+            let mut in_shadow = false;
+            let distance_to_light = (intersection.point - light.origin).length();
+            let light_direction = (light.origin - intersection.point).normalize();
+            let ray = Ray::new(intersection.point + light_direction * EPSILON,
+                               light_direction,
+                               Some(original_ray.medium_refraction));
+
+            for object in self.scene.objects {
+                if let Some(hit) = object.intersect(ray) {
+                    if hit.t < distance_to_light {
+                        in_shadow = true;
+                        break;
+                    }
+                }
+            }
+
+            if in_shadow {
+                continue;
+            }
+
+            let light_color = light.color();
+            let mut dot = light_direction.dot(&intersection.normal);
+
+            // Diffuse
+            if dot > 0.0 {
+                result = result + (light_color * material.diffuse_color) * dot;
+            }
+
+            dot = original_ray.direction.dot(&light_direction.reflect(&intersection.normal));
+
+            // Specular
+            if dot > 0.0 {
+                let spec = dot.powf(20.0);
+
+                result = result + (light_color * material.specular_color) * spec;
+            }
+        }
+
+        result
+    }
+
+    fn reflect(&self, intersection: &Intersection, original_ray: Ray, current_depth: u32) -> Color {
+        let new_direction = original_ray.direction.reflect(&intersection.normal).normalize();
+
+        let new_ray = Ray::new(intersection.point + new_direction * EPSILON,
+                               new_direction,
+                               Some(original_ray.medium_refraction));
+
+        let reflected_color = self.trace(new_ray, current_depth - 1);
+
+        reflected_color *
+        intersection.shape
+            .material()
+            .reflection_coefficient
+            .unwrap_or(0.0)
     }
 }

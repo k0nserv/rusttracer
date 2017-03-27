@@ -35,8 +35,10 @@ impl Camera {
         let samplesf = samples as f64;
         let sample_width = self.widthf * samplesf;
         let sample_height = self.heightf * samplesf;
-        let px = (((x * samples + xSample) as f64) * 2.0) / sample_width - 1.0;
-        let py = (((y * samples + ySample) as f64) * 2.0) / sample_height - 1.0;
+
+        // Map pixel coordinates to space in -1, 1 range
+        let px = ((((x * samples + xSample) as f64) * 2.0) / sample_width) - 1.0;
+        let py = ((((y * samples + ySample) as f64) * 2.0) / sample_height) - 1.0;
 
         let direction = Vector3::new((px as f64) * self.x0, (py as f64) * self.y0, 1.0);
 

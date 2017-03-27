@@ -2,18 +2,22 @@ use geometry::Shape;
 use color::Color;
 use ray::Ray;
 use intersection::Intersection;
+use lights::PointLight;
 
 pub struct Scene<'a> {
-    objects: &'a Vec<&'a Shape>,
-    // TODO: Remove when there are lights
-    // lights: &'a vec<&'a Light>,
+    pub objects: &'a Vec<&'a Shape>,
+    pub lights: &'a Vec<&'a PointLight>,
     pub clear_color: Color,
 }
 
 impl<'a> Scene<'a> {
-    pub fn new(objects: &'a Vec<&'a Shape>, clear_color: Color) -> Scene<'a> {
+    pub fn new(objects: &'a Vec<&'a Shape>,
+               lights: &'a Vec<&'a PointLight>,
+               clear_color: Color)
+               -> Scene<'a> {
         Scene {
             objects: objects,
+            lights: lights,
             clear_color: clear_color,
         }
     }
