@@ -150,6 +150,10 @@ impl<'a> Renderer<'a> {
             if hit.shape.material().is_reflective() {
                 result = result + self.reflect(&hit, ray, depth);
             }
+
+            if hit.shape.material().is_refractive() {
+                result = result + self.refract(&hit, ray, depth);
+            }
         }
 
         result
@@ -215,5 +219,51 @@ impl<'a> Renderer<'a> {
             .material()
             .reflection_coefficient
             .unwrap_or(0.0)
+    }
+
+    fn refract(&self, intersection: &Intersection, original_ray: Ray, current_depth: u32) -> Color {
+        assert!(intersection.shape
+                    .material()
+                    .refraction_coefficient
+                    .is_some(),
+                "Don't call refract for materials that aren't refractive");
+        let mut refraction_coefficient = intersection.shape
+            .material()
+            .refraction_coefficient
+            .unwrap_or(1.0);
+
+        if intersection.inside {
+            // Leaving refractive material
+            refraction_coefficient = 1.0;
+        }
+
+        let n = original_ray.medium_refraction / refraction_coefficient;
+        let normal = match intersection.inside {
+            true => -intersection.normal,
+            false => intersection.normal,
+        };
+
+        let cos_i = normal.dot(&original_ray.direction);
+        let c2 = 1.0 - n * (1.0 - cos_i * cos_i);
+
+        if c2 > 0.0 {
+            let t = (original_ray.direction * n + normal * (n * cos_i - c2.sqrt())).normalize();
+
+            let new_ray = Ray::new(intersection.point + t * EPSILON,
+                                   t,
+                                   Some(refraction_coefficient));
+
+            let refraction_color = self.trace(new_ray, current_depth - 1);
+            let absorbance = intersection.shape.material().ambient_color * 0.15 * -intersection.t;
+            let transparency = Color::new_f64(absorbance.r_f64().exp(),
+                                              absorbance.g_f64().exp(),
+                                              absorbance.b_f64().exp());
+
+            return refraction_color * transparency;
+
+
+        }
+
+        return Color::black();
     }
 }

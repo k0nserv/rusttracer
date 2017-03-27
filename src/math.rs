@@ -1,6 +1,6 @@
 pub const EPSILON: f64 = 1e-5;
 
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Sub, Mul, Neg};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
@@ -141,6 +141,18 @@ define_scalar_sub!(u8);
 define_scalar_sub!(u16);
 define_scalar_sub!(u32);
 define_scalar_sub!(u64);
+
+impl Neg for Vector3 {
+    type Output = Vector3;
+
+    fn neg(self) -> Vector3 {
+        Vector3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
+    }
+}
 
 
 macro_rules! define_scalar_mul {

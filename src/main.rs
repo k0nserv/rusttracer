@@ -31,6 +31,7 @@ fn main() {
     let floor_material = Material::new(Color::white() * 0.05,
                                        Color::white() * 0.3,
                                        Color::black(),
+                                       None,
                                        None);
     let floor = Plane::new(Vector3::new(0.0, -5.0, 0.0),
                            Vector3::new(0.0, 1.0, 0.0),
@@ -39,12 +40,17 @@ fn main() {
     let back_material = Material::new(Color::red() * 0.00,
                                       Color::white() * 0.8,
                                       Color::black(),
+                                      None,
                                       None);
     let back = Plane::new(Vector3::new(0.0, 0.0, 50.0),
                           Vector3::new(0.0, 0.0, -1.0),
                           back_material);
 
-    let m1 = Material::new(Color::black(), Color::black(), Color::black(), Some(1.0));
+    let m1 = Material::new(Color::black(),
+                           Color::black(),
+                           Color::black(),
+                           Some(1.0),
+                           None);
     let s1 = Sphere::new(Vector3::new(0.0, -4.0, 45.0), 1.0, m1);
 
     let l1 = PointLight::new(Vector3::new(0.0, 10.0, 45.0), Color::new(67, 249, 253), 0.5);
