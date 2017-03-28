@@ -66,6 +66,7 @@ fn main() {
                              s1.origin,
                              Vector3::new(0.0, 1.0, 0.0));
 
+    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2), num_threads);
 
     if benchmark {
         for _ in 0..10 {
