@@ -3,17 +3,14 @@ use std::ops::{Add, Sub, Mul};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
-    data: u32,
+    r: u8,
+    g: u8,
+    b: u8
 }
 
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
-        let mut result: u32 = 0xFF000000;
-        result = result | (r as u32) << 0;
-        result = result | (g as u32) << 8;
-        result = result | (b as u32) << 16;
-
-        Color { data: result }
+        Color { r: r, g: g, b: b }
     }
 
     pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
@@ -24,7 +21,7 @@ impl Color {
 
     #[inline(always)]
     pub fn r(&self) -> u8 {
-        ((self.data & 0x000000FF) >> 0) as u8
+        self.r
     }
 
     #[inline(always)]
@@ -34,7 +31,7 @@ impl Color {
 
     #[inline(always)]
     pub fn g(&self) -> u8 {
-        ((self.data & 0x0000FF00) >> 8) as u8
+        self.g
     }
 
     #[inline(always)]
@@ -44,7 +41,7 @@ impl Color {
 
     #[inline(always)]
     pub fn b(&self) -> u8 {
-        ((self.data & 0x00FF0000) >> 16) as u8
+        self.b
     }
 
     #[inline(always)]
@@ -54,7 +51,10 @@ impl Color {
 
     #[inline(always)]
     pub fn as_u32(&self) -> u32 {
-        self.data
+        0xFF000000 
+            & (self.r as u32) 
+            & (self.g as u32) << 8 
+            & (self.b as u32) << 16
     }
 
     fn clamp(value: i16) -> u8 {
