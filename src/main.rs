@@ -14,7 +14,6 @@ use rusttracer::lights::PointLight;
 const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 2560;
 const HEIGHT: u32 = 1440;
-const BUFFER_SIZE: usize = (WIDTH * HEIGHT * 3) as usize;
 const DEFAULT_NUMBER_OF_THREADS: u32 = 4;
 
 fn main() {
@@ -77,18 +76,15 @@ fn main() {
     }
 
     let result: Vec<Color> = renderer.render(MAX_DEPTH);
-    let mut buffer = vec![0x8C; BUFFER_SIZE];
 
-    for (index, pixel) in result.iter().enumerate() {
-        buffer[(index * 3) + 0] = pixel.r();
-        buffer[(index * 3) + 1] = pixel.g();
-        buffer[(index * 3) + 2] = pixel.b();
-    }
+    let buffer: Vec<u8> = result.iter().flat_map(|pixel| {
+        pixel.into_iter()
+    }).collect();
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);
     image::save_buffer(&Path::new(&filename),
-                       &buffer[..],
+                       &buffer,
                        WIDTH,
                        HEIGHT,
                        image::RGB(8))
