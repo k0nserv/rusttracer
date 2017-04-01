@@ -73,8 +73,8 @@ fn main() {
 
     let result: Vec<Color> = renderer.render(MAX_DEPTH);
 
-    let buffer = result.into_par_iter()
-        .flat_map(|pixel| pixel.to_vec().into_par_iter())
+    let buffer = result.into_iter()
+        .flat_map(|pixel| pixel.into_iter())
         .collect::<Vec<u8>>();
 
     let timestamp = time::get_time().sec;
