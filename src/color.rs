@@ -1,6 +1,6 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul};
-use std::iter::{Iterator,IntoIterator};
+use std::iter::Iterator;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
@@ -44,9 +44,9 @@ impl Color {
     }
 
     pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
-        Color::new(Color::clamp((r * 255.0) as i16),
-                   Color::clamp((g * 255.0) as i16),
-                   Color::clamp((b * 255.0) as i16))
+        Color::new(Color::clamp((r * 255.0) as i32),
+                   Color::clamp((g * 255.0) as i32),
+                   Color::clamp((b * 255.0) as i32))
     }
 
     #[inline(always)]
@@ -87,16 +87,12 @@ impl Color {
             & (self.b as u32) << 16
     }
 
-    fn clamp(value: i16) -> u8 {
-        if value < 0 {
-            return 0;
+    fn clamp(value: i32) -> u8 {
+        match value {
+            v if v < 0 => 0,
+            v if v > (u8::max_value() as i32) => u8::max_value(),
+            v => v as u8
         }
-
-        if value > (u8::max_value() as i16) {
-            return u8::max_value();
-        }
-
-        value as u8
     }
 }
 
@@ -112,11 +108,9 @@ impl Add for Color {
     type Output = Color;
 
     fn add(self, other: Color) -> Color {
-        let r = Color::clamp((self.r() as i16) + (other.r() as i16));
-        let g = Color::clamp((self.g() as i16) + (other.g() as i16));
-        let b = Color::clamp((self.b() as i16) + (other.b() as i16));
+        let f = |f: fn(&Color)->u8| Color::clamp((f(&self) as i32) + (f(&other) as i32));
 
-        Color::new(r, g, b)
+        Color::new(f(Color::r), f(Color::g), f(Color::b))
     }
 }
 
@@ -124,9 +118,9 @@ impl Sub for Color {
     type Output = Color;
 
     fn sub(self, other: Color) -> Color {
-        let r = Color::clamp((self.r() as i16) - (other.r() as i16));
-        let g = Color::clamp((self.g() as i16) - (other.g() as i16));
-        let b = Color::clamp((self.b() as i16) - (other.b() as i16));
+        let r = Color::clamp((self.r() as i32) - (other.r() as i32));
+        let g = Color::clamp((self.g() as i32) - (other.g() as i32));
+        let b = Color::clamp((self.b() as i32) - (other.b() as i32));
 
         Color::new(r, g, b)
     }
