@@ -6,52 +6,41 @@ use std::iter::{Iterator,IntoIterator};
 pub struct Color {
     r: u8,
     g: u8,
-    b: u8
+    b: u8,
+    next: NextColor,
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum NextColor {
     Red, Green, Blue, Done
 }
 
-pub struct ColorIterator {
-    color: [u8;3],
-    next: NextColor
-}
-
-impl Iterator for ColorIterator {
+impl Iterator for Color{
     type Item = u8;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.next {
             NextColor::Red => {
                 self.next = NextColor::Green;
-                Some(self.color[0])
+                Some(self.r)
             }
             NextColor::Green => {
                 self.next = NextColor::Blue;
-                Some(self.color[1])
+                Some(self.g)
             }
             NextColor::Blue => {
                 self.next = NextColor::Done;
-                Some(self.color[2])
+                Some(self.b)
             }
             NextColor::Done => None
         }
     }
 }
 
-impl IntoIterator for Color {
-    type Item = u8;
-    type IntoIter = ColorIterator;
-    fn into_iter(self) -> Self::IntoIter {
-        ColorIterator { color:[self.r, self.g, self.b], next:NextColor::Red }
-    }
-}
-
 
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
-        Color { r: r, g: g, b: b }
+        Color { r: r, g: g, b: b, next: NextColor::Red }
     }
 
     pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
