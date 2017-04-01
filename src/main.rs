@@ -4,7 +4,6 @@ extern crate rayon;
 
 extern crate rusttracer;
 
-use rayon::prelude::*;
 use std::path::Path;
 use std::env;
 
@@ -71,11 +70,7 @@ fn main() {
         return;
     }
 
-    let result: Vec<Color> = renderer.render(MAX_DEPTH);
-
-    let buffer = result.into_iter()
-        .flat_map(|pixel| pixel.into_iter())
-        .collect::<Vec<u8>>();
+    let buffer = renderer.render(MAX_DEPTH);
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);

@@ -36,7 +36,7 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    pub fn render(&self, max_depth: u32) -> Vec<Color> {
+    pub fn render(&self, max_depth: u32) -> Vec<u8> {
             let range: Range<usize> = (0 as usize)..(self.camera.height as usize);
             self.render_segment(0, &range, max_depth)
     }
@@ -45,14 +45,14 @@ impl<'a> Renderer<'a> {
                       segment_offset: usize,
                       segment_range: &Range<usize>,
                       max_depth: u32)
-                      -> Vec<Color> {
+                      -> Vec<u8> {
         let width = self.camera.width as usize;
 
         segment_range.clone().into_par_iter().flat_map(|y| {
-            (0..width).into_par_iter().map(move|x| {
-                self.render_point(segment_offset, max_depth, x, y)
-            })
-        }).collect::<Vec<Color>>()
+            (0..width).flat_map(move|x| {
+                self.render_point(segment_offset, max_depth, x, y).into_iter()
+            }).collect::<Vec<u8>>().into_par_iter()
+        }).collect::<Vec<u8>>()
     }
 
     fn render_point(&self, segment_offset: usize, max_depth: u32, x: usize, y:usize) -> Color {
