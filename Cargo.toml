@@ -1,9 +1,9 @@
 [package]
 name = "rusttracer"
 version = "0.1.0"
-authors = ["Hugo Tunius <h@tunius.se>"]
+authors = ["Hugo Tunius <h@tunius.se>", "Andrew Aylett <andrew@aylett.co.uk>"]
 
 [dependencies]
 image = "*"
-crossbeam = "*"
 time="0.1"
+rayon="0.6.0"

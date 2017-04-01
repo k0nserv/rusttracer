@@ -1,8 +1,10 @@
 extern crate image;
 extern crate time;
+extern crate rayon;
 
 extern crate rusttracer;
 
+use rayon::prelude::*;
 use std::path::Path;
 use std::env;
 
@@ -14,14 +16,8 @@ use rusttracer::lights::PointLight;
 const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 2560;
 const HEIGHT: u32 = 1440;
-const DEFAULT_NUMBER_OF_THREADS: u32 = 4;
 
 fn main() {
-    let num_threads = match env::var("NUM_THREADS") {
-        Ok(threads) => threads.parse::<u32>().unwrap_or(DEFAULT_NUMBER_OF_THREADS),
-        Err(_) => DEFAULT_NUMBER_OF_THREADS,
-    };
-
     let benchmark = match env::var("BENCHMARK") {
         Ok(s) => s.parse::<bool>().unwrap_or(false),
         Err(_) => false,
@@ -65,7 +61,7 @@ fn main() {
                              s1.origin,
                              Vector3::new(0.0, 1.0, 0.0));
 
-    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2), num_threads);
+    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
 
     if benchmark {
         for _ in 0..10 {
@@ -77,14 +73,14 @@ fn main() {
 
     let result: Vec<Color> = renderer.render(MAX_DEPTH);
 
-    let buffer: Vec<u8> = result.iter().flat_map(|pixel| {
-        pixel.into_iter()
-    }).collect();
+    let buffer = result.into_par_iter()
+        .flat_map(|pixel| pixel.to_vec().into_par_iter())
+        .collect::<Vec<u8>>();
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);
     image::save_buffer(&Path::new(&filename),
-                       &buffer,
+                       &buffer[..],
                        WIDTH,
                        HEIGHT,
                        image::RGB(8))

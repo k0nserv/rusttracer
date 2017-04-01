@@ -1,51 +1,11 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul};
-use std::iter::{Iterator,IntoIterator};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
     r: u8,
     g: u8,
     b: u8
-}
-
-pub enum NextColor {
-    Red, Green, Blue, Done
-}
-
-pub struct ColorIterator {
-    color: Color,
-    next: NextColor
-}
-
-impl Iterator for ColorIterator {
-    type Item = u8;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.next {
-            NextColor::Red => {
-                self.next = NextColor::Green;
-                Some(self.color.r)
-            }
-            NextColor::Green => {
-                self.next = NextColor::Blue;
-                Some(self.color.g)
-            }
-            NextColor::Blue => {
-                self.next = NextColor::Done;
-                Some(self.color.b)
-            }
-            NextColor::Done => None
-        }
-    }
-}
-
-impl IntoIterator for Color {
-    type Item = u8;
-    type IntoIter = ColorIterator;
-    fn into_iter(self) -> Self::IntoIter {
-        ColorIterator { color:self, next:NextColor::Red }
-    }
 }
 
 impl Color {
@@ -57,6 +17,10 @@ impl Color {
         Color::new(Color::clamp((r * 255.0) as i16),
                    Color::clamp((g * 255.0) as i16),
                    Color::clamp((b * 255.0) as i16))
+    }
+
+    pub fn to_vec(self) -> Vec<u8> {
+        vec![self.r, self.g, self.b]
     }
 
     #[inline(always)]
