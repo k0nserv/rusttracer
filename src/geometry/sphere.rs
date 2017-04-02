@@ -76,10 +76,20 @@ mod tests {
     use math::{Vector3, EPSILON};
     use ray::Ray;
     use geometry::Shape;
+    use material::{MaterialTemplate,Material};
+    use color::Color;
+
+    fn build_test_material() -> Material {
+        let color = Color::new(0,0,0);
+
+        MaterialTemplate::new(color, color, color, None, None)
+            .build_material(|_ignore| {})
+    }
 
     #[test]
     fn test_intersection_miss() {
-        let sphere = Sphere::new(Vector3::at_origin(), 1.0);
+        let material = build_test_material();
+        let sphere = Sphere::new(Vector3::at_origin(), 1.0, material);
         let ray = Ray::new(Vector3::new(0.0, 0.0, 2.0),
                            Vector3::new(0.0, 0.0, 1.0),
                            None);
@@ -91,7 +101,8 @@ mod tests {
 
     #[test]
     fn test_intersection() {
-        let sphere = Sphere::new(Vector3::at_origin(), 1.0);
+        let material = build_test_material();
+        let sphere = Sphere::new(Vector3::at_origin(), 1.0, material);
         let ray = Ray::new(Vector3::new(0.0, 0.0, 2.0),
                            Vector3::new(0.0, 0.0, -1.0),
                            None);
