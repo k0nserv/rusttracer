@@ -1,3 +1,5 @@
+extern crate rayon;
+
 #[macro_use]
 pub mod math;
 pub mod ray;

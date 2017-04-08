@@ -1,5 +1,6 @@
 extern crate image;
 extern crate time;
+extern crate rayon;
 
 extern crate rusttracer;
 
@@ -14,15 +15,8 @@ use rusttracer::lights::PointLight;
 const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 2560;
 const HEIGHT: u32 = 1440;
-const BUFFER_SIZE: usize = (WIDTH * HEIGHT * 3) as usize;
-const DEFAULT_NUMBER_OF_THREADS: u32 = 4;
 
 fn main() {
-    let num_threads = match env::var("NUM_THREADS") {
-        Ok(threads) => threads.parse::<u32>().unwrap_or(DEFAULT_NUMBER_OF_THREADS),
-        Err(_) => DEFAULT_NUMBER_OF_THREADS,
-    };
-
     let benchmark = match env::var("BENCHMARK") {
         Ok(s) => s.parse::<bool>().unwrap_or(false),
         Err(_) => false,
@@ -66,7 +60,7 @@ fn main() {
                              s1.origin,
                              Vector3::new(0.0, 1.0, 0.0));
 
-    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2), num_threads);
+    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
 
     if benchmark {
         for _ in 0..10 {
@@ -76,14 +70,7 @@ fn main() {
         return;
     }
 
-    let result: Vec<Color> = renderer.render(MAX_DEPTH);
-    let mut buffer = vec![0x8C; BUFFER_SIZE];
-
-    for (index, pixel) in result.iter().enumerate() {
-        buffer[(index * 3) + 0] = pixel.r();
-        buffer[(index * 3) + 1] = pixel.g();
-        buffer[(index * 3) + 2] = pixel.b();
-    }
+    let buffer = renderer.render(MAX_DEPTH);
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);

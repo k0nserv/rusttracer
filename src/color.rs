@@ -1,30 +1,57 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul};
+use std::iter::Iterator;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
-    data: u32,
+    r: u8,
+    g: u8,
+    b: u8,
+    next: NextColor,
 }
+
+#[derive(Debug, Copy, Clone)]
+pub enum NextColor {
+    Red, Green, Blue, Done
+}
+
+impl Iterator for Color{
+    type Item = u8;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.next {
+            NextColor::Red => {
+                self.next = NextColor::Green;
+                Some(self.r)
+            }
+            NextColor::Green => {
+                self.next = NextColor::Blue;
+                Some(self.g)
+            }
+            NextColor::Blue => {
+                self.next = NextColor::Done;
+                Some(self.b)
+            }
+            NextColor::Done => None
+        }
+    }
+}
+
 
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
-        let mut result: u32 = 0xFF000000;
-        result = result | (r as u32) << 0;
-        result = result | (g as u32) << 8;
-        result = result | (b as u32) << 16;
-
-        Color { data: result }
+        Color { r: r, g: g, b: b, next: NextColor::Red }
     }
 
     pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
-        Color::new(Color::clamp((r * 255.0) as i16),
-                   Color::clamp((g * 255.0) as i16),
-                   Color::clamp((b * 255.0) as i16))
+        Color::new(Color::clamp((r * 255.0) as i32),
+                   Color::clamp((g * 255.0) as i32),
+                   Color::clamp((b * 255.0) as i32))
     }
 
     #[inline(always)]
     pub fn r(&self) -> u8 {
-        ((self.data & 0x000000FF) >> 0) as u8
+        self.r
     }
 
     #[inline(always)]
@@ -34,7 +61,7 @@ impl Color {
 
     #[inline(always)]
     pub fn g(&self) -> u8 {
-        ((self.data & 0x0000FF00) >> 8) as u8
+        self.g
     }
 
     #[inline(always)]
@@ -44,7 +71,7 @@ impl Color {
 
     #[inline(always)]
     pub fn b(&self) -> u8 {
-        ((self.data & 0x00FF0000) >> 16) as u8
+        self.b
     }
 
     #[inline(always)]
@@ -54,19 +81,18 @@ impl Color {
 
     #[inline(always)]
     pub fn as_u32(&self) -> u32 {
-        self.data
+        0xFF000000 
+            & (self.r as u32) 
+            & (self.g as u32) << 8 
+            & (self.b as u32) << 16
     }
 
-    fn clamp(value: i16) -> u8 {
-        if value < 0 {
-            return 0;
+    fn clamp(value: i32) -> u8 {
+        match value {
+            v if v < 0 => 0,
+            v if v > (u8::max_value() as i32) => u8::max_value(),
+            v => v as u8
         }
-
-        if value > (u8::max_value() as i16) {
-            return u8::max_value();
-        }
-
-        value as u8
     }
 }
 
@@ -82,11 +108,9 @@ impl Add for Color {
     type Output = Color;
 
     fn add(self, other: Color) -> Color {
-        let r = Color::clamp((self.r() as i16) + (other.r() as i16));
-        let g = Color::clamp((self.g() as i16) + (other.g() as i16));
-        let b = Color::clamp((self.b() as i16) + (other.b() as i16));
+        let f = |f: fn(&Color)->u8| Color::clamp((f(&self) as i32) + (f(&other) as i32));
 
-        Color::new(r, g, b)
+        Color::new(f(Color::r), f(Color::g), f(Color::b))
     }
 }
 
@@ -94,9 +118,9 @@ impl Sub for Color {
     type Output = Color;
 
     fn sub(self, other: Color) -> Color {
-        let r = Color::clamp((self.r() as i16) - (other.r() as i16));
-        let g = Color::clamp((self.g() as i16) - (other.g() as i16));
-        let b = Color::clamp((self.b() as i16) - (other.b() as i16));
+        let r = Color::clamp((self.r() as i32) - (other.r() as i32));
+        let g = Color::clamp((self.g() as i32) - (other.g() as i32));
+        let b = Color::clamp((self.b() as i32) - (other.b() as i32));
 
         Color::new(r, g, b)
     }
