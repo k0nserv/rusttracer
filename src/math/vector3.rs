@@ -85,6 +85,10 @@ impl Point3 {
     pub fn at_origin() -> Point3 {
         Point3::new(0.0, 0.0, 0.0)
     }
+
+    pub fn as_vector(&self) -> Vector3 {
+        Vector3::new(self.x, self.y, self.z)
+    }
 }
 
 
