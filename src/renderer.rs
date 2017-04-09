@@ -203,10 +203,11 @@ impl<'a> Renderer<'a> {
         let c2 = 1.0 - n * (1.0 - cos_i * cos_i);
 
         if c2 > 0.0 {
-            let t = (original_ray.direction * n + normal * (n * cos_i - c2.sqrt())).normalize();
+            let direction = (original_ray.direction * n + normal * (n * cos_i - c2.sqrt()))
+                .normalize();
 
-            let new_ray = Ray::new(intersection.point + t * EPSILON,
-                                   t,
+            let new_ray = Ray::new(intersection.point + direction * EPSILON,
+                                   direction,
                                    Some(refraction_coefficient));
 
             let refraction_color = self.trace(new_ray, current_depth - 1);
