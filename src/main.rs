@@ -37,18 +37,22 @@ fn main() {
 
     let back_material =
         template.build_material(|material| { material.diffuse_color = Color::white() * 0.8; });
-    let back = Plane::new(Vector3::new(0.0, 0.0, 50.0),
-                          Vector3::new(0.0, 0.0, -1.0),
+    let back = Plane::new(Vector3::new(0.0, 0.0, -50.0),
+                          Vector3::new(0.0, 0.0, 1.0),
                           back_material);
 
     let m1 = template.build_material(|material| { material.reflection_coefficient = Some(1.0); });
-    let s1 = Sphere::new(Vector3::new(0.0, -4.0, 45.0), 1.0, m1);
+    let s1 = Sphere::new(Vector3::new(0.0, -4.0, -45.0), 1.0, m1);
 
-    let l1 = PointLight::new(Vector3::new(0.0, 10.0, 45.0), Color::new(67, 249, 253), 0.4);
-    let l2 = PointLight::new(Vector3::new(-15.0, 10.0, 45.0),
+    let l1 = PointLight::new(Vector3::new(0.0, 10.0, -45.0),
+                             Color::new(67, 249, 253),
+                             0.4);
+    let l2 = PointLight::new(Vector3::new(-15.0, 10.0, -45.0),
                              Color::new(92, 253, 67),
                              0.4);
-    let l3 = PointLight::new(Vector3::new(15.0, 10.0, 45.0), Color::new(253, 115, 6), 0.4);
+    let l3 = PointLight::new(Vector3::new(15.0, 10.0, -45.0),
+                             Color::new(253, 115, 6),
+                             0.4);
 
     let objects: Vec<&Shape> = vec![&s1, &floor, &back];
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3];
@@ -56,7 +60,7 @@ fn main() {
     let camera = Camera::new(0.873,
                              WIDTH,
                              HEIGHT,
-                             Vector3::new(-10.0, 5.0, 10.0),
+                             Vector3::new(-10.0, 5.0, -10.0),
                              s1.origin,
                              Vector3::new(0.0, 1.0, 0.0));
 

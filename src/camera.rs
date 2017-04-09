@@ -27,8 +27,8 @@ impl Camera {
         let x0 = (fov * 0.5).sin();
         let y0 = (vertical_fov * 0.5).sin();
         let direction = (look_at - position).normalize();
-        let u = up.cross(&direction);
-        let v = direction.cross(&u);
+        let u = direction.cross(&up);
+        let v = u.cross(&direction);
 
         Camera {
             width: width,
