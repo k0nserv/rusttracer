@@ -76,14 +76,13 @@ mod tests {
     use math::{Vector3, EPSILON};
     use ray::Ray;
     use geometry::Shape;
-    use material::{MaterialTemplate,Material};
+    use material::{MaterialTemplate, Material};
     use color::Color;
 
     fn build_test_material() -> Material {
-        let color = Color::new(0,0,0);
+        let color = Color::new(0, 0, 0);
 
-        MaterialTemplate::new(color, color, color, None, None)
-            .build_material(|_ignore| {})
+        MaterialTemplate::new(color, color, color, None, None).build_material(|_ignore| {})
     }
 
     #[test]

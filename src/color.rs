@@ -12,10 +12,13 @@ pub struct Color {
 
 #[derive(Debug, Copy, Clone)]
 pub enum NextColor {
-    Red, Green, Blue, Done
+    Red,
+    Green,
+    Blue,
+    Done,
 }
 
-impl Iterator for Color{
+impl Iterator for Color {
     type Item = u8;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -32,7 +35,7 @@ impl Iterator for Color{
                 self.next = NextColor::Done;
                 Some(self.b)
             }
-            NextColor::Done => None
+            NextColor::Done => None,
         }
     }
 }
@@ -40,7 +43,12 @@ impl Iterator for Color{
 
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
-        Color { r: r, g: g, b: b, next: NextColor::Red }
+        Color {
+            r: r,
+            g: g,
+            b: b,
+            next: NextColor::Red,
+        }
     }
 
     pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
@@ -81,17 +89,14 @@ impl Color {
 
     #[inline(always)]
     pub fn as_u32(&self) -> u32 {
-        0xFF000000 
-            & (self.r as u32) 
-            & (self.g as u32) << 8 
-            & (self.b as u32) << 16
+        0xFF000000 & (self.r as u32) & (self.g as u32) << 8 & (self.b as u32) << 16
     }
 
     fn clamp(value: i32) -> u8 {
         match value {
             v if v < 0 => 0,
             v if v > (u8::max_value() as i32) => u8::max_value(),
-            v => v as u8
+            v => v as u8,
         }
     }
 }
@@ -108,7 +113,7 @@ impl Add for Color {
     type Output = Color;
 
     fn add(self, other: Color) -> Color {
-        let f = |f: fn(&Color)->u8| Color::clamp((f(&self) as i32) + (f(&other) as i32));
+        let f = |f: fn(&Color) -> u8| Color::clamp((f(&self) as i32) + (f(&other) as i32));
 
         Color::new(f(Color::r), f(Color::g), f(Color::b))
     }

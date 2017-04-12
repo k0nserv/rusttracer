@@ -37,8 +37,8 @@ impl<'a> Renderer<'a> {
     }
 
     pub fn render(&self, max_depth: u32) -> Vec<u8> {
-            let range: Range<usize> = (0 as usize)..(self.camera.height as usize);
-            self.render_segment(0, &range, max_depth)
+        let range: Range<usize> = (0 as usize)..(self.camera.height as usize);
+        self.render_segment(0, &range, max_depth)
     }
 
     fn render_segment(&self,
@@ -48,14 +48,20 @@ impl<'a> Renderer<'a> {
                       -> Vec<u8> {
         let width = self.camera.width as usize;
 
-        segment_range.clone().into_par_iter().flat_map(|y| {
-            (0..width).flat_map(move|x| {
-                self.render_point(segment_offset, max_depth, x, y).into_iter()
-            }).collect::<Vec<u8>>().into_par_iter()
-        }).collect::<Vec<u8>>()
+        segment_range.clone()
+            .into_par_iter()
+            .flat_map(|y| {
+                (0..width)
+                    .flat_map(move |x| {
+                                  self.render_point(segment_offset, max_depth, x, y).into_iter()
+                              })
+                    .collect::<Vec<u8>>()
+                    .into_par_iter()
+            })
+            .collect::<Vec<u8>>()
     }
 
-    fn render_point(&self, segment_offset: usize, max_depth: u32, x: usize, y:usize) -> Color {
+    fn render_point(&self, segment_offset: usize, max_depth: u32, x: usize, y: usize) -> Color {
         let samples = match self.super_sampling {
             SuperSampling::Off => 1,
             SuperSampling::On(samples) => samples,
