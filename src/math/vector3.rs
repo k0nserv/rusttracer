@@ -1,6 +1,6 @@
-pub const EPSILON: f64 = 1e-5;
-
 use std::ops::{Add, Sub, Mul, Neg};
+
+use math::Matrix3;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
@@ -194,24 +194,20 @@ define_scalar_mul!(u16);
 define_scalar_mul!(u32);
 define_scalar_mul!(u64);
 
+impl Mul<Matrix3> for Vector3 {
+    type Output = Vector3;
 
-macro_rules! assert_eq_within_bound {
-    ($x:expr, $y: expr, $bound: expr) => (
-        assert!($x >= $y - $bound && $x <= $y + $bound, "{} is not equal to {} within bound {}", $x, $y, $bound);
-    );
-}
-
-macro_rules! assert_eq_vector3 {
-    ($x:expr, $y: expr, $bound: expr) => (
-        assert_eq_within_bound!($x.x, $y.x, $bound);
-        assert_eq_within_bound!($x.y, $y.y, $bound);
-        assert_eq_within_bound!($x.z, $y.z, $bound);
-    );
+    fn mul(self, other: Matrix3) -> Vector3 {
+        Vector3::new(other.at(0, 0) * self.x + other.at(0, 1) * self.y + other.at(0, 2) * self.z,
+                     other.at(1, 0) * self.x + other.at(1, 1) * self.y + other.at(1, 2) * self.z,
+                     other.at(2, 0) * self.x + other.at(2, 1) * self.y + other.at(2, 2) * self.z)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Vector3, EPSILON};
+    use math::{EPSILON, Matrix3};
+    use super::Vector3;
 
 
     #[test]
@@ -447,5 +443,23 @@ mod tests {
 
         let result: Vector3 = vec1 * 20.0;
         assert_eq_vector3!(result, expected2, EPSILON);
+    }
+
+    #[test]
+    fn test_vector3_mul_simple() {
+        let m = Matrix3::identity();
+
+        let result = Vector3::new(2.4, 3.1, 9.0) * m;
+
+        assert_eq_vector3!(result, Vector3::new(2.4, 3.1, 9.0), EPSILON);
+    }
+
+    #[test]
+    fn test_vector3_mul_complex() {
+        let m = Matrix3::new([[15.0, 1.3, -2.8], [-1.4, 7.8, 3.5], [5.0, -3.6, 1.0]]);
+
+        let result = Vector3::new(2.4, 3.2, -1.0) * m;
+
+        assert_eq_vector3!(result, Vector3::new(42.96, 18.1, -0.52), EPSILON);
     }
 }
