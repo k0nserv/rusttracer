@@ -1,6 +1,6 @@
 use std::ops::{Add, Sub, Mul, Neg};
 
-use math::Matrix3;
+use math::Matrix4;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
@@ -194,20 +194,24 @@ define_scalar_mul!(u16);
 define_scalar_mul!(u32);
 define_scalar_mul!(u64);
 
-impl Mul<Matrix3> for Vector3 {
+impl Mul<Matrix4> for Vector3 {
     type Output = Vector3;
 
-    fn mul(self, other: Matrix3) -> Vector3 {
-        Vector3::new(other.at(0, 0) * self.x + other.at(0, 1) * self.y + other.at(0, 2) * self.z,
-                     other.at(1, 0) * self.x + other.at(1, 1) * self.y + other.at(1, 2) * self.z,
-                     other.at(2, 0) * self.x + other.at(2, 1) * self.y + other.at(2, 2) * self.z)
+    fn mul(self, other: Matrix4) -> Vector3 {
+        Vector3::new(other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z +
+                     other[(3, 0)],
+                     other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z +
+                     other[(3, 1)],
+                     other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z +
+                     other[(3, 2)])
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use math::{EPSILON, Matrix3};
+    use math::{EPSILON, Matrix4};
     use super::Vector3;
+    use std::f64::consts::PI;
 
 
     #[test]
@@ -446,8 +450,8 @@ mod tests {
     }
 
     #[test]
-    fn test_vector3_mul_simple() {
-        let m = Matrix3::identity();
+    fn test_vector4_mul_simple() {
+        let m = Matrix4::identity();
 
         let result = Vector3::new(2.4, 3.1, 9.0) * m;
 
@@ -455,11 +459,58 @@ mod tests {
     }
 
     #[test]
-    fn test_vector3_mul_complex() {
-        let m = Matrix3::new([[15.0, 1.3, -2.8], [-1.4, 7.8, 3.5], [5.0, -3.6, 1.0]]);
+    fn test_vector4_mul_complex() {
+        let m = Matrix4::new([[15.0, 1.3, -2.8, 0.0],
+                              [-1.4, 7.8, 3.5, 0.0],
+                              [5.0, -3.6, 1.0, 0.0],
+                              [12.3, 9.1, -1.2, 1.0]]);
 
         let result = Vector3::new(2.4, 3.2, -1.0) * m;
 
-        assert_eq_vector3!(result, Vector3::new(42.96, 18.1, -0.52), EPSILON);
+        assert_eq_vector3!(result, Vector3::new(38.82, 40.78, 2.28), EPSILON);
+    }
+
+    #[test]
+    fn test_translation() {
+        let v = Vector3::new(1.5, 9.9, -5.6);
+        let m = Matrix4::translate(-2.0, 3.0, 5.0);
+
+        let expected = Vector3::new(&v.x - 2.0, &v.y + 3.0, &v.z + 5.0);
+
+        assert_eq_vector3!(v * m, expected, EPSILON);
+    }
+
+    #[test]
+    fn test_scale() {
+        let v = Vector3::new(1.0, 1.0, 1.0);
+        let m = Matrix4::scale(-2.0, 3.0, 5.0);
+
+        let expected = Vector3::new(&v.x * -2.0, &v.y * 3.0, &v.z * 5.0);
+
+        assert_eq_vector3!(v * m, expected, EPSILON);
+    }
+
+    #[test]
+    fn test_rot_x() {
+        let v = Vector3::new(1.0, 0.0, 1.0);
+        let m = Matrix4::rot_x(PI / 2.0);
+
+        assert_eq_vector3!(Vector3::new(1.0, -1.0, 0.0), v * m, EPSILON);
+    }
+
+    #[test]
+    fn test_rot_y() {
+        let v = Vector3::new(0.0, 1.0, 1.0);
+        let m = Matrix4::rot_y(PI / 2.0);
+
+        assert_eq_vector3!(Vector3::new(1.0, 1.0, 0.0), v * m, EPSILON);
+    }
+
+    #[test]
+    fn test_rot_z() {
+        let v = Vector3::new(1.0, 0.0, 1.0);
+        let m = Matrix4::rot_z(PI / 2.0);
+
+        assert_eq_vector3!(Vector3::new(0.0, 1.0, 1.0), v * m, EPSILON);
     }
 }
