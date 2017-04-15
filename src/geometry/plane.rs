@@ -1,5 +1,5 @@
 use math::Vector3;
-use geometry::Shape;
+use geometry::{Shape, Intersectable};
 use material::Material;
 use intersection::Intersection;
 use ray::Ray;
@@ -22,6 +22,12 @@ impl Plane {
 }
 
 impl Shape for Plane {
+    fn material(&self) -> &Material {
+        &self.material
+    }
+}
+
+impl Intersectable for Plane {
     fn intersect(&self, ray: Ray) -> Option<Intersection> {
         let denominator = self.normal.dot(&ray.direction);
 
@@ -41,9 +47,5 @@ impl Shape for Plane {
         }
 
         None
-    }
-
-    fn material(&self) -> &Material {
-        &self.material
     }
 }

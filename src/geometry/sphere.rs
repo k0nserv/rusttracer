@@ -1,5 +1,5 @@
 use math::Vector3;
-use geometry::Shape;
+use geometry::{Shape, Intersectable};
 use intersection::Intersection;
 use ray::Ray;
 use material::Material;
@@ -23,6 +23,12 @@ impl Sphere {
 }
 
 impl Shape for Sphere {
+    fn material(&self) -> &Material {
+        return &self.material;
+    }
+}
+
+impl Intersectable for Sphere {
     fn intersect(&self, ray: Ray) -> Option<Intersection> {
         let v = ray.origin - self.origin;
         let a = ray.direction.dot(&v);
@@ -63,10 +69,6 @@ impl Shape for Sphere {
 
 
         None
-    }
-
-    fn material(&self) -> &Material {
-        return &self.material;
     }
 }
 
