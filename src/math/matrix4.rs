@@ -1,4 +1,5 @@
 use std::ops::{Mul, Index, IndexMut};
+use math::EPSILON;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Matrix4 {
@@ -16,6 +17,55 @@ impl Matrix4 {
                       [self[(0, 1)], self[(1, 1)], self[(2, 1)], self[(3, 1)]],
                       [self[(0, 2)], self[(1, 2)], self[(2, 2)], self[(3, 2)]],
                       [self[(0, 3)], self[(1, 3)], self[(2, 3)], self[(3, 3)]]])
+    }
+
+    pub fn inverse(&self) -> Result<Matrix4, &str> {
+        let mut result = Matrix4::identity();
+        let mut self_copy = *self;
+
+        for column in 0..4 {
+            if self_copy[(column, column)].abs() < EPSILON {
+                let mut larger = column;
+
+                for row in 0..4 {
+                    if self_copy[(row, column)].abs() > self_copy[(larger, column)].abs() {
+                        larger = row;
+                    }
+                }
+
+                if larger == column {
+                    return Err("Singular matrix, cannot be inverted");
+                }
+
+                self_copy.data.swap(column, larger);
+                result.data.swap(column, larger);
+            }
+
+            for row in 0..4 {
+                if row == column {
+                    continue;
+                }
+
+                let coeff = self_copy[(row, column)] / self_copy[(column, column)];
+
+                if coeff != 0.0 {
+                    for j in 0..4 {
+                        self_copy[(row, j)] -= coeff * self_copy[(column, j)];
+                        result[(row, j)] -= coeff * result[(column, j)];
+                    }
+
+                    self_copy[(row, column)] = 0.0;
+                }
+            }
+        }
+
+        for row in 0..4 {
+            for column in 0..4 {
+                result[(row, column)] /= self_copy[(row, row)];
+            }
+        }
+
+        Ok(result)
     }
 
     pub fn identity() -> Matrix4 {
@@ -173,6 +223,68 @@ mod tests {
                                      [4.0, 8.0, 12.0, 16.0]]);
 
         assert_eq_matrix4!(m.transpose(), expected, EPSILON);
+    }
+
+    #[test]
+    fn inverse_identity() {
+        let m = Matrix4::identity();
+
+        let result = m.inverse();
+
+        if let Ok(matrix) = result {
+            assert_eq_matrix4!(matrix, m, EPSILON);
+        } else {
+            assert!(false, "Identity matrix should be invertible");
+        }
+    }
+
+    #[test]
+    fn inverse_moderate() {
+        let m = Matrix4::new([[2.0, 3.0, 1.0, 5.0],
+                              [1.0, 0.0, 3.0, 1.0],
+                              [0.0, 2.0, -3.0, 2.0],
+                              [0.0, 2.0, 3.0, 1.0]]);
+
+        let expected = Matrix4::new([[18.0, -35.0, -28.0, 1.0],
+                                     [9.0, -18.0, -14.0, 1.0],
+                                     [-2.0, 4.0, 3.0, 0.0],
+                                     [-12.0, 24.0, 19.0, -1.0]]);
+
+        assert_eq_matrix4!(m * expected, Matrix4::identity(), EPSILON);
+
+        let result = m.inverse();
+
+        if let Ok(inverse) = result {
+            assert_eq_matrix4!(inverse, expected, EPSILON);
+        } else {
+            assert!(false, "{:?} should be invertible");
+        }
+    }
+
+    #[test]
+    fn inverse_complex() {
+        let matrices = [Matrix4::new([[2.0, 3.0, 1.0, 5.0],
+                                      [1.0, 0.0, 3.0, 1.0],
+                                      [0.0, 2.0, -3.0, 2.0],
+                                      [0.0, 2.0, 3.0, 1.0]]),
+                        Matrix4::rot_x(PI / 2.0),
+                        Matrix4::rot_y(PI / 2.0),
+                        Matrix4::new([[1.0, 1.0, 1.0, 0.0],
+                                      [0.0, 3.0, 1.0, 2.0],
+                                      [2.0, 3.0, 1.0, 0.0],
+                                      [1.0, 0.0, 2.0, 1.0]])];
+        let identity = Matrix4::identity();
+
+        for matrix in matrices.iter() {
+            let result = matrix.inverse();
+            println!("Testing {:?}", matrix);
+
+            if let Ok(inverse) = result {
+                assert_eq_matrix4!((inverse * *matrix), identity, EPSILON);
+            } else {
+                assert!(false, "{:?} should be invertible", matrix);
+            }
+        }
     }
 
     #[test]
