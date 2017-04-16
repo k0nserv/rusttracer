@@ -11,6 +11,13 @@ impl Matrix4 {
         Matrix4 { data: data }
     }
 
+    pub fn transpose(&self) -> Matrix4 {
+        Matrix4::new([[self[(0, 0)], self[(1, 0)], self[(2, 0)], self[(3, 0)]],
+                      [self[(0, 1)], self[(1, 1)], self[(2, 1)], self[(3, 1)]],
+                      [self[(0, 2)], self[(1, 2)], self[(2, 2)], self[(3, 2)]],
+                      [self[(0, 3)], self[(1, 3)], self[(2, 3)], self[(3, 3)]]])
+    }
+
     pub fn identity() -> Matrix4 {
         Self::new([[1.0, 0.0, 0.0, 0.0],
                    [0.0, 1.0, 0.0, 0.],
@@ -142,6 +149,30 @@ mod tests {
                                      [0.0, 0.0, 0.0, 1.0]]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
+    }
+
+    #[test]
+    fn transpose_identity() {
+        let m = Matrix4::identity();
+
+        let expected = Matrix4::identity();
+
+        assert_eq_matrix4!(m.transpose(), expected, EPSILON);
+    }
+
+    #[test]
+    fn transpose_complex() {
+        let m = Matrix4::new([[1.0, 2.0, 3.0, 4.0],
+                              [5.0, 6.0, 7.0, 8.0],
+                              [9.0, 10.0, 11.0, 12.0],
+                              [13.0, 14.0, 15.0, 16.0]]);
+
+        let expected = Matrix4::new([[1.0, 5.0, 9.0, 13.0],
+                                     [2.0, 6.0, 10.0, 14.0],
+                                     [3.0, 7.0, 11.0, 15.0],
+                                     [4.0, 8.0, 12.0, 16.0]]);
+
+        assert_eq_matrix4!(m.transpose(), expected, EPSILON);
     }
 
     #[test]
