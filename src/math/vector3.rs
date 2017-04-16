@@ -2,23 +2,37 @@ use std::ops::{Add, Sub, Mul, Neg};
 
 use math::Matrix4;
 
-#[derive(Debug, Copy, Clone)]
-pub struct Vector3 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
+macro_rules! define_struct {
+    ($T: ident) => (
+        #[derive(Debug, Copy, Clone)]
+        pub struct $T {
+            pub x: f64,
+            pub y: f64,
+            pub z: f64,
+        }
+    )
 }
 
+define_struct!(Vector3);
+define_struct!(Point3);
+
+macro_rules! define_impl {
+    ($T: ident) => (
+        impl $T {
+            pub fn new(x: f64, y: f64, z: f64) -> $T {
+                $T { x: x, y: y, z: z }
+            }
+
+        }
+
+    )
+}
+
+define_impl!(Vector3);
+define_impl!(Point3);
+
+// Vector 3 specific
 impl Vector3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Vector3 {
-        Vector3 { x: x, y: y, z: z }
-    }
-
-    pub fn at_origin() -> Vector3 {
-        Vector3::new(0.0, 0.0, 0.0)
-    }
-
-
     pub fn dot(&self, other: &Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
@@ -60,7 +74,19 @@ impl Vector3 {
             z: self.z / l,
         }
     }
+
+    pub fn as_point(&self) -> Point3 {
+        Point3::new(self.x, self.y, self.z)
+    }
 }
+
+// Point3 specific
+impl Point3 {
+    pub fn at_origin() -> Point3 {
+        Point3::new(0.0, 0.0, 0.0)
+    }
+}
+
 
 // Operators
 
@@ -80,17 +106,25 @@ macro_rules! define_scalar_add {
     )
 }
 
-impl Add for Vector3 {
-    type Output = Vector3;
+macro_rules! define_add {
+    ($T: ident, $V: ident, $U: ident) => (
+        impl Add<$V> for $T {
+            type Output = $U;
 
-    fn add(self, other: Vector3) -> Vector3 {
-        Vector3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
+            fn add(self, other: $V) -> $U {
+                $U {
+                    x: self.x + other.x,
+                    y: self.y + other.y,
+                    z: self.z + other.z,
+                }
+            }
         }
-    }
+    )
 }
+
+define_add!(Vector3, Vector3, Vector3);
+define_add!(Point3, Vector3, Vector3);
+
 
 define_scalar_add!(f64);
 define_scalar_add!(f32);
@@ -119,17 +153,24 @@ macro_rules! define_scalar_sub {
     )
 }
 
-impl Sub for Vector3 {
-    type Output = Vector3;
+macro_rules! define_sub {
+    ($T: ident, $V: ident, $U: ident) => (
+        impl Sub<$V> for $T {
+            type Output = $U;
 
-    fn sub(self, other: Vector3) -> Vector3 {
-        Vector3 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
+            fn sub(self, other: $V) -> $U {
+                $U {
+                    x: self.x - other.x,
+                    y: self.y - other.y,
+                    z: self.z - other.z,
+                }
+            }
         }
-    }
+    )
 }
+
+define_sub!(Point3, Point3, Vector3);
+define_sub!(Vector3, Vector3, Vector3);
 
 define_scalar_sub!(f64);
 define_scalar_sub!(f32);
@@ -198,19 +239,31 @@ impl Mul<Matrix4> for Vector3 {
     type Output = Vector3;
 
     fn mul(self, other: Matrix4) -> Vector3 {
-        Vector3::new(other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z +
-                     other[(3, 0)],
-                     other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z +
-                     other[(3, 1)],
-                     other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z +
-                     other[(3, 2)])
+        Vector3::new(other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z,
+                     other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z,
+                     other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z)
     }
 }
 
+impl Mul<Matrix4> for Point3 {
+    type Output = Point3;
+
+    fn mul(self, other: Matrix4) -> Point3 {
+        Point3::new(other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z +
+                    other[(3, 0)],
+                    other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z +
+                    other[(3, 1)],
+                    other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z +
+                    other[(3, 2)])
+    }
+}
+
+
+// TOOD: Improve tests for Point3
 #[cfg(test)]
 mod tests {
     use math::{EPSILON, Matrix4};
-    use super::Vector3;
+    use super::{Vector3, Point3};
     use std::f64::consts::PI;
 
 
@@ -229,15 +282,15 @@ mod tests {
 
     #[test]
     fn test_at_origin() {
-        let vec = Vector3::at_origin();
+        let vec = Point3::at_origin();
 
-        assert_eq_vector3!(vec,
-                           Vector3 {
-                               x: 0.0,
-                               y: 0.0,
-                               z: 0.0,
-                           },
-                           EPSILON);
+        assert_eq_point3!(vec,
+                          Vector3 {
+                              x: 0.0,
+                              y: 0.0,
+                              z: 0.0,
+                          },
+                          EPSILON);
     }
 
     #[test]
@@ -450,7 +503,7 @@ mod tests {
     }
 
     #[test]
-    fn test_vector4_mul_simple() {
+    fn test_vector3_mul_simple() {
         let m = Matrix4::identity();
 
         let result = Vector3::new(2.4, 3.1, 9.0) * m;
@@ -459,7 +512,7 @@ mod tests {
     }
 
     #[test]
-    fn test_vector4_mul_complex() {
+    fn test_vector3_mul_complex() {
         let m = Matrix4::new([[15.0, 1.3, -2.8, 0.0],
                               [-1.4, 7.8, 3.5, 0.0],
                               [5.0, -3.6, 1.0, 0.0],
@@ -467,17 +520,17 @@ mod tests {
 
         let result = Vector3::new(2.4, 3.2, -1.0) * m;
 
-        assert_eq_vector3!(result, Vector3::new(38.82, 40.78, 2.28), EPSILON);
+        assert_eq_vector3!(result, Vector3::new(26.52, 31.68, 3.48), EPSILON);
     }
 
     #[test]
     fn test_translation() {
-        let v = Vector3::new(1.5, 9.9, -5.6);
+        let v = Point3::new(1.5, 9.9, -5.6);
         let m = Matrix4::translate(-2.0, 3.0, 5.0);
 
-        let expected = Vector3::new(&v.x - 2.0, &v.y + 3.0, &v.z + 5.0);
+        let expected = Point3::new(&v.x - 2.0, &v.y + 3.0, &v.z + 5.0);
 
-        assert_eq_vector3!(v * m, expected, EPSILON);
+        assert_eq_point3!(v * m, expected, EPSILON);
     }
 
     #[test]

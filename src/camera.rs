@@ -1,46 +1,41 @@
 use ray::Ray;
-use math::Vector3;
+use math::{Vector3, Matrix4, Point3};
 
 pub struct Camera {
     pub width: u32,
     pub height: u32,
     widthf: f64,
     heightf: f64,
-    x0: f64,
-    y0: f64,
-    u: Vector3,
-    v: Vector3,
-    direction: Vector3,
-    position: Vector3,
+    scale: f64,
+    aspect_ratio: f64,
+    camera_to_world: Matrix4,
 }
 
 impl Camera {
     pub fn new(fov: f64,
                width: u32,
                height: u32,
-               position: Vector3,
-               look_at: Vector3,
-               up: Vector3)
+               position: Point3,
+               look_at: Point3,
+               tmp_up: Vector3)
                -> Camera {
-        let aspect_ratio = (height as f64) / (width as f64);
-        let vertical_fov = fov * aspect_ratio;
-        let x0 = (fov * 0.5).sin();
-        let y0 = (vertical_fov * 0.5).sin();
-        let direction = (look_at - position).normalize();
-        let u = direction.cross(&up);
-        let v = u.cross(&direction);
+        let aspect_ratio = (width as f64) / (height as f64);
+        let scale = (fov * 0.5).tan();
+        let direction = (position - look_at).normalize();
+        let right = tmp_up.normalize().cross(&direction);
+        let up = direction.cross(&right);
 
         Camera {
             width: width,
             height: height,
             widthf: (width as f64),
             heightf: (height as f64),
-            x0: x0,
-            y0: y0,
-            u: u.normalize(),
-            v: v.normalize(),
-            direction: direction,
-            position: position,
+            scale: scale,
+            aspect_ratio: aspect_ratio,
+            camera_to_world: Self::camera_to_world_matrix(right.normalize(),
+                                                          up.normalize(),
+                                                          direction,
+                                                          position),
         }
     }
 
@@ -49,12 +44,54 @@ impl Camera {
         let sample_width = self.widthf * samplesf;
         let sample_height = self.heightf * samplesf;
 
-        // Map pixel coordinates to space in -1, 1 range
-        let px = ((((x * samples + x_sample) as f64) * 2.0) / sample_width) - 1.0;
-        let py = ((((y * samples + y_sample) as f64) * 2.0) / sample_height) - 1.0;
+        let mut x_sample_offset = x_sample as f64;
+        let mut y_sample_offset = y_sample as f64;
 
-        let direction = self.u * (px * self.x0) + self.v * (py * self.y0) + self.direction;
+        if samples == 1 {
+            x_sample_offset = 0.5;
+            y_sample_offset = 0.5;
+        }
 
-        Ray::new(self.position, direction.normalize(), None)
+        let px = ((2.0 * (((x * samples) as f64) + x_sample_offset) / sample_width) - 1.0) *
+                 self.aspect_ratio * self.scale;
+        let py = ((2.0 * (((y * samples) as f64) + y_sample_offset) / sample_height) - 1.0) *
+                 self.scale;
+
+        let direction = Vector3::new(px, py, -1.0) * self.camera_to_world;
+        let origin = Point3::at_origin() * self.camera_to_world;
+
+        Ray::new(origin, direction.normalize(), None)
+    }
+
+    pub fn camera_to_world_matrix(right: Vector3,
+                                  up: Vector3,
+                                  direction: Vector3,
+                                  position: Point3)
+                                  -> Matrix4 {
+        let mut result = Matrix4::identity();
+
+        // right
+        result[(0, 0)] = right.x;
+        result[(0, 1)] = right.y;
+        result[(0, 2)] = right.z;
+
+        // up
+        result[(1, 0)] = up.x;
+        result[(1, 1)] = up.y;
+        result[(1, 2)] = up.z;
+
+        // direction
+        result[(2, 0)] = direction.x;
+        result[(2, 1)] = direction.y;
+        result[(2, 2)] = direction.z;
+
+        // position
+        result[(3, 0)] = position.x;
+        result[(3, 1)] = position.y;
+        result[(3, 2)] = position.z;
+
+        println!("Camera to world matrix {:?}", result);
+
+        result
     }
 }

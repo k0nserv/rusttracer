@@ -129,7 +129,7 @@ impl<'a> Renderer<'a> {
             let mut in_shadow = false;
             let distance_to_light = (intersection.point - light.origin).length();
             let light_direction = (light.origin - intersection.point).normalize();
-            let ray = Ray::new(intersection.point + light_direction * EPSILON,
+            let ray = Ray::new((intersection.point + light_direction * EPSILON).as_point(),
                                light_direction,
                                Some(original_ray.medium_refraction));
 
@@ -170,7 +170,7 @@ impl<'a> Renderer<'a> {
     fn reflect(&self, intersection: &Intersection, original_ray: Ray, current_depth: u32) -> Color {
         let new_direction = original_ray.direction.reflect(&intersection.normal).normalize();
 
-        let new_ray = Ray::new(intersection.point + new_direction * EPSILON,
+        let new_ray = Ray::new((intersection.point + new_direction * EPSILON).as_point(),
                                new_direction,
                                Some(original_ray.medium_refraction));
 
@@ -212,7 +212,7 @@ impl<'a> Renderer<'a> {
             let direction = (original_ray.direction * n + normal * (n * cos_i - c2.sqrt()))
                 .normalize();
 
-            let new_ray = Ray::new(intersection.point + direction * EPSILON,
+            let new_ray = Ray::new((intersection.point + direction * EPSILON).as_point(),
                                    direction,
                                    Some(refraction_coefficient));
 

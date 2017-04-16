@@ -1,4 +1,4 @@
-use math::Vector3;
+use math::{Vector3, Point3};
 use ray::Ray;
 use geometry::Shape;
 
@@ -6,7 +6,7 @@ use geometry::Shape;
 pub struct Intersection<'a> {
     pub t: f64,
     pub shape: &'a Shape,
-    pub point: Vector3,
+    pub point: Point3,
     pub ray: Ray,
     pub normal: Vector3,
     pub inside: bool,
@@ -15,7 +15,7 @@ pub struct Intersection<'a> {
 impl<'a> Intersection<'a> {
     pub fn new(t: f64,
                shape: &'a Shape,
-               point: Vector3,
+               point: Point3,
                ray: Ray,
                normal: Vector3,
                inside: bool)

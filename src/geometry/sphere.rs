@@ -1,19 +1,19 @@
-use math::Vector3;
-use geometry::{Shape, Intersectable};
+use math::{Vector3, Matrix4, Point3};
+use geometry::{Shape, Intersectable, Transformable};
 use intersection::Intersection;
 use ray::Ray;
 use material::Material;
 
 #[derive(Debug)]
 pub struct Sphere {
-    pub origin: Vector3,
+    pub origin: Point3,
     pub radius: f64,
     material: Material,
 }
 
 
 impl Sphere {
-    pub fn new(origin: Vector3, radius: f64, material: Material) -> Sphere {
+    pub fn new(origin: Point3, radius: f64, material: Material) -> Sphere {
         Sphere {
             origin: origin,
             radius: radius,
@@ -59,7 +59,7 @@ impl Intersectable for Sphere {
 
         if hit {
             assert!(t.is_some());
-            let point = ray.origin + ray.direction * t.unwrap();
+            let point: Point3 = (ray.origin + ray.direction * t.unwrap()).as_point();
             let n = (point - self.origin).normalize();
 
             let intersection = Intersection::new(t.unwrap(), self, point, ray, n, inside);
@@ -72,10 +72,16 @@ impl Intersectable for Sphere {
     }
 }
 
+impl Transformable for Sphere {
+    fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4) {
+        self.origin = self.origin * matrix;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Sphere;
-    use math::{Vector3, EPSILON};
+    use math::{Vector3, Point3, EPSILON};
     use ray::Ray;
     use geometry::Shape;
     use material::{MaterialTemplate, Material};
@@ -90,8 +96,8 @@ mod tests {
     #[test]
     fn test_intersection_miss() {
         let material = build_test_material();
-        let sphere = Sphere::new(Vector3::at_origin(), 1.0, material);
-        let ray = Ray::new(Vector3::new(0.0, 0.0, 2.0),
+        let sphere = Sphere::new(Point3::at_origin(), 1.0, material);
+        let ray = Ray::new(Point3::new(0.0, 0.0, 2.0),
                            Vector3::new(0.0, 0.0, 1.0),
                            None);
 
@@ -103,8 +109,8 @@ mod tests {
     #[test]
     fn test_intersection() {
         let material = build_test_material();
-        let sphere = Sphere::new(Vector3::at_origin(), 1.0, material);
-        let ray = Ray::new(Vector3::new(0.0, 0.0, 2.0),
+        let sphere = Sphere::new(Point3::at_origin(), 1.0, material);
+        let ray = Ray::new(Point3::new(0.0, 0.0, 2.0),
                            Vector3::new(0.0, 0.0, -1.0),
                            None);
 
