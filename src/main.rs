@@ -8,13 +8,66 @@ use std::path::Path;
 use std::env;
 
 use rusttracer::math::{Vector3, Point3};
-use rusttracer::{Scene, Color, Camera, MaterialTemplate, Renderer, SuperSampling};
+use rusttracer::{Scene, Color, Camera, MaterialTemplate, Material, Renderer, SuperSampling};
 use rusttracer::geometry::{Shape, Sphere, Plane, Triangle};
 use rusttracer::lights::PointLight;
 
 const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 2560;
 const HEIGHT: u32 = 1440;
+
+fn triangle_fan(vertices: Vec<Point3>, material: Material) -> Vec<Triangle> {
+    assert!(vertices.len() % 3 == 0,
+            "Number of vertices should be a multiple of 3");
+    (0..vertices.len() / 3)
+        .map(|i| {
+                 Triangle::new(vertices[i * 3],
+                               vertices[i * 3 + 1],
+                               vertices[i * 3 + 2],
+                               material)
+             })
+        .collect()
+}
+
+fn cube(material: Material) -> Vec<Triangle> {
+    triangle_fan(vec![Point3::new(-1.0, -1.0, -1.0),
+                      Point3::new(-1.0, -1.0, 1.0),
+                      Point3::new(-1.0, 1.0, 1.0),
+                      Point3::new(1.0, 1.0, -1.0),
+                      Point3::new(-1.0, -1.0, -1.0),
+                      Point3::new(-1.0, 1.0, -1.0),
+                      Point3::new(1.0, -1.0, 1.0),
+                      Point3::new(-1.0, -1.0, -1.0),
+                      Point3::new(1.0, -1.0, -1.0),
+                      Point3::new(1.0, 1.0, -1.0),
+                      Point3::new(1.0, -1.0, -1.0),
+                      Point3::new(-1.0, -1.0, -1.0),
+                      Point3::new(-1.0, -1.0, -1.0),
+                      Point3::new(-1.0, 1.0, 1.0),
+                      Point3::new(-1.0, 1.0, -1.0),
+                      Point3::new(1.0, -1.0, 1.0),
+                      Point3::new(-1.0, -1.0, 1.0),
+                      Point3::new(-1.0, -1.0, -1.0),
+                      Point3::new(-1.0, 1.0, 1.0),
+                      Point3::new(-1.0, -1.0, 1.0),
+                      Point3::new(1.0, -1.0, 1.0),
+                      Point3::new(1.0, 1.0, 1.0),
+                      Point3::new(1.0, -1.0, -1.0),
+                      Point3::new(1.0, 1.0, -1.0),
+                      Point3::new(1.0, -1.0, -1.0),
+                      Point3::new(1.0, 1.0, 1.0),
+                      Point3::new(1.0, -1.0, 1.0),
+                      Point3::new(1.0, 1.0, 1.0),
+                      Point3::new(1.0, 1.0, -1.0),
+                      Point3::new(-1.0, 1.0, -1.0),
+                      Point3::new(1.0, 1.0, 1.0),
+                      Point3::new(-1.0, 1.0, -1.0),
+                      Point3::new(-1.0, 1.0, 1.0),
+                      Point3::new(1.0, 1.0, 1.0),
+                      Point3::new(-1.0, 1.0, 1.0),
+                      Point3::new(1.0, -1.0, 1.0)],
+                 material)
+}
 
 fn main() {
     let benchmark = match env::var("BENCHMARK") {
@@ -57,7 +110,39 @@ fn main() {
                            Point3::new(0.0, 0.0, -40.0),
                            triangle_material);
 
-    let objects: Vec<&Shape> = vec![&t1, &s1, &floor, &back];
+    let mut objects: Vec<&Shape> = vec![&t1, &s1, &floor, &back];
+    let cube_triangles = cube(triangle_material);
+    //    objects.push(&cube_triangles[0] as &Shape);
+    //for triangle in cube_triangles {
+    //        objects.push(triangle as &Shape);
+    //}
+    let mut shapes = cube_triangles.iter().map(|t| t as &Shape).collect();
+
+    // Fails with
+    /*
+        error: `cube_triangles` does not live long enough
+           --> src/main.rs:153:1
+            |
+        119 |     let mut shapes = cube_triangles.iter().map(|t| t as &Shape).collect();
+            |                      -------------- borrow occurs here
+        ...
+        153 | }
+            | ^ `cube_triangles` dropped here while still borrowed
+            |
+            = note: values in a scope are dropped in the opposite order they are created
+
+        error: aborting due to previous error
+
+        error: Could not compile `rusttracer`.
+
+        To learn more, run the command again with --verbose.
+    */
+
+
+
+    objects.append(&mut shapes);
+
+
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3];
     let scene = Scene::new(&objects, &lights, Color::black());
     let camera = Camera::new(0.873,
