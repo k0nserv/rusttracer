@@ -9,7 +9,7 @@ use std::env;
 
 use rusttracer::math::{Vector3, Point3};
 use rusttracer::{Scene, Color, Camera, MaterialTemplate, Renderer, SuperSampling};
-use rusttracer::geometry::{Shape, Sphere, Plane};
+use rusttracer::geometry::{Shape, Sphere, Plane, Triangle};
 use rusttracer::lights::PointLight;
 
 const MAX_DEPTH: u32 = 5;
@@ -50,7 +50,14 @@ fn main() {
                              0.4);
     let l3 = PointLight::new(Point3::new(15.0, 10.0, -45.0), Color::new(253, 115, 6), 0.4);
 
-    let objects: Vec<&Shape> = vec![&s1, &floor, &back];
+    let triangle_material =
+        template.build_material(|material| { material.diffuse_color = Color::red(); });
+    let t1 = Triangle::new(Point3::new(5.0, 0.0, -40.0),
+                           Point3::new(5.0, 2.0, -45.0),
+                           Point3::new(0.0, 0.0, -40.0),
+                           triangle_material);
+
+    let objects: Vec<&Shape> = vec![&t1, &s1, &floor, &back];
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3];
     let scene = Scene::new(&objects, &lights, Color::black());
     let camera = Camera::new(0.873,
