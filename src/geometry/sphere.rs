@@ -1,4 +1,4 @@
-use math::{Vector3, Matrix4, Point3};
+use math::{Matrix4, Point3};
 use geometry::{Shape, Intersectable, Transformable};
 use intersection::Intersection;
 use ray::Ray;
@@ -73,7 +73,7 @@ impl Intersectable for Sphere {
 }
 
 impl Transformable for Sphere {
-    fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4) {
+    fn transform(&mut self, matrix: Matrix4, _: Matrix4) {
         self.origin = self.origin * matrix;
     }
 }
