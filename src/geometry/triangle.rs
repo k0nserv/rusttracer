@@ -10,23 +10,24 @@ pub struct Triangle {
     pub v0: Point3, // A
     pub v1: Point3, // B
     pub v2: Point3, // C
-    pub d: f64, // Distance to origin
+    pub ab: Vector3, // B - A
+    pub ac: Vector3, // C - A
     pub normal: Vector3,
     material: Material,
 }
 
 impl Triangle {
     pub fn new(v0: Point3, v1: Point3, v2: Point3, material: Material) -> Triangle {
-        let a = v1 - v0;
-        let b = v2 - v0;
-        let normal = a.cross(&b).normalize();
+        let ab = v1 - v0;
+        let ac = v2 - v0;
 
         Triangle {
             v0: v0,
             v1: v1,
             v2: v2,
-            d: normal.dot(&v0.as_vector()).abs(),
-            normal: normal.normalize(),
+            ab: ab,
+            ac: ac,
+            normal: ab.cross(&ac).normalize(),
             material: material,
         }
     }
@@ -40,48 +41,40 @@ impl Shape for Triangle {
 
 impl Intersectable for Triangle {
     fn intersect(&self, ray: Ray) -> Option<Intersection> {
-        let normal_dot_ray_dir = self.normal.dot(&ray.direction);
+        let pvec = ray.direction.cross(&self.ac);
+        let det = self.ab.dot(&pvec);
 
-        // Perpendicular to triangle plane
-        if normal_dot_ray_dir.abs() <= EPSILON {
+        if det.abs() < EPSILON {
             return None;
         }
 
-        let t = -(self.normal.dot(&ray.origin.as_vector()) + self.d) / normal_dot_ray_dir;
+        let inv_det = 1.0 / det;
 
-        if t < 0.0 {
+        let tvec = ray.origin - self.v0;
+        let u = tvec.dot(&pvec) * inv_det;
+
+        if u < 0.0 || u > 1.0 {
             return None;
         }
 
-        let intersection_point = (ray.origin + ray.direction * t).as_point();
+        let qvec = tvec.cross(&self.ab);
+        let v = ray.direction.dot(&qvec) * inv_det;
 
-        let edge0 = self.v1 - self.v0;
-        let vp0 = intersection_point - self.v0;
-        let mut c = edge0.cross(&vp0);
-
-        if self.normal.dot(&c) < 0.0 {
+        if v < 0.0 || u + v > 1.0 {
             return None;
         }
 
-        let edge1 = self.v2 - self.v1;
-        let vp1 = intersection_point - self.v1;
-        c = edge1.cross(&vp1);
+        let t = self.ac.dot(&qvec) * inv_det;
+        if t > EPSILON {
 
-        if self.normal.dot(&c) < 0.0 {
-            return None;
+            let intersection_point = (ray.origin + ray.direction * t).as_point();
+            let intersection =
+                Intersection::new(t, self, intersection_point, ray, self.normal, false);
+
+            return Some(intersection);
         }
 
-        let edge2 = self.v0 - self.v2;
-        let vp2 = intersection_point - self.v2;
-        c = edge2.cross(&vp2);
-
-        if self.normal.dot(&c) < 0.0 {
-            return None;
-        }
-
-        let intersection = Intersection::new(t, self, intersection_point, ray, self.normal, false);
-
-        Some(intersection)
+        None
     }
 }
 
@@ -91,6 +84,5 @@ impl Transformable for Triangle {
         self.v1 = self.v1 * matrix;
         self.v2 = self.v2 * matrix;
         self.normal = (self.normal * normal_matrix).normalize();
-        self.d = self.normal.dot(&self.v0.as_vector()).abs();
     }
 }
