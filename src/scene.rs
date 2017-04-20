@@ -1,17 +1,17 @@
-use geometry::Shape;
+use geometry::Intersectable;
 use color::Color;
 use ray::Ray;
 use intersection::Intersection;
 use lights::PointLight;
 
 pub struct Scene<'a> {
-    pub objects: &'a Vec<&'a Shape>,
+    pub objects: &'a Vec<&'a Intersectable>,
     pub lights: &'a Vec<&'a PointLight>,
     pub clear_color: Color,
 }
 
 impl<'a> Scene<'a> {
-    pub fn new(objects: &'a Vec<&'a Shape>,
+    pub fn new(objects: &'a Vec<&'a Intersectable>,
                lights: &'a Vec<&'a PointLight>,
                clear_color: Color)
                -> Scene<'a> {
