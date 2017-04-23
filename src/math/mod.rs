@@ -24,6 +24,8 @@ macro_rules! assert_eq_point3 {
 
 pub mod vector3;
 pub mod matrix4;
+pub mod transform;
 
 pub use self::vector3::{Vector3, Point3};
 pub use self::matrix4::Matrix4;
+pub use self::transform::Transform;

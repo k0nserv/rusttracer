@@ -1,5 +1,5 @@
 use geometry::{Triangle, Material, Transformable, Intersectable};
-use math::{Point3, Matrix4};
+use math::{Point3, Transform};
 use ray::Ray;
 use intersection::Intersection;
 
@@ -79,9 +79,9 @@ impl Mesh {
 }
 
 impl Transformable for Mesh {
-    fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4) {
+    fn transform(&mut self, transform: &Transform) {
         for boxed_triangle in self.triangles.iter_mut() {
-            boxed_triangle.as_mut().transform(matrix, normal_matrix);
+            boxed_triangle.as_mut().transform(transform);
         }
     }
 }

@@ -10,7 +10,7 @@ pub use self::mesh::Mesh;
 
 use intersection::Intersection;
 use ray::Ray;
-use math::Matrix4;
+use math::Transform;
 use material::Material;
 
 pub trait Intersectable {
@@ -18,7 +18,7 @@ pub trait Intersectable {
 }
 
 pub trait Transformable {
-    fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4);
+    fn transform(&mut self, transform: &Transform);
 }
 
 pub trait Shape: Intersectable + Transformable {

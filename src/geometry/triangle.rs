@@ -1,4 +1,4 @@
-use math::{Vector3, Matrix4, Point3};
+use math::{Vector3, Transform, Point3};
 use geometry::{Shape, Intersectable, Transformable};
 use ray::Ray;
 use material::Material;
@@ -79,7 +79,10 @@ impl Intersectable for Triangle {
 }
 
 impl Transformable for Triangle {
-    fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4) {
+    fn transform(&mut self, transform: &Transform) {
+        let matrix = transform.matrix;
+        let normal_matrix = transform.matrix;
+
         self.a = self.a * matrix;
         self.b = self.b * matrix;
         self.c = self.c * matrix;

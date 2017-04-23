@@ -1,4 +1,4 @@
-use math::{Vector3, Matrix4, Point3};
+use math::{Vector3, Transform, Point3};
 use geometry::{Shape, Intersectable, Transformable};
 use material::Material;
 use intersection::Intersection;
@@ -51,8 +51,8 @@ impl Intersectable for Plane {
 }
 
 impl Transformable for Plane {
-    fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4) {
-        self.origin = self.origin * matrix;
-        self.normal = (self.normal * normal_matrix).normalize();
+    fn transform(&mut self, transform: &Transform) {
+        self.origin = self.origin * transform.matrix;
+        self.normal = (self.normal * transform.normal_matrix).normalize();
     }
 }

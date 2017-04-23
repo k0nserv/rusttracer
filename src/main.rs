@@ -7,7 +7,7 @@ extern crate rusttracer;
 use std::path::Path;
 use std::env;
 
-use rusttracer::math::{Vector3, Point3, Matrix4};
+use rusttracer::math::{Vector3, Point3, Matrix4, Transform};
 use rusttracer::{Scene, Color, Camera, MaterialTemplate, Renderer, SuperSampling};
 use rusttracer::geometry::{Sphere, Plane, Transformable, Mesh, Intersectable};
 use rusttracer::lights::PointLight;
@@ -50,25 +50,24 @@ fn main() {
                              0.4);
     let l3 = PointLight::new(Point3::new(15.0, 10.0, -45.0), Color::new(253, 115, 6), 0.4);
 
-
-    let triangle_material =
+    let red_material =
         template.build_material(|material| { material.diffuse_color = Color::new(195, 0, 13); });
 
-    let transform_matrix = Matrix4::translate(-5.0, -4.0, -40.0);
-    let normal_transform = transform_matrix.transpose();
+    let cube_1_transform_matrix = Matrix4::scale(2.0, 2.0, 2.0) *
+                                  Matrix4::translate(-5.0, -4.0, -30.0);
+    let cube_1_transform = Transform::new(cube_1_transform_matrix);
+    let mut cube1 = Mesh::cube(red_material);
+    cube1.transform(&cube_1_transform);
 
-    let mut cube = Mesh::cube(triangle_material);
-    cube.transform(transform_matrix, normal_transform);
-
-    let objects: Vec<&Intersectable> = vec![&s1, &floor, &back, &cube];
+    let objects: Vec<&Intersectable> = vec![&s1, &floor, &back, &cube1];
 
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3];
     let scene = Scene::new(&objects, &lights, Color::black());
     let camera = Camera::new(0.873,
                              WIDTH,
                              HEIGHT,
-                             Point3::new(15.0, 5.0, -30.0),
-                             s1.origin,
+                             Point3::new(0.0, 0.0, 15.0),
+                             Point3::at_origin(),
                              Vector3::new(0.0, 1.0, 0.0));
 
     let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
