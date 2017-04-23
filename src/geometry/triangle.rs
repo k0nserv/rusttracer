@@ -83,6 +83,8 @@ impl Transformable for Triangle {
         self.v0 = self.v0 * matrix;
         self.v1 = self.v1 * matrix;
         self.v2 = self.v2 * matrix;
+        self.ab = self.v1 - self.v0;
+        self.ac = self.v2 - self.v0;
         self.normal = (self.normal * normal_matrix).normalize();
     }
 }
