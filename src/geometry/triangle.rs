@@ -7,9 +7,9 @@ use math::EPSILON;
 
 #[derive(Debug)]
 pub struct Triangle {
-    pub v0: Point3, // A
-    pub v1: Point3, // B
-    pub v2: Point3, // C
+    pub a: Point3, // A
+    pub b: Point3, // B
+    pub c: Point3, // C
     pub ab: Vector3, // B - A
     pub ac: Vector3, // C - A
     pub normal: Vector3,
@@ -17,14 +17,14 @@ pub struct Triangle {
 }
 
 impl Triangle {
-    pub fn new(v0: Point3, v1: Point3, v2: Point3, material: Material) -> Triangle {
-        let ab = v1 - v0;
-        let ac = v2 - v0;
+    pub fn new(a: Point3, b: Point3, c: Point3, material: Material) -> Triangle {
+        let ab = b - a;
+        let ac = c - a;
 
         Triangle {
-            v0: v0,
-            v1: v1,
-            v2: v2,
+            a: a,
+            b: b,
+            c: c,
             ab: ab,
             ac: ac,
             normal: ab.cross(&ac).normalize(),
@@ -50,7 +50,7 @@ impl Intersectable for Triangle {
 
         let inv_det = 1.0 / det;
 
-        let tvec = ray.origin - self.v0;
+        let tvec = ray.origin - self.a;
         let u = tvec.dot(&pvec) * inv_det;
 
         if u < 0.0 || u > 1.0 {
@@ -80,11 +80,11 @@ impl Intersectable for Triangle {
 
 impl Transformable for Triangle {
     fn transform(&mut self, matrix: Matrix4, normal_matrix: Matrix4) {
-        self.v0 = self.v0 * matrix;
-        self.v1 = self.v1 * matrix;
-        self.v2 = self.v2 * matrix;
-        self.ab = self.v1 - self.v0;
-        self.ac = self.v2 - self.v0;
+        self.a = self.a * matrix;
+        self.b = self.b * matrix;
+        self.c = self.c * matrix;
+        self.ab = self.b - self.a;
+        self.ac = self.c - self.a;
         self.normal = (self.normal * normal_matrix).normalize();
     }
 }
