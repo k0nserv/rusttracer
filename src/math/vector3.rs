@@ -1,6 +1,6 @@
 use std::ops::{Add, Sub, Mul, Neg};
 
-use math::Matrix4;
+use math::{Matrix4, EPSILON};
 
 macro_rules! define_struct {
     ($T: ident) => (
@@ -253,12 +253,26 @@ impl Mul<Matrix4> for Point3 {
     type Output = Point3;
 
     fn mul(self, other: Matrix4) -> Point3 {
-        Point3::new(other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z +
-                    other[(3, 0)],
-                    other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z +
-                    other[(3, 1)],
-                    other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z +
-                    other[(3, 2)])
+        let mut x = other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z +
+                    other[(3, 0)];
+        let mut y = other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z +
+                    other[(3, 1)];
+        let mut z = other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z +
+                    other[(3, 2)];
+        let w = other[(0, 3)] * self.x + other[(1, 3)] * self.y + other[(2, 3)] * self.z +
+                other[(3, 3)];
+
+        if !(w > (1.0 - EPSILON) && w < (1.0 + EPSILON)) &&
+           !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON)) {
+            assert!(false, "Bad value for w {}", w);
+            x /= w;
+            y /= w;
+            z /= w;
+        }
+
+
+
+        Point3::new(x, y, z)
     }
 }
 
