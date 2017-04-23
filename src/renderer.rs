@@ -146,12 +146,13 @@ impl<'a> Renderer<'a> {
                 continue;
             }
 
-            let light_color = light.color();
             let mut dot = light_direction.dot(&intersection.normal);
 
             // Diffuse
             if dot > 0.0 {
-                result = result + (light_color * material.diffuse_color) * dot;
+                result = result +
+                         (light.color * material.diffuse_color) * dot *
+                         light.intensity(distance_to_light);
             }
 
             dot = original_ray.direction.dot(&light_direction.reflect(&intersection.normal));
@@ -160,7 +161,9 @@ impl<'a> Renderer<'a> {
             if dot > 0.0 {
                 let spec = dot.powf(20.0);
 
-                result = result + (light_color * material.specular_color) * spec;
+                result = result +
+                         (light.color * material.specular_color) * spec *
+                         light.intensity(distance_to_light);
             }
         }
 

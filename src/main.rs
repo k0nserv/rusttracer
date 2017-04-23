@@ -29,7 +29,7 @@ fn main() {
 
     let floor_material = template.build_material(|material| {
                                                      material.ambient_color = Color::white() * 0.05;
-                                                     material.diffuse_color = Color::white() * 0.3;
+                                                     material.diffuse_color = Color::white() * 0.6;
                                                  });
     let floor = Plane::new(Point3::new(0.0, -5.0, 0.0),
                            Vector3::new(0.0, 1.0, 0.0),
@@ -41,19 +41,21 @@ fn main() {
                           Vector3::new(0.0, 0.0, 1.0),
                           back_material);
 
-    let m1 = template.build_material(|material| { material.reflection_coefficient = Some(1.0); });
+    let m1 = template.build_material(|material| {
+                                         material.reflection_coefficient = Some(1.0);
+                                         material.specular_color = Color::white() * 1.0
+                                     });
     let s1 = Sphere::new(Point3::new(0.0, -4.0, -45.0), 1.0, m1);
 
-    let l1 = PointLight::new(Point3::new(0.0, 10.0, -45.0), Color::new(67, 249, 253), 0.4);
-    let l2 = PointLight::new(Point3::new(-15.0, 10.0, -45.0),
-                             Color::new(92, 253, 67),
-                             0.4);
-    let l3 = PointLight::new(Point3::new(15.0, 10.0, -45.0), Color::new(253, 115, 6), 0.4);
+    let l1 = PointLight::new(Point3::new(0.0, 3.0, -45.0), Color::new(67, 249, 253), 5.0);
+    let l2 = PointLight::new(Point3::new(-15.0, 3.0, -45.0), Color::new(92, 253, 67), 5.0);
+    let l3 = PointLight::new(Point3::new(15.0, 3.0, -45.0), Color::new(253, 115, 6), 5.0);
+    let l4 = PointLight::new(Point3::new(0.0, 10.0, -20.0), Color::white(), 50.0);
 
     let red_material =
         template.build_material(|material| { material.diffuse_color = Color::new(195, 0, 13); });
 
-    let cube_1_transform_matrix = Matrix4::scale(2.0, 2.0, 2.0) *
+    let cube_1_transform_matrix = Matrix4::scale(2.0, 2.0, 2.0) * Matrix4::rot_y(3.14 / 1.5) *
                                   Matrix4::translate(-5.0, -4.0, -30.0);
     let cube_1_transform = Transform::new(cube_1_transform_matrix);
     let mut cube1 = Mesh::cube(red_material);
@@ -61,13 +63,13 @@ fn main() {
 
     let objects: Vec<&Intersectable> = vec![&s1, &floor, &back, &cube1];
 
-    let lights: Vec<&PointLight> = vec![&l1, &l2, &l3];
+    let lights: Vec<&PointLight> = vec![&l1, &l2, &l3, &l4];
     let scene = Scene::new(&objects, &lights, Color::black());
     let camera = Camera::new(0.873,
                              WIDTH,
                              HEIGHT,
-                             Point3::new(0.0, 0.0, 15.0),
-                             Point3::at_origin(),
+                             Point3::new(0.0, 0.0, -15.0),
+                             s1.origin,
                              Vector3::new(0.0, 1.0, 0.0));
 
     let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
