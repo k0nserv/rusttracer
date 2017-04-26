@@ -4,8 +4,9 @@ use std::path::Path;
 use std::collections::HashMap;
 
 use geometry::{Mesh, Triangle};
+use geometry::triangle::Normal;
 use material::Material;
-use math::Point3;
+use math::{Point3, Vector3};
 use color::Color;
 
 
@@ -51,11 +52,19 @@ impl MeshLoader {
             println!("Mesh name {}", m.name);
             println!("Num indices: {}", mesh.indices.len());
             println!("Num vertices: {}", mesh.positions.len());
+            println!("Num normals: {}", mesh.normals.len());
+            let use_vertex_normals = mesh.normals.len() > 0;
+
+            if use_vertex_normals {
+                println!("Using vertex normals");
+            }
+
 
             for f in 0..mesh.indices.len() / 3 {
                 let i0 = mesh.indices[f * 3 + 0] as usize;
                 let i1 = mesh.indices[f * 3 + 1] as usize;
                 let i2 = mesh.indices[f * 3 + 2] as usize;
+
 
                 let p0 = Point3::new((mesh.positions[i0 * 3 + 0]) as f64,
                                      (mesh.positions[i0 * 3 + 1]) as f64,
@@ -67,6 +76,27 @@ impl MeshLoader {
                                      (mesh.positions[i2 * 3 + 1]) as f64,
                                      (mesh.positions[i2 * 3 + 2]) as f64);
 
+                let normal;
+                if use_vertex_normals {
+                    let n0 = Vector3::new(mesh.normals[i0 * 3 + 0] as f64,
+                                          mesh.normals[i0 * 3 + 1] as f64,
+                                          mesh.normals[i0 * 3 + 2] as f64);
+                    let n1 = Vector3::new(mesh.normals[i1 * 3 + 0] as f64,
+                                          mesh.normals[i1 * 3 + 1] as f64,
+                                          mesh.normals[i1 * 3 + 2] as f64);
+                    let n2 = Vector3::new(mesh.normals[i2 * 3 + 0] as f64,
+                                          mesh.normals[i2 * 3 + 1] as f64,
+                                          mesh.normals[i2 * 3 + 2] as f64);
+
+                    normal = Some(Normal::Vertex(n0, n1, n2));
+                } else {
+                    let ab = p0 - p1;
+                    let ac = p0 - p2;
+
+                    normal = Some(Normal::Face(ab.cross(&ac).normalize()));
+                }
+
+
                 let mut material = fallback_material;
                 if let Some(id) = mesh.material_id {
                     if let Some(m) = material_cache.get(&id) {
@@ -74,7 +104,7 @@ impl MeshLoader {
                     }
                 }
 
-                triangles.push(Box::new(Triangle::new(p0, p1, p2, *material)));
+                triangles.push(Box::new(Triangle::new(p0, p1, p2, normal.unwrap(), *material)));
             }
 
             let mesh = Mesh::new(triangles);

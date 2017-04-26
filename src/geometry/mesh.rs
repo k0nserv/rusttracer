@@ -1,4 +1,5 @@
 use geometry::{Triangle, Material, Transformable, Intersectable, AABB};
+use geometry::triangle::Normal;
 use math::{Point3, Transform};
 use ray::Ray;
 use intersection::Intersection;
@@ -78,11 +79,19 @@ impl Mesh {
                 "Number of vertices should be a multiple of 3");
         (0..vertices.len() / 3)
             .map(|i| {
-                     Box::new(Triangle::new(vertices[i * 3],
-                                            vertices[i * 3 + 1],
-                                            vertices[i * 3 + 2],
-                                            material))
-                 })
+                let a = vertices[i * 3];
+                let b = vertices[i * 3 + 1];
+                let c = vertices[i * 3 + 2];
+                let ab = a - b;
+                let ac = a - c;
+                let normal = ab.cross(&ac).normalize();
+
+                Box::new(Triangle::new(vertices[i * 3],
+                                       vertices[i * 3 + 1],
+                                       vertices[i * 3 + 2],
+                                       Normal::Face(normal),
+                                       material))
+            })
             .collect()
     }
 

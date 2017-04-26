@@ -6,17 +6,23 @@ use intersection::Intersection;
 use math::EPSILON;
 
 #[derive(Debug)]
+pub enum Normal {
+    Face(Vector3),
+    Vertex(Vector3, Vector3, Vector3),
+}
+
+#[derive(Debug)]
 pub struct Triangle {
     // A, B, C
     pub vertices: [Point3; 3],
     pub ab: Vector3, // B - A
     pub ac: Vector3, // C - A
-    pub normal: Vector3,
+    pub normal: Normal,
     material: Material,
 }
 
 impl Triangle {
-    pub fn new(a: Point3, b: Point3, c: Point3, material: Material) -> Triangle {
+    pub fn new(a: Point3, b: Point3, c: Point3, normal: Normal, material: Material) -> Triangle {
         let ab = b - a;
         let ac = c - a;
 
@@ -24,7 +30,7 @@ impl Triangle {
             vertices: [a, b, c],
             ab: ab,
             ac: ac,
-            normal: ab.cross(&ac).normalize(),
+            normal: normal,
             material: material,
         }
     }
@@ -69,13 +75,26 @@ impl Intersectable for Triangle {
         if t > EPSILON {
 
             let intersection_point = (ray.origin + ray.direction * t).as_point();
-            let intersection =
-                Intersection::new(t, self, intersection_point, ray, self.normal, false);
+            let intersection = Intersection::new(t,
+                                                 self,
+                                                 intersection_point,
+                                                 ray,
+                                                 self.normal_at_intersection(u, v),
+                                                 false);
 
             return Some(intersection);
         }
 
         None
+    }
+}
+
+impl Triangle {
+    fn normal_at_intersection(&self, u: f64, v: f64) -> Vector3 {
+        match self.normal {
+            Normal::Face(normal) => normal,
+            Normal::Vertex(n0, n1, n2) => (n0 * (1.0 - u - v) + n1 * u + n2 * v).normalize(),
+        }
     }
 }
 
@@ -90,6 +109,13 @@ impl Transformable for Triangle {
         self.vertices[2] = self.vertices[2] * matrix;
         self.ab = self.vertices[1] - self.vertices[0];
         self.ac = self.vertices[2] - self.vertices[0];
-        self.normal = (self.normal * normal_matrix).normalize();
+        self.normal = match self.normal {
+            Normal::Face(normal) => Normal::Face((normal * normal_matrix).normalize()),
+            Normal::Vertex(n0, n1, n2) => {
+                Normal::Vertex((n0 * normal_matrix).normalize(),
+                               (n1 * normal_matrix).normalize(),
+                               (n2 * normal_matrix).normalize())
+            }
+        }
     }
 }

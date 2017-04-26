@@ -57,13 +57,14 @@ fn main() {
                                                  });
 
     let mesh_loader = MeshLoader::new();
-    let mut suzanne = mesh_loader.load(Path::new("models/buddha.obj"), &white_material);
+    let mut suzanne = mesh_loader.load(Path::new("models/dragon.obj"), &white_material);
 
     let mut objects: Vec<&Intersectable> = vec![&floor, &back];
 
     for (index, mesh) in suzanne.iter_mut().enumerate() {
-        let transform = Transform::new(Matrix4::rot_y(PI) *
-                                       Matrix4::translate(0.0 + (index as f64) * -5.0, 0.0, -40.0));
+        let transform =
+            Transform::new(Matrix4::scale_uniform(10.0) * Matrix4::rot_y(PI / 2.0) *
+                           Matrix4::translate(0.0 + (index as f64) * -5.0, -3.0, -40.0));
         mesh.transform(&transform);
         objects.push(mesh as &Intersectable);
     }
@@ -73,8 +74,8 @@ fn main() {
     let camera = Camera::new(0.873,
                              WIDTH,
                              HEIGHT,
-                             Point3::new(0.0, 0.0, -35.0),
-                             Point3::new(0.0, 0.0, -40.0),
+                             Point3::new(0.0, 0.0, -30.0),
+                             Point3::new(0.0, -3.0, -40.0),
                              Vector3::new(0.0, 1.0, 0.0));
 
     let renderer = Renderer::new(&scene, &camera, SuperSampling::Off);

@@ -86,6 +86,10 @@ impl Matrix4 {
         Self::new([[x, 0.0, 0.0, 0.0], [0.0, y, 0.0, 0.], [0.0, 0.0, z, 0.0], [0.0, 0.0, 0.0, 1.0]])
     }
 
+    pub fn scale_uniform(scale: f64) -> Matrix4 {
+        Self::scale(scale, scale, scale)
+    }
+
     pub fn rot_x(theta: f64) -> Matrix4 {
         Self::new([[1.0, 0.0, 0.0, 0.0],
                    [0.0, theta.cos(), theta.sin(), 0.0],
