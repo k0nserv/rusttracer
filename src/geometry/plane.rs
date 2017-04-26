@@ -28,7 +28,7 @@ impl Shape for Plane {
 }
 
 impl Intersectable for Plane {
-    fn intersect(&self, ray: Ray) -> Option<Intersection> {
+    fn intersect(&self, ray: Ray, _: bool) -> Option<Intersection> {
         let denominator = self.normal.dot(&ray.direction);
 
         if denominator.abs() <= EPSILON {

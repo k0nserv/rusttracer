@@ -7,9 +7,8 @@ use math::EPSILON;
 
 #[derive(Debug)]
 pub struct Triangle {
-    pub a: Point3, // A
-    pub b: Point3, // B
-    pub c: Point3, // C
+    // A, B, C
+    pub vertices: [Point3; 3],
     pub ab: Vector3, // B - A
     pub ac: Vector3, // C - A
     pub normal: Vector3,
@@ -22,9 +21,7 @@ impl Triangle {
         let ac = c - a;
 
         Triangle {
-            a: a,
-            b: b,
-            c: c,
+            vertices: [a, b, c],
             ab: ab,
             ac: ac,
             normal: ab.cross(&ac).normalize(),
@@ -40,9 +37,13 @@ impl Shape for Triangle {
 }
 
 impl Intersectable for Triangle {
-    fn intersect(&self, ray: Ray) -> Option<Intersection> {
+    fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
         let pvec = ray.direction.cross(&self.ac);
         let det = self.ab.dot(&pvec);
+
+        if cull && det < EPSILON {
+            return None;
+        }
 
         if det.abs() < EPSILON {
             return None;
@@ -50,7 +51,7 @@ impl Intersectable for Triangle {
 
         let inv_det = 1.0 / det;
 
-        let tvec = ray.origin - self.a;
+        let tvec = ray.origin - self.vertices[0];
         let u = tvec.dot(&pvec) * inv_det;
 
         if u < 0.0 || u > 1.0 {
@@ -83,11 +84,12 @@ impl Transformable for Triangle {
         let matrix = transform.matrix;
         let normal_matrix = transform.matrix;
 
-        self.a = self.a * matrix;
-        self.b = self.b * matrix;
-        self.c = self.c * matrix;
-        self.ab = self.b - self.a;
-        self.ac = self.c - self.a;
+        // TODO: Consider doing this as a 4x4 matrix calculation instead
+        self.vertices[0] = self.vertices[0] * matrix;
+        self.vertices[1] = self.vertices[1] * matrix;
+        self.vertices[2] = self.vertices[2] * matrix;
+        self.ab = self.vertices[1] - self.vertices[0];
+        self.ac = self.vertices[2] - self.vertices[0];
         self.normal = (self.normal * normal_matrix).normalize();
     }
 }

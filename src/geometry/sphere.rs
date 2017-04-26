@@ -29,7 +29,7 @@ impl Shape for Sphere {
 }
 
 impl Intersectable for Sphere {
-    fn intersect(&self, ray: Ray) -> Option<Intersection> {
+    fn intersect(&self, ray: Ray, _: bool) -> Option<Intersection> {
         let v = ray.origin - self.origin;
         let a = ray.direction.dot(&v);
         let b = -a;

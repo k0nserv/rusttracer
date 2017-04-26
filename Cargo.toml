@@ -7,3 +7,4 @@ authors = ["Hugo Tunius <h@tunius.se>", "Andrew Aylett <andrew@aylett.co.uk>"]
 image = "*"
 time="0.1"
 rayon="0.6.0"
+tobj="0.1.2"

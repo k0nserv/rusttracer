@@ -1,4 +1,4 @@
-use geometry::{Triangle, Material, Transformable, Intersectable};
+use geometry::{Triangle, Material, Transformable, Intersectable, AABB};
 use math::{Point3, Transform};
 use ray::Ray;
 use intersection::Intersection;
@@ -6,9 +6,18 @@ use intersection::Intersection;
 #[derive(Debug)]
 pub struct Mesh {
     triangles: Vec<Box<Triangle>>,
+    aabb: AABB,
 }
 
 impl Mesh {
+    pub fn new(triangles: Vec<Box<Triangle>>) -> Self {
+        let aabb = Self::calculate_bounding_box(&triangles);
+        Self {
+            triangles: triangles,
+            aabb: aabb,
+        }
+    }
+
     pub fn cube(material: Material) -> Self {
         let vertices = [Point3::new(-1.0, -1.0, 1.0),
                         Point3::new(1.0, -1.0, 1.0),
@@ -61,7 +70,7 @@ impl Mesh {
 
 
 
-        Self { triangles: triangles }
+        Self::new(triangles)
     }
 
     fn from_triangles(vertices: Vec<Point3>, material: Material) -> Vec<Box<Triangle>> {
@@ -76,6 +85,47 @@ impl Mesh {
                  })
             .collect()
     }
+
+    fn calculate_bounding_box(triangles: &Vec<Box<Triangle>>) -> AABB {
+        assert!(triangles.len() > 0, "Creating AABB with 0 vertices");
+        if triangles.len() == 0 {
+            return AABB::new(Point3::new(0.0, 0.0, 0.0), Point3::new(0.0, 0.0, 0.0));
+        }
+        let mut min = triangles[0].vertices[0];
+        let mut max = triangles[0].vertices[0];
+
+        for triangle in triangles.iter() {
+            for vertex in triangle.vertices.iter() {
+                // Max
+                if vertex.x > max.x {
+                    max.x = vertex.x;
+                }
+
+                if vertex.y > max.y {
+                    max.y = vertex.y;
+                }
+
+                if vertex.z > max.z {
+                    max.z = vertex.z;
+                }
+
+                // Min
+                if vertex.x < min.x {
+                    min.x = vertex.x;
+                }
+
+                if vertex.y < min.y {
+                    min.y = vertex.y;
+                }
+
+                if vertex.z < min.z {
+                    min.z = vertex.z;
+                }
+            }
+        }
+
+        AABB::new(min, max)
+    }
 }
 
 impl Transformable for Mesh {
@@ -83,15 +133,21 @@ impl Transformable for Mesh {
         for boxed_triangle in self.triangles.iter_mut() {
             boxed_triangle.as_mut().transform(transform);
         }
+
+        self.aabb = Self::calculate_bounding_box(&self.triangles);
     }
 }
 
 impl Intersectable for Mesh {
-    fn intersect(&self, ray: Ray) -> Option<Intersection> {
+    fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
+        if !self.aabb.intersect(ray) {
+            return None;
+        }
+
         let mut nearest_intersection: Option<Intersection> = None;
 
         for boxed_triangle in self.triangles.iter() {
-            let potential_intersection = boxed_triangle.intersect(ray);
+            let potential_intersection = boxed_triangle.intersect(ray, cull);
 
             if let Some(intersection) = potential_intersection {
                 if nearest_intersection.is_some() {

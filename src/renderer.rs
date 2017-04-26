@@ -78,7 +78,7 @@ impl<'a> Renderer<'a> {
                                                  y_sample,
                                                  samples);
                 sample_colors[(y_sample * samples + x_sample) as usize] =
-                    self.trace(ray, max_depth);
+                    self.trace(ray, max_depth, true);
             }
         }
 
@@ -98,13 +98,13 @@ impl<'a> Renderer<'a> {
                        sum_b / sample_colors.len() as f64)
     }
 
-    fn trace(&self, ray: Ray, depth: u32) -> Color {
+    fn trace(&self, ray: Ray, depth: u32, cull: bool) -> Color {
         if depth == 0 {
             return Color::black();
         }
 
         let mut result = self.scene.clear_color;
-        let possible_hit = self.scene.intersect(ray);
+        let possible_hit = self.scene.intersect(ray, cull);
 
         if let Some(hit) = possible_hit {
             result = self.shade(&hit, ray);
@@ -134,7 +134,7 @@ impl<'a> Renderer<'a> {
                                Some(original_ray.medium_refraction));
 
             for object in self.scene.objects {
-                if let Some(hit) = object.intersect(ray) {
+                if let Some(hit) = object.intersect(ray, false) {
                     if hit.t < distance_to_light {
                         in_shadow = true;
                         break;
@@ -159,7 +159,7 @@ impl<'a> Renderer<'a> {
 
             // Specular
             if dot > 0.0 {
-                let spec = dot.powf(20.0);
+                let spec = dot.powf(material.specular_exponent);
 
                 result = result +
                          (light.color * material.specular_color) * spec *
@@ -177,7 +177,7 @@ impl<'a> Renderer<'a> {
                                new_direction,
                                Some(original_ray.medium_refraction));
 
-        let reflected_color = self.trace(new_ray, current_depth - 1);
+        let reflected_color = self.trace(new_ray, current_depth - 1, false);
 
         reflected_color *
         intersection.shape
@@ -219,7 +219,7 @@ impl<'a> Renderer<'a> {
                                    direction,
                                    Some(refraction_coefficient));
 
-            let refraction_color = self.trace(new_ray, current_depth - 1);
+            let refraction_color = self.trace(new_ray, current_depth - 1, false);
             let absorbance = intersection.shape.material().ambient_color * 0.15 * -intersection.t;
             let transparency = Color::new_f64(absorbance.r_f64().exp(),
                                               absorbance.g_f64().exp(),
