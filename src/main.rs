@@ -1,6 +1,5 @@
 extern crate image;
 extern crate time;
-extern crate rayon;
 
 extern crate rusttracer;
 
