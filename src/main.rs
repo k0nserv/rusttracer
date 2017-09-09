@@ -8,7 +8,7 @@ use std::env;
 use std::f64::consts::PI;
 
 use rusttracer::math::{Vector3, Point3, Matrix4, Transform};
-use rusttracer::{Scene, Color, Camera, MaterialTemplate, Renderer, SuperSampling};
+use rusttracer::{Scene, Color, Camera, MaterialTemplate, Renderer, SuperSampling, Config};
 use rusttracer::geometry::{Plane, Transformable, Intersectable};
 use rusttracer::lights::PointLight;
 use rusttracer::mesh_loader::MeshLoader;
@@ -16,12 +16,17 @@ use rusttracer::mesh_loader::MeshLoader;
 const MAX_DEPTH: u32 = 5;
 const WIDTH: u32 = 1280;
 const HEIGHT: u32 = 800;
+const SUPER_SAMPLING: SuperSampling = SuperSampling::Off;
 
 fn main() {
     let benchmark = match env::var("BENCHMARK") {
         Ok(s) => s.parse::<bool>().unwrap_or(false),
         Err(_) => false,
     };
+
+    let config = Config::new(
+        WIDTH, HEIGHT, MAX_DEPTH, SUPER_SAMPLING
+    );
     let template = MaterialTemplate::new(Color::blue() * 0.02,
                                          Color::black(),
                                          Color::black(),
@@ -71,8 +76,8 @@ fn main() {
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3, &l4];
     let scene = Scene::new(&objects, &lights, Color::black());
     let camera = Camera::new(0.873,
-                             WIDTH,
-                             HEIGHT,
+                             config.width,
+                             config.height,
                              Point3::new(0.0, 0.0, -30.0),
                              Point3::new(0.0, -3.0, -40.0),
                              Vector3::new(0.0, 1.0, 0.0));
@@ -81,20 +86,20 @@ fn main() {
 
     if benchmark {
         for _ in 0..10 {
-            let _ = renderer.render(MAX_DEPTH);
+            let _ = renderer.render(config.max_depth);
         }
 
         return;
     }
 
-    let buffer = renderer.render(MAX_DEPTH);
+    let buffer = renderer.render(config.max_depth);
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);
     image::save_buffer(&Path::new(&filename),
                        &buffer[..],
-                       WIDTH,
-                       HEIGHT,
+                       config.width,
+                       config.height,
                        image::RGB(8))
             .unwrap();
 }
