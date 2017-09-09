@@ -1,4 +1,8 @@
 extern crate rayon;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
+extern crate toml;
 
 #[macro_use]
 pub mod math;

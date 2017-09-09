@@ -9,6 +9,7 @@ use math::EPSILON;
 use rayon::prelude::*;
 use std::ops::Range;
 
+#[derive(Deserialize, Debug, Copy, Clone)]
 pub enum SuperSampling {
     Off,
     On(u32),

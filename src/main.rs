@@ -13,10 +13,7 @@ use rusttracer::geometry::{Plane, Transformable, Intersectable};
 use rusttracer::lights::PointLight;
 use rusttracer::mesh_loader::MeshLoader;
 
-const MAX_DEPTH: u32 = 5;
-const WIDTH: u32 = 1280;
-const HEIGHT: u32 = 800;
-const SUPER_SAMPLING: SuperSampling = SuperSampling::Off;
+const CONFIG: &str = "LowQuality.toml";
 
 fn main() {
     let benchmark = match env::var("BENCHMARK") {
@@ -24,9 +21,8 @@ fn main() {
         Err(_) => false,
     };
 
-    let config = Config::new(
-        WIDTH, HEIGHT, MAX_DEPTH, SUPER_SAMPLING
-    );
+    let config = Config::new_from_file(CONFIG).expect("Invalid configuration");
+
     let template = MaterialTemplate::new(Color::blue() * 0.02,
                                          Color::black(),
                                          Color::black(),
@@ -61,7 +57,7 @@ fn main() {
                                                  });
 
     let mesh_loader = MeshLoader::new();
-    let mut suzanne = mesh_loader.load(Path::new("models/dragon.obj"), &white_material);
+    let mut suzanne = mesh_loader.load(Path::new("models/bunny.obj"), &white_material);
 
     let mut objects: Vec<&Intersectable> = vec![&floor, &back];
 
