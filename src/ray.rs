@@ -1,4 +1,4 @@
-use math::{Vector3, Point3};
+use math::{Point3, Vector3};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Ray {
@@ -16,9 +16,11 @@ impl Ray {
             origin: origin,
             direction: direction,
             inv_direction: inv_dir,
-            sign: [(inv_dir.x < 0.0) as usize,
-                   (inv_dir.y < 0.0) as usize,
-                   (inv_dir.z < 0.0) as usize],
+            sign: [
+                (inv_dir.x < 0.0) as usize,
+                (inv_dir.y < 0.0) as usize,
+                (inv_dir.z < 0.0) as usize,
+            ],
             medium_refraction: medium_refraction.unwrap_or(1.0),
         }
     }

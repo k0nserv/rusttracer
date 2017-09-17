@@ -1,5 +1,5 @@
-use math::{Vector3, Transform, Point3};
-use geometry::{Shape, Intersectable, Transformable};
+use math::{Point3, Transform, Vector3};
+use geometry::{Intersectable, Shape, Transformable};
 use material::Material;
 use intersection::Intersection;
 use ray::Ray;

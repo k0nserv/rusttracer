@@ -18,7 +18,7 @@ impl Config {
             width: width,
             height: height,
             max_depth: max_depth,
-            super_sampling: super_sampling
+            super_sampling: super_sampling,
         }
     }
 

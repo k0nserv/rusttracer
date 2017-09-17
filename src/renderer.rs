@@ -25,11 +25,11 @@ unsafe impl<'a> Sync for Renderer<'a> {}
 unsafe impl<'a> Send for Renderer<'a> {}
 
 impl<'a> Renderer<'a> {
-    pub fn new(scene: &'a Scene<'a>,
-               camera: &'a Camera,
-               super_sampling: SuperSampling)
-               -> Renderer<'a> {
-
+    pub fn new(
+        scene: &'a Scene<'a>,
+        camera: &'a Camera,
+        super_sampling: SuperSampling,
+    ) -> Renderer<'a> {
         Renderer {
             scene: scene,
             camera: camera,
@@ -42,20 +42,23 @@ impl<'a> Renderer<'a> {
         self.render_segment(0, &range, max_depth)
     }
 
-    fn render_segment(&self,
-                      segment_offset: usize,
-                      segment_range: &Range<usize>,
-                      max_depth: u32)
-                      -> Vec<u8> {
+    fn render_segment(
+        &self,
+        segment_offset: usize,
+        segment_range: &Range<usize>,
+        max_depth: u32,
+    ) -> Vec<u8> {
         let width = self.camera.width as usize;
 
-        segment_range.clone()
+        segment_range
+            .clone()
             .into_par_iter()
             .flat_map(|y| {
                 (0..width)
                     .flat_map(move |x| {
-                                  self.render_point(segment_offset, max_depth, x, y).into_iter()
-                              })
+                        self.render_point(segment_offset, max_depth, x, y)
+                            .into_iter()
+                    })
                     .collect::<Vec<u8>>()
                     .into_par_iter()
             })
@@ -73,11 +76,13 @@ impl<'a> Renderer<'a> {
 
         for x_sample in 0..samples {
             for y_sample in 0..samples {
-                let ray = self.camera.create_ray(x as u32,
-                                                 self.camera.height - global_y as u32,
-                                                 x_sample,
-                                                 y_sample,
-                                                 samples);
+                let ray = self.camera.create_ray(
+                    x as u32,
+                    self.camera.height - global_y as u32,
+                    x_sample,
+                    y_sample,
+                    samples,
+                );
                 sample_colors[(y_sample * samples + x_sample) as usize] =
                     self.trace(ray, max_depth, true);
             }
@@ -94,9 +99,11 @@ impl<'a> Renderer<'a> {
             sum_b += color.b_f64();
         }
 
-        Color::new_f64(sum_r / sample_colors.len() as f64,
-                       sum_g / sample_colors.len() as f64,
-                       sum_b / sample_colors.len() as f64)
+        Color::new_f64(
+            sum_r / sample_colors.len() as f64,
+            sum_g / sample_colors.len() as f64,
+            sum_b / sample_colors.len() as f64,
+        )
     }
 
     fn trace(&self, ray: Ray, depth: u32, cull: bool) -> Color {
@@ -130,9 +137,11 @@ impl<'a> Renderer<'a> {
             let mut in_shadow = false;
             let distance_to_light = (intersection.point - light.origin).length();
             let light_direction = (light.origin - intersection.point).normalize();
-            let ray = Ray::new((intersection.point + light_direction * EPSILON).as_point(),
-                               light_direction,
-                               Some(original_ray.medium_refraction));
+            let ray = Ray::new(
+                (intersection.point + light_direction * EPSILON).as_point(),
+                light_direction,
+                Some(original_ray.medium_refraction),
+            );
 
             for object in self.scene.objects {
                 if let Some(hit) = object.intersect(ray, false) {
@@ -152,19 +161,21 @@ impl<'a> Renderer<'a> {
             // Diffuse
             if dot > 0.0 {
                 result = result +
-                         (light.color * material.diffuse_color) * dot *
-                         light.intensity(distance_to_light);
+                    (light.color * material.diffuse_color) * dot *
+                        light.intensity(distance_to_light);
             }
 
-            dot = original_ray.direction.dot(&light_direction.reflect(&intersection.normal));
+            dot = original_ray
+                .direction
+                .dot(&light_direction.reflect(&intersection.normal));
 
             // Specular
             if dot > 0.0 {
                 let spec = dot.powf(material.specular_exponent);
 
                 result = result +
-                         (light.color * material.specular_color) * spec *
-                         light.intensity(distance_to_light);
+                    (light.color * material.specular_color) * spec *
+                        light.intensity(distance_to_light);
             }
         }
 
@@ -172,28 +183,38 @@ impl<'a> Renderer<'a> {
     }
 
     fn reflect(&self, intersection: &Intersection, original_ray: Ray, current_depth: u32) -> Color {
-        let new_direction = original_ray.direction.reflect(&intersection.normal).normalize();
+        let new_direction = original_ray
+            .direction
+            .reflect(&intersection.normal)
+            .normalize();
 
-        let new_ray = Ray::new((intersection.point + new_direction * EPSILON).as_point(),
-                               new_direction,
-                               Some(original_ray.medium_refraction));
+        let new_ray = Ray::new(
+            (intersection.point + new_direction * EPSILON).as_point(),
+            new_direction,
+            Some(original_ray.medium_refraction),
+        );
 
         let reflected_color = self.trace(new_ray, current_depth - 1, false);
 
         reflected_color *
-        intersection.shape
-            .material()
-            .reflection_coefficient
-            .unwrap_or(0.0)
+            intersection
+                .shape
+                .material()
+                .reflection_coefficient
+                .unwrap_or(0.0)
     }
 
     fn refract(&self, intersection: &Intersection, original_ray: Ray, current_depth: u32) -> Color {
-        assert!(intersection.shape
-                    .material()
-                    .refraction_coefficient
-                    .is_some(),
-                "Don't call refract for materials that aren't refractive");
-        let mut refraction_coefficient = intersection.shape
+        assert!(
+            intersection
+                .shape
+                .material()
+                .refraction_coefficient
+                .is_some(),
+            "Don't call refract for materials that aren't refractive"
+        );
+        let mut refraction_coefficient = intersection
+            .shape
             .material()
             .refraction_coefficient
             .unwrap_or(1.0);
@@ -213,22 +234,24 @@ impl<'a> Renderer<'a> {
         let c2 = 1.0 - n * (1.0 - cos_i * cos_i);
 
         if c2 > 0.0 {
-            let direction = (original_ray.direction * n + normal * (n * cos_i - c2.sqrt()))
-                .normalize();
+            let direction =
+                (original_ray.direction * n + normal * (n * cos_i - c2.sqrt())).normalize();
 
-            let new_ray = Ray::new((intersection.point + direction * EPSILON).as_point(),
-                                   direction,
-                                   Some(refraction_coefficient));
+            let new_ray = Ray::new(
+                (intersection.point + direction * EPSILON).as_point(),
+                direction,
+                Some(refraction_coefficient),
+            );
 
             let refraction_color = self.trace(new_ray, current_depth - 1, false);
             let absorbance = intersection.shape.material().ambient_color * 0.15 * -intersection.t;
-            let transparency = Color::new_f64(absorbance.r_f64().exp(),
-                                              absorbance.g_f64().exp(),
-                                              absorbance.b_f64().exp());
+            let transparency = Color::new_f64(
+                absorbance.r_f64().exp(),
+                absorbance.g_f64().exp(),
+                absorbance.b_f64().exp(),
+            );
 
             return refraction_color * transparency;
-
-
         }
 
         return Color::black();

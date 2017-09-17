@@ -1,5 +1,5 @@
-use math::{Transform, Point3};
-use geometry::{Shape, Intersectable, Transformable};
+use math::{Point3, Transform};
+use geometry::{Intersectable, Shape, Transformable};
 use intersection::Intersection;
 use ray::Ray;
 use material::Material;
@@ -81,10 +81,10 @@ impl Transformable for Sphere {
 #[cfg(test)]
 mod tests {
     use super::Sphere;
-    use math::{Vector3, Point3, EPSILON};
+    use math::{Point3, Vector3, EPSILON};
     use ray::Ray;
     use geometry::Shape;
-    use material::{MaterialTemplate, Material};
+    use material::{Material, MaterialTemplate};
     use color::Color;
 
     fn build_test_material() -> Material {
@@ -97,9 +97,11 @@ mod tests {
     fn test_intersection_miss() {
         let material = build_test_material();
         let sphere = Sphere::new(Point3::at_origin(), 1.0, material);
-        let ray = Ray::new(Point3::new(0.0, 0.0, 2.0),
-                           Vector3::new(0.0, 0.0, 1.0),
-                           None);
+        let ray = Ray::new(
+            Point3::new(0.0, 0.0, 2.0),
+            Vector3::new(0.0, 0.0, 1.0),
+            None,
+        );
 
         let intersection = (&sphere as &Shape).intersect(ray);
 
@@ -110,9 +112,11 @@ mod tests {
     fn test_intersection() {
         let material = build_test_material();
         let sphere = Sphere::new(Point3::at_origin(), 1.0, material);
-        let ray = Ray::new(Point3::new(0.0, 0.0, 2.0),
-                           Vector3::new(0.0, 0.0, -1.0),
-                           None);
+        let ray = Ray::new(
+            Point3::new(0.0, 0.0, 2.0),
+            Vector3::new(0.0, 0.0, -1.0),
+            None,
+        );
 
         let i = (&sphere as &Shape).intersect(ray);
         assert!(i.is_some());

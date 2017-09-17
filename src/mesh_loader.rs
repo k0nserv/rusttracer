@@ -29,18 +29,26 @@ impl MeshLoader {
         let mut material_cache = HashMap::new();
 
         for (i, m) in materials.iter().enumerate() {
-            let mat = Box::new(Material::new(Color::new_f64(m.ambient[0] as f64,
-                                                            m.ambient[1] as f64,
-                                                            m.ambient[2] as f64),
-                                             Color::new_f64(m.diffuse[0] as f64,
-                                                            m.diffuse[1] as f64,
-                                                            m.diffuse[2] as f64),
-                                             Color::new_f64(m.specular[0] as f64,
-                                                            m.specular[1] as f64,
-                                                            m.specular[2] as f64),
-                                             m.shininess as f64,
-                                             None,
-                                             None));
+            let mat = Box::new(Material::new(
+                Color::new_f64(
+                    m.ambient[0] as f64,
+                    m.ambient[1] as f64,
+                    m.ambient[2] as f64,
+                ),
+                Color::new_f64(
+                    m.diffuse[0] as f64,
+                    m.diffuse[1] as f64,
+                    m.diffuse[2] as f64,
+                ),
+                Color::new_f64(
+                    m.specular[0] as f64,
+                    m.specular[1] as f64,
+                    m.specular[2] as f64,
+                ),
+                m.shininess as f64,
+                None,
+                None,
+            ));
 
             material_cache.insert(i, mat);
         }
@@ -66,27 +74,39 @@ impl MeshLoader {
                 let i2 = mesh.indices[f * 3 + 2] as usize;
 
 
-                let p0 = Point3::new((mesh.positions[i0 * 3 + 0]) as f64,
-                                     (mesh.positions[i0 * 3 + 1]) as f64,
-                                     (mesh.positions[i0 * 3 + 2]) as f64);
-                let p1 = Point3::new((mesh.positions[i1 * 3 + 0]) as f64,
-                                     (mesh.positions[i1 * 3 + 1]) as f64,
-                                     (mesh.positions[i1 * 3 + 2]) as f64);
-                let p2 = Point3::new((mesh.positions[i2 * 3 + 0]) as f64,
-                                     (mesh.positions[i2 * 3 + 1]) as f64,
-                                     (mesh.positions[i2 * 3 + 2]) as f64);
+                let p0 = Point3::new(
+                    (mesh.positions[i0 * 3 + 0]) as f64,
+                    (mesh.positions[i0 * 3 + 1]) as f64,
+                    (mesh.positions[i0 * 3 + 2]) as f64,
+                );
+                let p1 = Point3::new(
+                    (mesh.positions[i1 * 3 + 0]) as f64,
+                    (mesh.positions[i1 * 3 + 1]) as f64,
+                    (mesh.positions[i1 * 3 + 2]) as f64,
+                );
+                let p2 = Point3::new(
+                    (mesh.positions[i2 * 3 + 0]) as f64,
+                    (mesh.positions[i2 * 3 + 1]) as f64,
+                    (mesh.positions[i2 * 3 + 2]) as f64,
+                );
 
                 let normal;
                 if use_vertex_normals {
-                    let n0 = Vector3::new(mesh.normals[i0 * 3 + 0] as f64,
-                                          mesh.normals[i0 * 3 + 1] as f64,
-                                          mesh.normals[i0 * 3 + 2] as f64);
-                    let n1 = Vector3::new(mesh.normals[i1 * 3 + 0] as f64,
-                                          mesh.normals[i1 * 3 + 1] as f64,
-                                          mesh.normals[i1 * 3 + 2] as f64);
-                    let n2 = Vector3::new(mesh.normals[i2 * 3 + 0] as f64,
-                                          mesh.normals[i2 * 3 + 1] as f64,
-                                          mesh.normals[i2 * 3 + 2] as f64);
+                    let n0 = Vector3::new(
+                        mesh.normals[i0 * 3 + 0] as f64,
+                        mesh.normals[i0 * 3 + 1] as f64,
+                        mesh.normals[i0 * 3 + 2] as f64,
+                    );
+                    let n1 = Vector3::new(
+                        mesh.normals[i1 * 3 + 0] as f64,
+                        mesh.normals[i1 * 3 + 1] as f64,
+                        mesh.normals[i1 * 3 + 2] as f64,
+                    );
+                    let n2 = Vector3::new(
+                        mesh.normals[i2 * 3 + 0] as f64,
+                        mesh.normals[i2 * 3 + 1] as f64,
+                        mesh.normals[i2 * 3 + 2] as f64,
+                    );
 
                     normal = Some(Normal::Vertex(n0, n1, n2));
                 } else {
@@ -104,7 +124,9 @@ impl MeshLoader {
                     }
                 }
 
-                triangles.push(Box::new(Triangle::new(p0, p1, p2, normal.unwrap(), *material)));
+                triangles.push(Box::new(
+                    Triangle::new(p0, p1, p2, normal.unwrap(), *material),
+                ));
             }
 
             let mesh = Mesh::new(triangles);

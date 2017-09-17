@@ -19,13 +19,14 @@ impl Material {
         self.refraction_coefficient.is_some()
     }
 
-    pub fn new(ambient_color: Color,
-               diffuse_color: Color,
-               specular_color: Color,
-               specular_exponent: f64,
-               reflection_coefficient: Option<f64>,
-               refraction_coefficient: Option<f64>)
-               -> Material {
+    pub fn new(
+        ambient_color: Color,
+        diffuse_color: Color,
+        specular_color: Color,
+        specular_exponent: f64,
+        reflection_coefficient: Option<f64>,
+        refraction_coefficient: Option<f64>,
+    ) -> Material {
         Material {
             ambient_color: ambient_color,
             diffuse_color: diffuse_color,
@@ -48,14 +49,17 @@ pub struct MaterialTemplate {
 
 impl MaterialTemplate {
     pub fn build_material<F>(&self, builder_closure: F) -> Material
-        where F: Fn(&mut Material)
+    where
+        F: Fn(&mut Material),
     {
-        let mut material = Material::new(self.ambient_color,
-                                         self.diffuse_color,
-                                         self.specular_color,
-                                         self.specular_exponent,
-                                         self.reflection_coefficient,
-                                         self.refraction_coefficient);
+        let mut material = Material::new(
+            self.ambient_color,
+            self.diffuse_color,
+            self.specular_color,
+            self.specular_exponent,
+            self.reflection_coefficient,
+            self.refraction_coefficient,
+        );
 
         builder_closure(&mut material);
 
@@ -63,13 +67,14 @@ impl MaterialTemplate {
     }
 
 
-    pub fn new(ambient_color: Color,
-               diffuse_color: Color,
-               specular_color: Color,
-               specular_exponent: f64,
-               reflection_coefficient: Option<f64>,
-               refraction_coefficient: Option<f64>)
-               -> MaterialTemplate {
+    pub fn new(
+        ambient_color: Color,
+        diffuse_color: Color,
+        specular_color: Color,
+        specular_exponent: f64,
+        reflection_coefficient: Option<f64>,
+        refraction_coefficient: Option<f64>,
+    ) -> MaterialTemplate {
         MaterialTemplate {
             ambient_color: ambient_color,
             diffuse_color: diffuse_color,

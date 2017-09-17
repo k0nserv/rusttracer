@@ -1,5 +1,5 @@
-use math::{Vector3, Transform, Point3};
-use geometry::{Shape, Intersectable, Transformable};
+use math::{Point3, Transform, Vector3};
+use geometry::{Intersectable, Shape, Transformable};
 use ray::Ray;
 use material::Material;
 use intersection::Intersection;
@@ -73,14 +73,15 @@ impl Intersectable for Triangle {
 
         let t = self.ac.dot(&qvec) * inv_det;
         if t > EPSILON {
-
             let intersection_point = (ray.origin + ray.direction * t).as_point();
-            let intersection = Intersection::new(t,
-                                                 self,
-                                                 intersection_point,
-                                                 ray,
-                                                 self.normal_at_intersection(u, v),
-                                                 false);
+            let intersection = Intersection::new(
+                t,
+                self,
+                intersection_point,
+                ray,
+                self.normal_at_intersection(u, v),
+                false,
+            );
 
             return Some(intersection);
         }
@@ -111,11 +112,11 @@ impl Transformable for Triangle {
         self.ac = self.vertices[2] - self.vertices[0];
         self.normal = match self.normal {
             Normal::Face(normal) => Normal::Face((normal * normal_matrix).normalize()),
-            Normal::Vertex(n0, n1, n2) => {
-                Normal::Vertex((n0 * normal_matrix).normalize(),
-                               (n1 * normal_matrix).normalize(),
-                               (n2 * normal_matrix).normalize())
-            }
+            Normal::Vertex(n0, n1, n2) => Normal::Vertex(
+                (n0 * normal_matrix).normalize(),
+                (n1 * normal_matrix).normalize(),
+                (n2 * normal_matrix).normalize(),
+            ),
         }
     }
 }
