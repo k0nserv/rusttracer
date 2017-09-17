@@ -39,46 +39,34 @@ impl<'a> Renderer<'a> {
 
     pub fn render(&self, max_depth: u32) -> Vec<u8> {
         let range: Range<usize> = (0 as usize)..(self.camera.height as usize);
-        self.render_segment(0, &range, max_depth)
-    }
-
-    fn render_segment(
-        &self,
-        segment_offset: usize,
-        segment_range: &Range<usize>,
-        max_depth: u32,
-    ) -> Vec<u8> {
         let width = self.camera.width as usize;
 
-        segment_range
+        range
             .clone()
             .into_par_iter()
             .flat_map(|y| {
                 (0..width)
-                    .flat_map(move |x| {
-                        self.render_point(segment_offset, max_depth, x, y)
-                            .into_iter()
-                    })
+                    .flat_map(move |x| self.render_point(max_depth, x, y).into_iter())
                     .collect::<Vec<u8>>()
                     .into_par_iter()
             })
             .collect::<Vec<u8>>()
     }
 
-    fn render_point(&self, segment_offset: usize, max_depth: u32, x: usize, y: usize) -> Color {
+    fn render_point(&self, max_depth: u32, x: usize, y: usize) -> Color {
         let samples = match self.super_sampling {
             SuperSampling::Off => 1,
             SuperSampling::On(samples) => samples,
         };
 
+        // TODO: Get rid of this vec in favour of just accumulating the sums directly?
         let mut sample_colors = vec![Color::black(); (samples * samples) as usize];
-        let global_y = segment_offset + y;
 
         for x_sample in 0..samples {
             for y_sample in 0..samples {
                 let ray = self.camera.create_ray(
                     x as u32,
-                    self.camera.height - global_y as u32,
+                    self.camera.height - y as u32,
                     x_sample,
                     y_sample,
                     samples,
@@ -206,11 +194,7 @@ impl<'a> Renderer<'a> {
 
     fn refract(&self, intersection: &Intersection, original_ray: Ray, current_depth: u32) -> Color {
         assert!(
-            intersection
-                .shape
-                .material()
-                .refraction_coefficient
-                .is_some(),
+            intersection.shape.material().is_refractive(),
             "Don't call refract for materials that aren't refractive"
         );
         let mut refraction_coefficient = intersection
