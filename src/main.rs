@@ -1,10 +1,9 @@
 #![cfg_attr(feature="clippy", feature(plugin))]
 
 #![cfg_attr(feature="clippy", plugin(clippy))]
-
+extern crate getopts;
 extern crate image;
 extern crate time;
-extern crate getopts;
 
 extern crate rusttracer;
 
@@ -15,8 +14,9 @@ use std::f64::consts::PI;
 use getopts::Options;
 
 use rusttracer::math::{Matrix4, Point3, Transform, Vector3};
-use rusttracer::{Camera, Color, Config, MaterialTemplate, Renderer, Scene, SuperSampling};
-use rusttracer::geometry::{Intersectable, Plane, Transformable};
+use rusttracer::{Camera, Color, Config, MaterialTemplate, Renderer, Scene, SuperSampling,
+                 IllumninationModel};
+use rusttracer::geometry::{Intersectable, Plane, Transformable, Sphere};
 use rusttracer::lights::PointLight;
 use rusttracer::mesh_loader::MeshLoader;
 
@@ -61,6 +61,7 @@ fn main() {
                                          Color::black(),
                                          Color::black(),
                                          0.0,
+                                         IllumninationModel::DiffuseSpecular,
                                          None,
                                          None);
 
@@ -90,29 +91,71 @@ fn main() {
                                                      material.reflection_coefficient = Some(0.3);
                                                  });
 
+    /*
     let mesh_loader = MeshLoader::new();
-    let mut suzanne = mesh_loader.load(Path::new("models/bunny.obj"), &white_material);
+    let mut suzanne = mesh_loader.load(Path::new("models/CornellBox-Mirror-Blender.obj"), &white_material);
 
-    let mut objects: Vec<&Intersectable> = vec![&floor, &back];
 
     for (index, mesh) in suzanne.iter_mut().enumerate() {
-        let transform =
-            Transform::new(Matrix4::scale_uniform(10.0) * Matrix4::rot_y(PI / 2.0) *
-                           Matrix4::translate(0.0 + (index as f64) * -5.0, -3.0, -40.0));
+        let transform = Transform::new(
+            Matrix4::scale_uniform(3.0) * Matrix4::rot_y(0.0) *
+                Matrix4::translate(-0.0, -5.0, -40.0),
+        );
         mesh.transform(&transform);
         objects.push(mesh as &Intersectable);
     }
+    */
 
+    let sphere_template = MaterialTemplate::new(Color::blue() * 0.02,
+                                                Color::red() * 0.7,
+                                                Color::white() * 0.5,
+                                                50.0,
+                                                IllumninationModel::DiffuseSpecular,
+                                                Some(0.3),
+                                                Some(1.3));
+
+
+    let s1_material = sphere_template.build_material(|material| {
+                                                         material.illumination_model =
+                                                             IllumninationModel::Constant;
+                                                     });
+    let s1 = Sphere::new(Point3::new(-7.0, -3.0, -40.0), 1.0, s1_material);
+
+    let s2_material = sphere_template.build_material(|material| {
+                                                         material.illumination_model =
+                                                             IllumninationModel::Diffuse;
+                                                     });
+    let s2 = Sphere::new(Point3::new(-4.5, -3.0, -40.0), 1.0, s2_material);
+
+    let s3_material = sphere_template.build_material(|material| {
+                                                         material.illumination_model =
+                                                             IllumninationModel::DiffuseSpecular;
+                                                     });
+    let s3 = Sphere::new(Point3::new(-2.0, -3.0, -40.0), 1.0, s3_material);
+
+    let s4_material = sphere_template.build_material(|material| {
+                                                         material.illumination_model =
+                                               IllumninationModel::DiffuseSpecularReflective;
+                                                     });
+    let s4 = Sphere::new(Point3::new(0.5, -3.0, -40.0), 1.0, s4_material);
+
+    let s5_material = sphere_template.build_material(|material| {
+                                                         material.illumination_model =
+                                               IllumninationModel::DiffuseSpecularFresnel;
+                                                     });
+    let s5 = Sphere::new(Point3::new(3.0, -3.0, -40.0), 1.0, s4_material);
+
+    let mut objects: Vec<&Intersectable> = vec![&floor, &back, &s1, &s2, &s3, &s4, &s5];
     let lights: Vec<&PointLight> = vec![&l1, &l2, &l3, &l4];
     let scene = Scene::new(&objects, &lights, Color::black());
     let camera = Camera::new(0.873,
                              config.width,
                              config.height,
-                             Point3::new(0.0, 0.0, -30.0),
+                             Point3::new(0.0, 0.0, -20.0),
                              Point3::new(0.0, -3.0, -40.0),
                              Vector3::new(0.0, 1.0, 0.0));
 
-    let renderer = Renderer::new(&scene, &camera, SuperSampling::Off);
+    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
 
     if benchmark {
         for _ in 0..10 {
