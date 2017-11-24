@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 use geometry::{Mesh, Triangle};
 use geometry::triangle::Normal;
-use material::Material;
+use material::{IllumninationModel, Material};
 use math::{Point3, Vector3};
 use color::Color;
 
@@ -29,6 +29,11 @@ impl MeshLoader {
         let mut material_cache = HashMap::new();
 
         for (i, m) in materials.iter().enumerate() {
+            let illumination_model = match m.illumination_model {
+                Some(model) => { IllumninationModel::from(model) },
+                None => { IllumninationModel::DiffuseSpecular },
+            };
+
             let mat = Box::new(Material::new(
                 Color::new_f64(
                     m.ambient[0] as f64,
@@ -46,6 +51,7 @@ impl MeshLoader {
                     m.specular[2] as f64,
                 ),
                 m.shininess as f64,
+                illumination_model,
                 None,
                 None,
             ));
