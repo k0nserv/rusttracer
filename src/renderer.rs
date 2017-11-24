@@ -272,7 +272,7 @@ impl<'a> Renderer<'a> {
 
             let new_ray = Ray::new((intersection.point + direction * EPSILON).as_point(),
                                    direction,
-                                   Some(refraction_properties.n2));
+                                   Some(n2));
 
             let refraction_color = self.trace(new_ray, current_depth - 1, false);
             let absorbance = intersection.shape.material().ambient_color * 0.15 * -intersection.t;

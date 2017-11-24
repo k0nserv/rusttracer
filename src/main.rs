@@ -20,7 +20,7 @@ use rusttracer::geometry::{Intersectable, Plane, Transformable, Sphere};
 use rusttracer::lights::PointLight;
 use rusttracer::mesh_loader::MeshLoader;
 
-const DEFAULT_CONFIG_PATH: &str = "default.toml";
+const DEFAULT_CONFIG_PATH: &str = "default.json";
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -34,7 +34,7 @@ fn main() {
     let mut opts = Options::new();
     opts.optopt("c",
                 "config-path",
-                "config file path, uses `default.toml` if not specified",
+                "config file path, uses `default.json` if not specified",
                 "CONFIG_PATH");
     opts.optflag("b",
                  "benchmark",

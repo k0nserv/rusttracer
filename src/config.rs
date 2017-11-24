@@ -1,8 +1,9 @@
-extern crate toml;
 use renderer::SuperSampling;
 
 use std::fs::File;
 use std::io::prelude::*;
+
+use serde_json;
 
 #[derive(Deserialize, Debug, Copy, Clone)]
 pub struct Config {
@@ -35,7 +36,7 @@ impl Config {
             return Err("Failed to read config file");
         }
 
-        let config = toml::from_str(&contents);
+        let config = serde_json::from_str(&contents);
 
         if config.is_err() {
             return Err("Failed to parse config");

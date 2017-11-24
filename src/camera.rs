@@ -12,14 +12,13 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(
-        fov: f64,
-        width: u32,
-        height: u32,
-        position: Point3,
-        look_at: Point3,
-        tmp_up: Vector3,
-    ) -> Camera {
+    pub fn new(fov: f64,
+               width: u32,
+               height: u32,
+               position: Point3,
+               look_at: Point3,
+               tmp_up: Vector3)
+               -> Camera {
         let aspect_ratio = (width as f64) / (height as f64);
         let scale = (fov * 0.5).tan();
         let direction = (position - look_at).normalize();
@@ -33,12 +32,10 @@ impl Camera {
             heightf: (height as f64),
             scale: scale,
             aspect_ratio: aspect_ratio,
-            camera_to_world: Self::camera_to_world_matrix(
-                right.normalize(),
-                up.normalize(),
-                direction,
-                position,
-            ),
+            camera_to_world: Self::camera_to_world_matrix(right.normalize(),
+                                                          up.normalize(),
+                                                          direction,
+                                                          position),
         }
     }
 
@@ -56,9 +53,9 @@ impl Camera {
         }
 
         let px = ((2.0 * (((x * samples) as f64) + x_sample_offset) / sample_width) - 1.0) *
-            self.aspect_ratio * self.scale;
-        let py =
-            ((2.0 * (((y * samples) as f64) + y_sample_offset) / sample_height) - 1.0) * self.scale;
+                 self.aspect_ratio * self.scale;
+        let py = ((2.0 * (((y * samples) as f64) + y_sample_offset) / sample_height) - 1.0) *
+                 self.scale;
 
         let direction = Vector3::new(px, py, -1.0) * self.camera_to_world;
         let origin = Point3::at_origin() * self.camera_to_world;
@@ -66,12 +63,11 @@ impl Camera {
         Ray::new(origin, direction.normalize(), None)
     }
 
-    pub fn camera_to_world_matrix(
-        right: Vector3,
-        up: Vector3,
-        direction: Vector3,
-        position: Point3,
-    ) -> Matrix4 {
+    pub fn camera_to_world_matrix(right: Vector3,
+                                  up: Vector3,
+                                  direction: Vector3,
+                                  position: Point3)
+                                  -> Matrix4 {
         let mut result = Matrix4::identity();
 
         // right

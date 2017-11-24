@@ -11,11 +11,10 @@ pub struct Scene<'a> {
 }
 
 impl<'a> Scene<'a> {
-    pub fn new(
-        objects: &'a Vec<&'a Intersectable>,
-        lights: &'a Vec<&'a PointLight>,
-        clear_color: Color,
-    ) -> Scene<'a> {
+    pub fn new(objects: &'a Vec<&'a Intersectable>,
+               lights: &'a Vec<&'a PointLight>,
+               clear_color: Color)
+               -> Scene<'a> {
         Scene {
             objects: objects,
             lights: lights,

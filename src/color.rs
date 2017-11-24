@@ -52,11 +52,9 @@ impl Color {
     }
 
     pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
-        Color::new(
-            Color::clamp((r * 255.0) as i32),
-            Color::clamp((g * 255.0) as i32),
-            Color::clamp((b * 255.0) as i32),
-        )
+        Color::new(Color::clamp((r * 255.0) as i32),
+                   Color::clamp((g * 255.0) as i32),
+                   Color::clamp((b * 255.0) as i32))
     }
 
     #[inline(always)]
