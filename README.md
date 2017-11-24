@@ -21,10 +21,16 @@ cargo build --release
 then run
 
 ```bash
-BENCHMARK=true target/release/rusttracer
+target/release/rusttracer --benchmark
 ```
 
 The benchmark is fairly naive and currently just renders the scene setup in `main.rs` several times.
+
+To see all available commands run
+
+```
+target/release/rusttracer --help
+```
 
 ## Renders
 
