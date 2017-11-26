@@ -1,6 +1,8 @@
 use ray::Ray;
 use math::{Matrix4, Point3, Vector3};
+use config;
 
+#[derive(Debug, Copy, Clone)]
 pub struct Camera {
     pub width: u32,
     pub height: u32,
@@ -37,6 +39,15 @@ impl Camera {
                                                           direction,
                                                           position),
         }
+    }
+
+    pub fn from_config(camera: &config::Camera) -> Camera {
+        Self::new(camera.fov,
+                  camera.width,
+                  camera.height,
+                  Point3::new_from_slice(camera.position),
+                  Point3::new_from_slice(camera.look_at),
+                  Vector3::new_from_slice(camera.up))
     }
 
     pub fn create_ray(&self, x: u32, y: u32, x_sample: u32, y_sample: u32, samples: u32) -> Ray {

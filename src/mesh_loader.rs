@@ -1,6 +1,6 @@
 extern crate tobj;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::collections::HashMap;
 
 use geometry::{Mesh, Triangle};
@@ -10,15 +10,18 @@ use math::{Point3, Vector3};
 use color::Color;
 
 
-pub struct MeshLoader {}
+pub struct MeshLoader {
+    root_path: PathBuf,
+}
 
 impl MeshLoader {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(root_path: PathBuf) -> MeshLoader {
+        MeshLoader { root_path: root_path }
     }
 
-    pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Mesh> {
-        let result = tobj::load_obj(path);
+    pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh>> {
+        let final_path = self.root_path.join(path);
+        let result = tobj::load_obj(&final_path);
         if let &Err(ref error) = &result {
             println!("Load error: {}", error);
         }
@@ -46,7 +49,7 @@ impl MeshLoader {
                                              m.shininess as f64,
                                              illumination_model,
                                              None,
-                                             None));
+                                             Some(m.optical_density as f64)));
 
             material_cache.insert(i, mat);
         }
@@ -113,7 +116,7 @@ impl MeshLoader {
                 triangles.push(Box::new(Triangle::new(p0, p1, p2, normal.unwrap(), *material)));
             }
 
-            let mesh = Mesh::new(triangles);
+            let mesh = Box::new(Mesh::new(triangles));
             meshes.push(mesh);
         }
 

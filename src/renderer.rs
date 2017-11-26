@@ -16,7 +16,7 @@ pub enum SuperSampling {
 }
 
 pub struct Renderer<'a> {
-    scene: &'a Scene<'a>,
+    scene: &'a Scene,
     camera: &'a Camera,
     super_sampling: SuperSampling,
 }
@@ -70,7 +70,7 @@ unsafe impl<'a> Sync for Renderer<'a> {}
 unsafe impl<'a> Send for Renderer<'a> {}
 
 impl<'a> Renderer<'a> {
-    pub fn new(scene: &'a Scene<'a>,
+    pub fn new(scene: &'a Scene,
                camera: &'a Camera,
                super_sampling: SuperSampling)
                -> Renderer<'a> {
@@ -191,24 +191,15 @@ impl<'a> Renderer<'a> {
         let material: &Material = intersection.shape.material();
         let mut result = material.ambient_color;
 
-        for light in self.scene.lights {
-            let mut in_shadow = false;
+        // TODO: Move lights iteration to Scene
+        for light in self.scene.lights.iter() {
             let distance_to_light = (intersection.point - light.origin).length();
             let light_direction = (light.origin - intersection.point).normalize();
             let ray = Ray::new((intersection.point + light_direction * EPSILON).as_point(),
                                light_direction,
                                Some(original_ray.medium_refraction));
 
-            for object in self.scene.objects {
-                if let Some(hit) = object.intersect(ray, false) {
-                    if hit.t < distance_to_light {
-                        in_shadow = true;
-                        break;
-                    }
-                }
-            }
-
-            if in_shadow {
+            if self.scene.first_intersection(ray, false, distance_to_light).is_some() {
                 continue;
             }
 

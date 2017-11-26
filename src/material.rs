@@ -1,8 +1,9 @@
 use std::convert::From;
 use color::Color;
+use config;
 
 /// See http://paulbourke.net/dataformats/mtl/
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Copy, Clone, PartialEq, Eq)]
 pub enum IllumninationModel {
     /// Mode 0, constant diffuse color
     Constant = 0,
@@ -87,6 +88,16 @@ impl Material {
             reflection_coefficient: reflection_coefficient,
             refraction_coefficient: refraction_coefficient,
         }
+    }
+
+    pub fn new_from_config(config: &config::Material) -> Self {
+        Self::new(Color::new_from_slice(config.ambient_color),
+                  Color::new_from_slice(config.diffuse_color),
+                  Color::new_from_slice(config.specular_color),
+                  config.specular_exponent,
+                  config.illumination_model,
+                  config.reflection_coefficient,
+                  config.refraction_coefficient)
     }
 }
 
