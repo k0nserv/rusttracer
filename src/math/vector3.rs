@@ -4,7 +4,7 @@ use math::{Matrix4, EPSILON};
 
 macro_rules! define_struct {
     ($T: ident) => (
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Debug, Copy, Clone, Deserialize)]
         pub struct $T {
             pub x: f64,
             pub y: f64,
@@ -23,8 +23,10 @@ macro_rules! define_impl {
                 $T { x: x, y: y, z: z }
             }
 
+            pub fn new_from_slice(slice: [f64; 3]) -> $T {
+                $T { x: slice[0], y: slice[1], z: slice[2] }
+            }
         }
-
     )
 }
 

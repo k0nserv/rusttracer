@@ -57,6 +57,10 @@ impl Color {
                    Color::clamp((b * 255.0) as i32))
     }
 
+    pub fn new_from_slice(slice: [f64; 3]) -> Color {
+        Self::new_f64(slice[0], slice[1], slice[2])
+    }
+
     #[inline(always)]
     pub fn r(&self) -> u8 {
         self.r

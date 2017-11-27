@@ -1,0 +1,38 @@
+{
+  "max_depth": 5,
+  "super_sampling": {
+    "On": 4
+  },
+  "cameras": [{
+    "fov": 0.873,
+    "width": 2560,
+    "height": 1440,
+    "position": [0.0, 4.0, 5.0],
+    "look_at": [0.0, 0.0, 0.0],
+    "up": [0.0, 1.0, 0.0]
+  }],
+  "scenes": [{
+    "clear_color": [0.0, 0.0, 0.0],
+    "objects": [{
+      "type": "Mesh",
+      "path": "resting-suzanne.obj"
+    }],
+    "lights": [{
+      "type": "PointLight",
+      "origin": [3.0, 5.0, 6.0],
+      "color": [0.06, 0.31, 0.85],
+      "intensity": 50.0
+    }, {
+      "type": "PointLight",
+      "origin": [-3.0, 5.0, 6.0],
+      "color": [0.75, 0.1, 0.25],
+      "intensity": 50.0
+    }, {
+      "type": "PointLight",
+      "origin": [0.0, 5.0, -6.0],
+      "color": [0.06, 0.83, 0.15],
+      "intensity": 50.0
+    }]
+  }],
+  "materials": []
+}
