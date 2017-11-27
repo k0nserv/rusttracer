@@ -11,7 +11,7 @@ use lights::PointLight;
 use config;
 use config::Object;
 use mesh_loader::MeshLoader;
-use geometry::{Sphere, Plane, Mesh};
+use geometry::{Sphere, Plane};
 use math::{Point3, Vector3};
 use material::Material;
 
@@ -66,7 +66,7 @@ impl Scene {
             let material = match material_id {
                 None => fallback_material,
                 Some(id) => {
-                    assert!(id >= 0 && id < materials.len(), "Invalid material_id");
+                    assert!(id < materials.len(), "Invalid material_id");
                     materials[id]
                 }
             };
@@ -77,9 +77,16 @@ impl Scene {
                                           &Object::Plane { normal,
                                                            ref transforms,
                                                            material_id } => {
+            let material = match material_id {
+                None => fallback_material,
+                Some(id) => {
+                    assert!(id < materials.len(), "Invalid material_id");
+                    materials[id]
+                }
+            };
             let mut plane = Box::new(Plane::new(Point3::at_origin(),
                                                 Vector3::new_from_slice(normal),
-                                                fallback_material));
+                                                material));
             Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
             objects.push(plane as Box<Intersectable>);
         }
