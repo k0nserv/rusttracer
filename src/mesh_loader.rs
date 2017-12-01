@@ -57,6 +57,9 @@ impl MeshLoader {
         for (i, m) in models.iter().enumerate() {
             let mut triangles = vec![];
             let mesh = &m.mesh;
+            if mesh.indices.is_empty() && mesh.positions.is_empty() {
+                continue;
+            }
             println!("Mesh with index {}", i);
             println!("Mesh name {}", m.name);
             println!("Num indices: {}", mesh.indices.len());
