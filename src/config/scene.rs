@@ -3,7 +3,7 @@ use super::light::Light;
 
 #[derive(Deserialize, Debug)]
 pub struct Scene {
-    pub clear_color: [f64; 3],
+    pub clear_color: [f32; 3],
     pub objects: Vec<Object>,
     pub lights: Vec<Light>,
 }

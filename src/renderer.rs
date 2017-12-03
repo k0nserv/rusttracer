@@ -22,11 +22,11 @@ pub struct Renderer<'a> {
 }
 
 pub struct RefractionProperties {
-    n1: f64,
-    n2: f64,
-    n: f64,
-    cos_i: f64,
-    c2: f64,
+    n1: f32,
+    n2: f32,
+    n: f32,
+    cos_i: f32,
+    c2: f32,
     normal: Vector3,
 }
 
@@ -118,19 +118,19 @@ impl<'a> Renderer<'a> {
         }
 
 
-        let mut sum_r: f64 = 0.0;
-        let mut sum_g: f64 = 0.0;
-        let mut sum_b: f64 = 0.0;
+        let mut sum_r: f32 = 0.0;
+        let mut sum_g: f32 = 0.0;
+        let mut sum_b: f32 = 0.0;
 
         for color in &sample_colors {
-            sum_r += color.r_f64();
-            sum_g += color.g_f64();
-            sum_b += color.b_f64();
+            sum_r += color.r_f32();
+            sum_g += color.g_f32();
+            sum_b += color.b_f32();
         }
 
-        Color::new_f64(sum_r / sample_colors.len() as f64,
-                       sum_g / sample_colors.len() as f64,
-                       sum_b / sample_colors.len() as f64)
+        Color::new_f32(sum_r / sample_colors.len() as f32,
+                       sum_g / sample_colors.len() as f32,
+                       sum_b / sample_colors.len() as f32)
     }
 
     fn trace(&self, ray: Ray, depth: u32, cull: bool) -> Color {
@@ -267,9 +267,9 @@ impl<'a> Renderer<'a> {
 
             let refraction_color = self.trace(new_ray, current_depth - 1, false);
             let absorbance = intersection.shape.material().ambient_color * 0.15 * -intersection.t;
-            let transparency = Color::new_f64(absorbance.r_f64().exp(),
-                                              absorbance.g_f64().exp(),
-                                              absorbance.b_f64().exp());
+            let transparency = Color::new_f32(absorbance.r_f32().exp(),
+                                              absorbance.g_f32().exp(),
+                                              absorbance.b_f32().exp());
 
             return refraction_color * transparency;
         }
@@ -277,7 +277,7 @@ impl<'a> Renderer<'a> {
         return Color::black();
     }
 
-    fn fresnel(&self, refraction_properties: &RefractionProperties) -> f64 {
+    fn fresnel(&self, refraction_properties: &RefractionProperties) -> f32 {
         let (n1, n2, cos_i) =
             (refraction_properties.n1, refraction_properties.n2, refraction_properties.cos_i);
         let sin_t = n1 / n2 * (1.0 - cos_i * cos_i).max(0.0).sqrt();

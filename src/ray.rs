@@ -6,11 +6,11 @@ pub struct Ray {
     pub direction: Vector3,
     pub inv_direction: Vector3,
     pub sign: [usize; 3],
-    pub medium_refraction: f64,
+    pub medium_refraction: f32,
 }
 
 impl Ray {
-    pub fn new(origin: Point3, direction: Vector3, medium_refraction: Option<f64>) -> Ray {
+    pub fn new(origin: Point3, direction: Vector3, medium_refraction: Option<f32>) -> Ray {
         let inv_dir = Vector3::new(1.0 / direction.x, 1.0 / direction.y, 1.0 / direction.z);
         Ray {
             origin: origin,

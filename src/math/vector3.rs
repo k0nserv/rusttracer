@@ -6,9 +6,9 @@ macro_rules! define_struct {
     ($T: ident) => (
         #[derive(Debug, Copy, Clone, Deserialize)]
         pub struct $T {
-            pub x: f64,
-            pub y: f64,
-            pub z: f64,
+            pub x: f32,
+            pub y: f32,
+            pub z: f32,
         }
     )
 }
@@ -19,11 +19,11 @@ define_struct!(Point3);
 macro_rules! define_impl {
     ($T: ident) => (
         impl $T {
-            pub fn new(x: f64, y: f64, z: f64) -> $T {
+            pub fn new(x: f32, y: f32, z: f32) -> $T {
                 $T { x: x, y: y, z: z }
             }
 
-            pub fn new_from_slice(slice: [f64; 3]) -> $T {
+            pub fn new_from_slice(slice: [f32; 3]) -> $T {
                 $T { x: slice[0], y: slice[1], z: slice[2] }
             }
         }
@@ -35,7 +35,7 @@ define_impl!(Point3);
 
 // Vector 3 specific
 impl Vector3 {
-    pub fn dot(&self, other: &Self) -> f64 {
+    pub fn dot(&self, other: &Self) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
@@ -55,7 +55,7 @@ impl Vector3 {
         *self - *normal * (2.0 * self.dot(&normal))
     }
 
-    pub fn length(&self) -> f64 {
+    pub fn length(&self) -> f32 {
         self.dot(&self).sqrt()
     }
 
@@ -103,9 +103,9 @@ macro_rules! define_scalar_add {
 
             fn add(self, other: $T) -> Vector3 {
                 Vector3 {
-                    x: self.x + (other as f64),
-                    y: self.y + (other as f64),
-                    z: self.z + (other as f64),
+                    x: self.x + (other as f32),
+                    y: self.y + (other as f32),
+                    z: self.z + (other as f32),
                 }
             }
         }
@@ -150,9 +150,9 @@ macro_rules! define_scalar_sub {
 
             fn sub(self, other: $T) -> Vector3 {
                 Vector3 {
-                    x: self.x - (other as f64),
-                    y: self.y - (other as f64),
-                    z: self.z - (other as f64),
+                    x: self.x - (other as f32),
+                    y: self.y - (other as f32),
+                    z: self.z - (other as f32),
                 }
             }
         }
@@ -209,9 +209,9 @@ macro_rules! define_scalar_mul {
 
             fn mul(self, other: $T) -> Vector3 {
                 Vector3 {
-                    x: self.x * (other as f64),
-                    y: self.y * (other as f64),
-                    z: self.z * (other as f64),
+                    x: self.x * (other as f32),
+                    y: self.y * (other as f32),
+                    z: self.z * (other as f32),
                 }
             }
         }
@@ -284,7 +284,7 @@ impl Mul<Matrix4> for Point3 {
 mod tests {
     use math::{Matrix4, EPSILON};
     use super::{Point3, Vector3};
-    use std::f64::consts::PI;
+    use std::f32::consts::PI;
 
 
     #[test]

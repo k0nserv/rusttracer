@@ -51,10 +51,10 @@ pub struct Material {
     pub ambient_color: Color,
     pub diffuse_color: Color,
     pub specular_color: Color,
-    pub specular_exponent: f64,
+    pub specular_exponent: f32,
     pub illumination_model: IllumninationModel,
-    pub reflection_coefficient: Option<f64>,
-    pub refraction_coefficient: Option<f64>,
+    pub reflection_coefficient: Option<f32>,
+    pub refraction_coefficient: Option<f32>,
 }
 
 impl Material {
@@ -74,10 +74,10 @@ impl Material {
     pub fn new(ambient_color: Color,
                diffuse_color: Color,
                specular_color: Color,
-               specular_exponent: f64,
+               specular_exponent: f32,
                illumination_model: IllumninationModel,
-               reflection_coefficient: Option<f64>,
-               refraction_coefficient: Option<f64>)
+               reflection_coefficient: Option<f32>,
+               refraction_coefficient: Option<f32>)
                -> Material {
         Material {
             ambient_color: ambient_color,
@@ -105,10 +105,10 @@ pub struct MaterialTemplate {
     ambient_color: Color,
     diffuse_color: Color,
     specular_color: Color,
-    specular_exponent: f64,
+    specular_exponent: f32,
     illumination_model: IllumninationModel,
-    reflection_coefficient: Option<f64>,
-    refraction_coefficient: Option<f64>,
+    reflection_coefficient: Option<f32>,
+    refraction_coefficient: Option<f32>,
 }
 
 impl MaterialTemplate {
@@ -132,10 +132,10 @@ impl MaterialTemplate {
     pub fn new(ambient_color: Color,
                diffuse_color: Color,
                specular_color: Color,
-               specular_exponent: f64,
+               specular_exponent: f32,
                illumination_model: IllumninationModel,
-               reflection_coefficient: Option<f64>,
-               refraction_coefficient: Option<f64>)
+               reflection_coefficient: Option<f32>,
+               refraction_coefficient: Option<f32>)
                -> MaterialTemplate {
         MaterialTemplate {
             ambient_color: ambient_color,

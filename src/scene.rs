@@ -143,7 +143,7 @@ impl Scene {
         return closest_intersection;
     }
 
-    pub fn first_intersection(&self, ray: Ray, cull: bool, distance: f64) -> Option<Intersection> {
+    pub fn first_intersection(&self, ray: Ray, cull: bool, distance: f32) -> Option<Intersection> {
         for object in self.objects.iter() {
             if let Some(hit) = object.intersect(ray, cull) {
                 if hit.t < distance {

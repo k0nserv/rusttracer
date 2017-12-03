@@ -4,12 +4,12 @@ use config::Transform;
 #[serde(tag = "type")]
 pub enum Object {
     Sphere {
-        radius: f64,
+        radius: f32,
         transforms: Option<Vec<Transform>>,
         material_id: Option<usize>,
     },
     Plane {
-        normal: [f64; 3],
+        normal: [f32; 3],
         transforms: Option<Vec<Transform>>,
         material_id: Option<usize>,
     },

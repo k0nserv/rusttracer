@@ -6,22 +6,22 @@ use config;
 pub struct Camera {
     pub width: u32,
     pub height: u32,
-    widthf: f64,
-    heightf: f64,
-    scale: f64,
-    aspect_ratio: f64,
+    widthf: f32,
+    heightf: f32,
+    scale: f32,
+    aspect_ratio: f32,
     camera_to_world: Matrix4,
 }
 
 impl Camera {
-    pub fn new(fov: f64,
+    pub fn new(fov: f32,
                width: u32,
                height: u32,
                position: Point3,
                look_at: Point3,
                tmp_up: Vector3)
                -> Camera {
-        let aspect_ratio = (width as f64) / (height as f64);
+        let aspect_ratio = (width as f32) / (height as f32);
         let scale = (fov * 0.5).tan();
         let direction = (position - look_at).normalize();
         let right = tmp_up.normalize().cross(&direction);
@@ -30,8 +30,8 @@ impl Camera {
         Camera {
             width: width,
             height: height,
-            widthf: (width as f64),
-            heightf: (height as f64),
+            widthf: (width as f32),
+            heightf: (height as f32),
             scale: scale,
             aspect_ratio: aspect_ratio,
             camera_to_world: Self::camera_to_world_matrix(right.normalize(),
@@ -51,21 +51,21 @@ impl Camera {
     }
 
     pub fn create_ray(&self, x: u32, y: u32, x_sample: u32, y_sample: u32, samples: u32) -> Ray {
-        let samplesf = samples as f64;
+        let samplesf = samples as f32;
         let sample_width = self.widthf * samplesf;
         let sample_height = self.heightf * samplesf;
 
-        let mut x_sample_offset = x_sample as f64;
-        let mut y_sample_offset = y_sample as f64;
+        let mut x_sample_offset = x_sample as f32;
+        let mut y_sample_offset = y_sample as f32;
 
         if samples == 1 {
             x_sample_offset = 0.5;
             y_sample_offset = 0.5;
         }
 
-        let px = ((2.0 * (((x * samples) as f64) + x_sample_offset) / sample_width) - 1.0) *
+        let px = ((2.0 * (((x * samples) as f32) + x_sample_offset) / sample_width) - 1.0) *
                  self.aspect_ratio * self.scale;
-        let py = ((2.0 * (((y * samples) as f64) + y_sample_offset) / sample_height) - 1.0) *
+        let py = ((2.0 * (((y * samples) as f32) + y_sample_offset) / sample_height) - 1.0) *
                  self.scale;
 
         let direction = Vector3::new(px, py, -1.0) * self.camera_to_world;

@@ -51,14 +51,14 @@ impl Color {
         }
     }
 
-    pub fn new_f64(r: f64, g: f64, b: f64) -> Color {
+    pub fn new_f32(r: f32, g: f32, b: f32) -> Color {
         Color::new(Color::clamp((r * 255.0) as i32),
                    Color::clamp((g * 255.0) as i32),
                    Color::clamp((b * 255.0) as i32))
     }
 
-    pub fn new_from_slice(slice: [f64; 3]) -> Color {
-        Self::new_f64(slice[0], slice[1], slice[2])
+    pub fn new_from_slice(slice: [f32; 3]) -> Color {
+        Self::new_f32(slice[0], slice[1], slice[2])
     }
 
     #[inline(always)]
@@ -67,8 +67,8 @@ impl Color {
     }
 
     #[inline(always)]
-    pub fn r_f64(&self) -> f64 {
-        self.r() as f64 / 255.0
+    pub fn r_f32(&self) -> f32 {
+        self.r() as f32 / 255.0
     }
 
     #[inline(always)]
@@ -77,8 +77,8 @@ impl Color {
     }
 
     #[inline(always)]
-    pub fn g_f64(&self) -> f64 {
-        self.g() as f64 / 255.0
+    pub fn g_f32(&self) -> f32 {
+        self.g() as f32 / 255.0
     }
 
     #[inline(always)]
@@ -87,8 +87,8 @@ impl Color {
     }
 
     #[inline(always)]
-    pub fn b_f64(&self) -> f64 {
-        self.b() as f64 / 255.0
+    pub fn b_f32(&self) -> f32 {
+        self.b() as f32 / 255.0
     }
 
     #[inline(always)]
@@ -139,23 +139,23 @@ impl Mul for Color {
     type Output = Color;
 
     fn mul(self, other: Color) -> Color {
-        let r = self.r_f64() * other.r_f64();
-        let g = self.g_f64() * other.g_f64();
-        let b = self.b_f64() * other.b_f64();
+        let r = self.r_f32() * other.r_f32();
+        let g = self.g_f32() * other.g_f32();
+        let b = self.b_f32() * other.b_f32();
 
-        Color::new_f64(r, g, b)
+        Color::new_f32(r, g, b)
     }
 }
 
-impl Mul<f64> for Color {
+impl Mul<f32> for Color {
     type Output = Color;
 
-    fn mul(self, other: f64) -> Color {
-        let r = self.r_f64() * other;
-        let g = self.g_f64() * other;
-        let b = self.b_f64() * other;
+    fn mul(self, other: f32) -> Color {
+        let r = self.r_f32() * other;
+        let g = self.g_f32() * other;
+        let b = self.b_f32() * other;
 
-        Color::new_f64(r, g, b)
+        Color::new_f32(r, g, b)
     }
 }
 

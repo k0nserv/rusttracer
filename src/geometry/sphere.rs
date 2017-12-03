@@ -7,13 +7,13 @@ use material::Material;
 #[derive(Debug)]
 pub struct Sphere {
     pub origin: Point3,
-    pub radius: f64,
+    pub radius: f32,
     material: Material,
 }
 
 
 impl Sphere {
-    pub fn new(origin: Point3, radius: f64, material: Material) -> Sphere {
+    pub fn new(origin: Point3, radius: f32, material: Material) -> Sphere {
         Sphere {
             origin: origin,
             radius: radius,
@@ -42,7 +42,7 @@ impl Intersectable for Sphere {
         let t1 = b + c.sqrt();
         let t2 = b - c.sqrt();
 
-        let mut t: Option<f64> = None;
+        let mut t: Option<f32> = None;
         let mut hit = false;
         let mut inside = false;
 

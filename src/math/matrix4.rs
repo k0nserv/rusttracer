@@ -4,11 +4,11 @@ use math::EPSILON;
 #[derive(Debug, Copy, Clone)]
 pub struct Matrix4 {
     // Rows in the outer slice and columns in the inner
-    data: [[f64; 4]; 4],
+    data: [[f32; 4]; 4],
 }
 
 impl Matrix4 {
-    pub fn new(data: [[f64; 4]; 4]) -> Matrix4 {
+    pub fn new(data: [[f32; 4]; 4]) -> Matrix4 {
         Matrix4 { data: data }
     }
 
@@ -75,36 +75,36 @@ impl Matrix4 {
                    [0.0, 0.0, 0.0, 1.0]])
     }
 
-    pub fn translate(x: f64, y: f64, z: f64) -> Matrix4 {
+    pub fn translate(x: f32, y: f32, z: f32) -> Matrix4 {
         Self::new([[1.0, 0.0, 0.0, 0.0],
                    [0.0, 1.0, 0.0, 0.0],
                    [0.0, 0.0, 1.0, 0.0],
                    [x, y, z, 1.0]])
     }
 
-    pub fn scale(x: f64, y: f64, z: f64) -> Matrix4 {
+    pub fn scale(x: f32, y: f32, z: f32) -> Matrix4 {
         Self::new([[x, 0.0, 0.0, 0.0], [0.0, y, 0.0, 0.], [0.0, 0.0, z, 0.0], [0.0, 0.0, 0.0, 1.0]])
     }
 
-    pub fn scale_uniform(scale: f64) -> Matrix4 {
+    pub fn scale_uniform(scale: f32) -> Matrix4 {
         Self::scale(scale, scale, scale)
     }
 
-    pub fn rot_x(theta: f64) -> Matrix4 {
+    pub fn rot_x(theta: f32) -> Matrix4 {
         Self::new([[1.0, 0.0, 0.0, 0.0],
                    [0.0, theta.cos(), theta.sin(), 0.0],
                    [0.0, -theta.sin(), theta.cos(), 0.0],
                    [0.0, 0.0, 0.0, 1.0]])
     }
 
-    pub fn rot_y(theta: f64) -> Matrix4 {
+    pub fn rot_y(theta: f32) -> Matrix4 {
         Self::new([[theta.cos(), 0.0, -theta.sin(), 0.0],
                    [0.0, 1.0, 0.0, 0.0],
                    [theta.sin(), 0.0, theta.cos(), 0.0],
                    [0.0, 0.0, 0.0, 1.0]])
     }
 
-    pub fn rot_z(theta: f64) -> Matrix4 {
+    pub fn rot_z(theta: f32) -> Matrix4 {
         Self::new([[theta.cos(), theta.sin(), 0.0, 0.0],
                    [-theta.sin(), theta.cos(), 0.0, 0.0],
                    [0.0, 0.0, 1.0, 0.0],
@@ -113,23 +113,23 @@ impl Matrix4 {
 }
 
 impl Index<usize> for Matrix4 {
-    type Output = [f64; 4];
+    type Output = [f32; 4];
 
-    fn index(&self, index: usize) -> &[f64; 4] {
+    fn index(&self, index: usize) -> &[f32; 4] {
         &self.data[index]
     }
 }
 
 impl Index<(usize, usize)> for Matrix4 {
-    type Output = f64;
+    type Output = f32;
 
-    fn index(&self, index: (usize, usize)) -> &f64 {
+    fn index(&self, index: (usize, usize)) -> &f32 {
         &self.data[index.0][index.1]
     }
 }
 
 impl IndexMut<(usize, usize)> for Matrix4 {
-    fn index_mut(&mut self, index: (usize, usize)) -> &mut f64 {
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut f32 {
         &mut self.data[index.0][index.1]
     }
 }
@@ -174,7 +174,7 @@ macro_rules! assert_eq_matrix4 {
 mod tests {
     use math::EPSILON;
     use super::Matrix4;
-    use std::f64::consts::PI;
+    use std::f32::consts::PI;
 
     #[test]
     fn test_identity() {

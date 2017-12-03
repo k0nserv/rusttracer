@@ -4,7 +4,7 @@ use geometry::Shape;
 
 #[derive(Copy, Clone)]
 pub struct Intersection<'a> {
-    pub t: f64,
+    pub t: f32,
     pub shape: &'a Shape,
     pub point: Point3,
     pub ray: Ray,
@@ -13,7 +13,7 @@ pub struct Intersection<'a> {
 }
 
 impl<'a> Intersection<'a> {
-    pub fn new(t: f64,
+    pub fn new(t: f32,
                shape: &'a Shape,
                point: Point3,
                ray: Ray,

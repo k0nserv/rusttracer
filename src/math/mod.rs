@@ -1,4 +1,4 @@
-pub const EPSILON: f64 = 1e-9;
+pub const EPSILON: f32 = 1e-5;
 
 macro_rules! assert_eq_within_bound {
     ($x:expr, $y: expr, $bound: expr) => (

@@ -89,7 +89,7 @@ impl Intersectable for Triangle {
 }
 
 impl Triangle {
-    fn normal_at_intersection(&self, u: f64, v: f64) -> Vector3 {
+    fn normal_at_intersection(&self, u: f32, v: f32) -> Vector3 {
         match self.normal {
             Normal::Face(normal) => normal,
             Normal::Vertex(n0, n1, n2) => (n0 * (1.0 - u - v) + n1 * u + n2 * v).normalize(),

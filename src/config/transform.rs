@@ -4,8 +4,8 @@ use math;
 #[derive(Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum Transform {
-    Translate { value: [f64; 3] },
-    Scale { value: [f64; 3] },
+    Translate { value: [f32; 3] },
+    Scale { value: [f32; 3] },
 }
 
 impl Transform {
