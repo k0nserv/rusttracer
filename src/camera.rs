@@ -14,13 +14,14 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(fov: f32,
-               width: u32,
-               height: u32,
-               position: Point3,
-               look_at: Point3,
-               tmp_up: Vector3)
-               -> Camera {
+    pub fn new(
+        fov: f32,
+        width: u32,
+        height: u32,
+        position: Point3,
+        look_at: Point3,
+        tmp_up: Vector3,
+    ) -> Camera {
         let aspect_ratio = (width as f32) / (height as f32);
         let scale = (fov * 0.5).tan();
         let direction = (position - look_at).normalize();
@@ -34,20 +35,24 @@ impl Camera {
             heightf: (height as f32),
             scale: scale,
             aspect_ratio: aspect_ratio,
-            camera_to_world: Self::camera_to_world_matrix(right.normalize(),
-                                                          up.normalize(),
-                                                          direction,
-                                                          position),
+            camera_to_world: Self::camera_to_world_matrix(
+                right.normalize(),
+                up.normalize(),
+                direction,
+                position,
+            ),
         }
     }
 
     pub fn from_config(camera: &config::Camera) -> Camera {
-        Self::new(camera.fov,
-                  camera.width,
-                  camera.height,
-                  Point3::new_from_slice(camera.position),
-                  Point3::new_from_slice(camera.look_at),
-                  Vector3::new_from_slice(camera.up))
+        Self::new(
+            camera.fov,
+            camera.width,
+            camera.height,
+            Point3::new_from_slice(camera.position),
+            Point3::new_from_slice(camera.look_at),
+            Vector3::new_from_slice(camera.up),
+        )
     }
 
     pub fn create_ray(&self, x: u32, y: u32, x_sample: u32, y_sample: u32, samples: u32) -> Ray {
@@ -63,10 +68,10 @@ impl Camera {
             y_sample_offset = 0.5;
         }
 
-        let px = ((2.0 * (((x * samples) as f32) + x_sample_offset) / sample_width) - 1.0) *
-                 self.aspect_ratio * self.scale;
-        let py = ((2.0 * (((y * samples) as f32) + y_sample_offset) / sample_height) - 1.0) *
-                 self.scale;
+        let px = ((2.0 * (((x * samples) as f32) + x_sample_offset) / sample_width) - 1.0)
+            * self.aspect_ratio * self.scale;
+        let py =
+            ((2.0 * (((y * samples) as f32) + y_sample_offset) / sample_height) - 1.0) * self.scale;
 
         let direction = Vector3::new(px, py, -1.0) * self.camera_to_world;
         let origin = Point3::at_origin() * self.camera_to_world;
@@ -74,11 +79,12 @@ impl Camera {
         Ray::new(origin, direction.normalize(), None)
     }
 
-    pub fn camera_to_world_matrix(right: Vector3,
-                                  up: Vector3,
-                                  direction: Vector3,
-                                  position: Point3)
-                                  -> Matrix4 {
+    pub fn camera_to_world_matrix(
+        right: Vector3,
+        up: Vector3,
+        direction: Vector3,
+        position: Point3,
+    ) -> Matrix4 {
         let mut result = Matrix4::identity();
 
         // right

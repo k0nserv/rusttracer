@@ -13,10 +13,12 @@ impl Matrix4 {
     }
 
     pub fn transpose(&self) -> Matrix4 {
-        Matrix4::new([[self[(0, 0)], self[(1, 0)], self[(2, 0)], self[(3, 0)]],
-                      [self[(0, 1)], self[(1, 1)], self[(2, 1)], self[(3, 1)]],
-                      [self[(0, 2)], self[(1, 2)], self[(2, 2)], self[(3, 2)]],
-                      [self[(0, 3)], self[(1, 3)], self[(2, 3)], self[(3, 3)]]])
+        Matrix4::new([
+            [self[(0, 0)], self[(1, 0)], self[(2, 0)], self[(3, 0)]],
+            [self[(0, 1)], self[(1, 1)], self[(2, 1)], self[(3, 1)]],
+            [self[(0, 2)], self[(1, 2)], self[(2, 2)], self[(3, 2)]],
+            [self[(0, 3)], self[(1, 3)], self[(2, 3)], self[(3, 3)]],
+        ])
     }
 
     pub fn inverse(&self) -> Result<Matrix4, &str> {
@@ -69,21 +71,30 @@ impl Matrix4 {
     }
 
     pub fn identity() -> Matrix4 {
-        Self::new([[1.0, 0.0, 0.0, 0.0],
-                   [0.0, 1.0, 0.0, 0.],
-                   [0.0, 0.0, 1.0, 0.0],
-                   [0.0, 0.0, 0.0, 1.0]])
+        Self::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
     }
 
     pub fn translate(x: f32, y: f32, z: f32) -> Matrix4 {
-        Self::new([[1.0, 0.0, 0.0, 0.0],
-                   [0.0, 1.0, 0.0, 0.0],
-                   [0.0, 0.0, 1.0, 0.0],
-                   [x, y, z, 1.0]])
+        Self::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [x, y, z, 1.0],
+        ])
     }
 
     pub fn scale(x: f32, y: f32, z: f32) -> Matrix4 {
-        Self::new([[x, 0.0, 0.0, 0.0], [0.0, y, 0.0, 0.], [0.0, 0.0, z, 0.0], [0.0, 0.0, 0.0, 1.0]])
+        Self::new([
+            [x, 0.0, 0.0, 0.0],
+            [0.0, y, 0.0, 0.],
+            [0.0, 0.0, z, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
     }
 
     pub fn scale_uniform(scale: f32) -> Matrix4 {
@@ -91,24 +102,30 @@ impl Matrix4 {
     }
 
     pub fn rot_x(theta: f32) -> Matrix4 {
-        Self::new([[1.0, 0.0, 0.0, 0.0],
-                   [0.0, theta.cos(), theta.sin(), 0.0],
-                   [0.0, -theta.sin(), theta.cos(), 0.0],
-                   [0.0, 0.0, 0.0, 1.0]])
+        Self::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, theta.cos(), theta.sin(), 0.0],
+            [0.0, -theta.sin(), theta.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
     }
 
     pub fn rot_y(theta: f32) -> Matrix4 {
-        Self::new([[theta.cos(), 0.0, -theta.sin(), 0.0],
-                   [0.0, 1.0, 0.0, 0.0],
-                   [theta.sin(), 0.0, theta.cos(), 0.0],
-                   [0.0, 0.0, 0.0, 1.0]])
+        Self::new([
+            [theta.cos(), 0.0, -theta.sin(), 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [theta.sin(), 0.0, theta.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
     }
 
     pub fn rot_z(theta: f32) -> Matrix4 {
-        Self::new([[theta.cos(), theta.sin(), 0.0, 0.0],
-                   [-theta.sin(), theta.cos(), 0.0, 0.0],
-                   [0.0, 0.0, 1.0, 0.0],
-                   [0.0, 0.0, 0.0, 1.0]])
+        Self::new([
+            [theta.cos(), theta.sin(), 0.0, 0.0],
+            [-theta.sin(), theta.cos(), 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
     }
 }
 
@@ -142,9 +159,9 @@ impl Mul for Matrix4 {
 
         for i in 0..4 {
             for j in 0..4 {
-                result[(i, j)] = self[(i, 0)] * other[(0, j)] + self[(i, 1)] * other[(1, j)] +
-                                 self[(i, 2)] * other[(2, j)] +
-                                 self[(i, 3)] * other[(3, j)];
+                result[(i, j)] = self[(i, 0)] * other[(0, j)] + self[(i, 1)] * other[(1, j)]
+                    + self[(i, 2)] * other[(2, j)]
+                    + self[(i, 3)] * other[(3, j)];
             }
         }
 
@@ -180,10 +197,12 @@ mod tests {
     fn test_identity() {
         let i = Matrix4::identity();
 
-        let expected = Matrix4::new([[1.0, 0.0, 0.0, 0.0],
-                                     [0.0, 1.0, 0.0, 0.0],
-                                     [0.0, 0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0, 1.0]]);
+        let expected = Matrix4::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(i, expected, EPSILON);
     }
@@ -191,16 +210,20 @@ mod tests {
     #[test]
     fn test_new() {
         let m = Matrix4 {
-            data: [[1.0, 0.0, 0.0, 0.0],
-                   [0.0, 1.0, 0.0, 0.0],
-                   [0.0, 0.0, 1.0, 0.0],
-                   [0.0, 0.0, 0.0, 1.0]],
+            data: [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
         };
 
-        let expected = Matrix4::new([[1.0, 0.0, 0.0, 0.0],
-                                     [0.0, 1.0, 0.0, 0.0],
-                                     [0.0, 0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0, 1.0]]);
+        let expected = Matrix4::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
     }
@@ -216,15 +239,19 @@ mod tests {
 
     #[test]
     fn transpose_complex() {
-        let m = Matrix4::new([[1.0, 2.0, 3.0, 4.0],
-                              [5.0, 6.0, 7.0, 8.0],
-                              [9.0, 10.0, 11.0, 12.0],
-                              [13.0, 14.0, 15.0, 16.0]]);
+        let m = Matrix4::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
 
-        let expected = Matrix4::new([[1.0, 5.0, 9.0, 13.0],
-                                     [2.0, 6.0, 10.0, 14.0],
-                                     [3.0, 7.0, 11.0, 15.0],
-                                     [4.0, 8.0, 12.0, 16.0]]);
+        let expected = Matrix4::new([
+            [1.0, 5.0, 9.0, 13.0],
+            [2.0, 6.0, 10.0, 14.0],
+            [3.0, 7.0, 11.0, 15.0],
+            [4.0, 8.0, 12.0, 16.0],
+        ]);
 
         assert_eq_matrix4!(m.transpose(), expected, EPSILON);
     }
@@ -244,15 +271,19 @@ mod tests {
 
     #[test]
     fn inverse_moderate() {
-        let m = Matrix4::new([[2.0, 3.0, 1.0, 5.0],
-                              [1.0, 0.0, 3.0, 1.0],
-                              [0.0, 2.0, -3.0, 2.0],
-                              [0.0, 2.0, 3.0, 1.0]]);
+        let m = Matrix4::new([
+            [2.0, 3.0, 1.0, 5.0],
+            [1.0, 0.0, 3.0, 1.0],
+            [0.0, 2.0, -3.0, 2.0],
+            [0.0, 2.0, 3.0, 1.0],
+        ]);
 
-        let expected = Matrix4::new([[18.0, -35.0, -28.0, 1.0],
-                                     [9.0, -18.0, -14.0, 1.0],
-                                     [-2.0, 4.0, 3.0, 0.0],
-                                     [-12.0, 24.0, 19.0, -1.0]]);
+        let expected = Matrix4::new([
+            [18.0, -35.0, -28.0, 1.0],
+            [9.0, -18.0, -14.0, 1.0],
+            [-2.0, 4.0, 3.0, 0.0],
+            [-12.0, 24.0, 19.0, -1.0],
+        ]);
 
         assert_eq_matrix4!(m * expected, Matrix4::identity(), EPSILON);
 
@@ -267,16 +298,22 @@ mod tests {
 
     #[test]
     fn inverse_complex() {
-        let matrices = [Matrix4::new([[2.0, 3.0, 1.0, 5.0],
-                                      [1.0, 0.0, 3.0, 1.0],
-                                      [0.0, 2.0, -3.0, 2.0],
-                                      [0.0, 2.0, 3.0, 1.0]]),
-                        Matrix4::rot_x(PI / 2.0),
-                        Matrix4::rot_y(PI / 2.0),
-                        Matrix4::new([[1.0, 1.0, 1.0, 0.0],
-                                      [0.0, 3.0, 1.0, 2.0],
-                                      [2.0, 3.0, 1.0, 0.0],
-                                      [1.0, 0.0, 2.0, 1.0]])];
+        let matrices = [
+            Matrix4::new([
+                [2.0, 3.0, 1.0, 5.0],
+                [1.0, 0.0, 3.0, 1.0],
+                [0.0, 2.0, -3.0, 2.0],
+                [0.0, 2.0, 3.0, 1.0],
+            ]),
+            Matrix4::rot_x(PI / 2.0),
+            Matrix4::rot_y(PI / 2.0),
+            Matrix4::new([
+                [1.0, 1.0, 1.0, 0.0],
+                [0.0, 3.0, 1.0, 2.0],
+                [2.0, 3.0, 1.0, 0.0],
+                [1.0, 0.0, 2.0, 1.0],
+            ]),
+        ];
         let identity = Matrix4::identity();
 
         for matrix in matrices.iter() {
@@ -328,10 +365,12 @@ mod tests {
     fn test_translate() {
         let m = Matrix4::translate(-2.0, 3.0, 5.0);
 
-        let expected = Matrix4::new([[1.0, 0.0, 0.0, 0.0],
-                                     [0.0, 1.0, 0.0, 0.0],
-                                     [0.0, 0.0, 1.0, 0.0],
-                                     [-2.0, 3.0, 5.0, 1.0]]);
+        let expected = Matrix4::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [-2.0, 3.0, 5.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
     }
@@ -340,10 +379,12 @@ mod tests {
     fn test_scale() {
         let m = Matrix4::scale(5.0, 3.0, -1.0);
 
-        let expected = Matrix4::new([[5.0, 0.0, 0.0, 0.0],
-                                     [0.0, 3.0, 0.0, 0.0],
-                                     [0.0, 0.0, -1.0, 0.0],
-                                     [0.0, 0.0, 0.0, 1.0]]);
+        let expected = Matrix4::new([
+            [5.0, 0.0, 0.0, 0.0],
+            [0.0, 3.0, 0.0, 0.0],
+            [0.0, 0.0, -1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
     }
@@ -353,10 +394,12 @@ mod tests {
         let m = Matrix4::rot_x(PI / 2.0);
 
 
-        let expected = Matrix4::new([[1.0, 0.0, 0.0, 0.0],
-                                     [0.0, 0.0, 1.0, 0.0],
-                                     [0.0, -1.0, 0.0, 0.0],
-                                     [0.0, 0.0, 0.0, 1.0]]);
+        let expected = Matrix4::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, -1.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
     }
@@ -366,10 +409,12 @@ mod tests {
         let m = Matrix4::rot_y(PI / 2.0);
 
 
-        let expected = Matrix4::new([[0.0, 0.0, -1.0, 0.0],
-                                     [0.0, 1.0, 0.0, 0.0],
-                                     [1.0, 0.0, 0.0, 0.0],
-                                     [0.0, 0.0, 0.0, 1.0]]);
+        let expected = Matrix4::new([
+            [0.0, 0.0, -1.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
     }
@@ -379,10 +424,12 @@ mod tests {
         let m = Matrix4::rot_z(PI / 2.0);
 
 
-        let expected = Matrix4::new([[0.0, 1.0, 0.0, 0.0],
-                                     [-1.0, 0.0, 0.0, 0.0],
-                                     [0.0, 0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0, 1.0]]);
+        let expected = Matrix4::new([
+            [0.0, 1.0, 0.0, 0.0],
+            [-1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
 
         assert_eq_matrix4!(m, expected, EPSILON);
     }

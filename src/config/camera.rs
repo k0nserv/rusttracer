@@ -9,13 +9,14 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(fov: f32,
-               width: u32,
-               height: u32,
-               position: [f32; 3],
-               look_at: [f32; 3],
-               up: [f32; 3])
-               -> Camera {
+    pub fn new(
+        fov: f32,
+        width: u32,
+        height: u32,
+        position: [f32; 3],
+        look_at: [f32; 3],
+        up: [f32; 3],
+    ) -> Camera {
         Camera {
             fov: fov,
             width: width,

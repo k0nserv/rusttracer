@@ -52,9 +52,11 @@ impl Color {
     }
 
     pub fn new_f32(r: f32, g: f32, b: f32) -> Color {
-        Color::new(Color::clamp((r * 255.0) as i32),
-                   Color::clamp((g * 255.0) as i32),
-                   Color::clamp((b * 255.0) as i32))
+        Color::new(
+            Color::clamp((r * 255.0) as i32),
+            Color::clamp((g * 255.0) as i32),
+            Color::clamp((b * 255.0) as i32),
+        )
     }
 
     pub fn new_from_slice(slice: [f32; 3]) -> Color {

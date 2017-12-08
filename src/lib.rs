@@ -1,9 +1,9 @@
 #![feature(try_from)]
 extern crate rayon;
 extern crate serde;
-extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
+extern crate serde_json;
 
 #[macro_use]
 pub mod math;
@@ -23,6 +23,6 @@ pub use self::scene::Scene;
 pub use self::color::Color;
 pub use self::ray::Ray;
 pub use self::camera::Camera;
-pub use self::material::{Material, MaterialTemplate, IllumninationModel};
+pub use self::material::{IllumninationModel, Material, MaterialTemplate};
 pub use self::renderer::{Renderer, SuperSampling};
 pub use self::config::Config;

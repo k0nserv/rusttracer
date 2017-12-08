@@ -11,7 +11,7 @@ use lights::PointLight;
 use config;
 use config::Object;
 use mesh_loader::MeshLoader;
-use geometry::{Sphere, Plane};
+use geometry::{Plane, Sphere};
 use math::{Point3, Vector3};
 use material::Material;
 
@@ -41,10 +41,11 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn new(objects: Vec<Box<Intersectable>>,
-               lights: Vec<Box<PointLight>>,
-               clear_color: Color)
-               -> Scene {
+    pub fn new(
+        objects: Vec<Box<Intersectable>>,
+        lights: Vec<Box<PointLight>>,
+        clear_color: Color,
+    ) -> Scene {
         Scene {
             objects: objects,
             lights: lights,
@@ -52,69 +53,90 @@ impl Scene {
         }
     }
 
-    pub fn new_from_config(scene: &config::Scene,
-                           materials: &Vec<Material>,
-                           mesh_loader: &MeshLoader,
-                           fallback_material: Material)
-                           -> Result<Scene, SceneConfigLoadError> {
+    pub fn new_from_config(
+        scene: &config::Scene,
+        materials: &Vec<Material>,
+        mesh_loader: &MeshLoader,
+        fallback_material: Material,
+    ) -> Result<Scene, SceneConfigLoadError> {
         let mut objects: Vec<Box<Intersectable>> = vec![];
 
         scene.objects.iter().for_each(|object| match object {
-                                          &Object::Sphere { radius,
-                                                            ref transforms,
-                                                            material_id } => {
-            let material = match material_id {
-                None => fallback_material,
-                Some(id) => {
-                    assert!(id < materials.len(), "Invalid material_id");
-                    materials[id]
-                }
-            };
-            let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
-            Self::apply_transforms(sphere.as_mut() as &mut Transformable, transforms);
-            objects.push(sphere as Box<Intersectable>);
-        }
-                                          &Object::Plane { normal,
-                                                           ref transforms,
-                                                           material_id } => {
-            let material = match material_id {
-                None => fallback_material,
-                Some(id) => {
-                    assert!(id < materials.len(), "Invalid material_id");
-                    materials[id]
-                }
-            };
-            let mut plane = Box::new(Plane::new(Point3::at_origin(),
-                                                Vector3::new_from_slice(normal),
-                                                material));
-            Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
-            objects.push(plane as Box<Intersectable>);
-        }
-                                          &Object::Mesh { ref path, ref transforms } => {
-            let mut meshes = mesh_loader.load(Path::new(&path), &fallback_material);
-            for mesh in meshes.iter_mut() {
-                Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
+            &Object::Sphere {
+                radius,
+                ref transforms,
+                material_id,
+            } => {
+                let material = match material_id {
+                    None => fallback_material,
+                    Some(id) => {
+                        assert!(id < materials.len(), "Invalid material_id");
+                        materials[id]
+                    }
+                };
+                let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
+                Self::apply_transforms(sphere.as_mut() as &mut Transformable, transforms);
+                objects.push(sphere as Box<Intersectable>);
             }
-            let mut intersectables =
-                meshes.into_iter().map(|mesh| mesh as Box<Intersectable>).collect();
+            &Object::Plane {
+                normal,
+                ref transforms,
+                material_id,
+            } => {
+                let material = match material_id {
+                    None => fallback_material,
+                    Some(id) => {
+                        assert!(id < materials.len(), "Invalid material_id");
+                        materials[id]
+                    }
+                };
+                let mut plane = Box::new(Plane::new(
+                    Point3::at_origin(),
+                    Vector3::new_from_slice(normal),
+                    material,
+                ));
+                Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
+                objects.push(plane as Box<Intersectable>);
+            }
+            &Object::Mesh {
+                ref path,
+                ref transforms,
+            } => {
+                let mut meshes = mesh_loader.load(Path::new(&path), &fallback_material);
+                for mesh in meshes.iter_mut() {
+                    Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
+                }
+                let mut intersectables = meshes
+                    .into_iter()
+                    .map(|mesh| mesh as Box<Intersectable>)
+                    .collect();
 
-            objects.append(&mut intersectables);
-        }
-                                      });
+                objects.append(&mut intersectables);
+            }
+        });
 
-        let lights = scene.lights
+        let lights = scene
+            .lights
             .iter()
             .map(|light| match *light {
-                     config::Light::PointLight { origin, color, intensity } => {
-                         Box::new(PointLight::new(Point3::new_from_slice(origin),
-                                                  Color::new_from_slice(color),
-                                                  intensity))
-                     }
-                 })
+                config::Light::PointLight {
+                    origin,
+                    color,
+                    intensity,
+                } => Box::new(PointLight::new(
+                    Point3::new_from_slice(origin),
+                    Color::new_from_slice(color),
+                    intensity,
+                )),
+            })
             .collect();
 
 
-        Ok(Self::new(objects, lights, Color::new_from_slice(scene.clear_color)))
+        Ok(Self::new(
+            objects,
+            lights,
+            Color::new_from_slice(scene.clear_color),
+        ))
     }
 
     fn apply_transforms(shape: &mut Transformable, transforms: &Option<Vec<config::Transform>>) {

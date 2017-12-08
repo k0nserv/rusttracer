@@ -64,10 +64,10 @@ impl Vector3 {
 
         if l == 0.0 {
             return Vector3 {
-                       x: 0.0,
-                       y: 0.0,
-                       z: 0.0,
-                   };
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            };
         }
 
         Vector3 {
@@ -245,9 +245,11 @@ impl Mul<Matrix4> for Vector3 {
     type Output = Vector3;
 
     fn mul(self, other: Matrix4) -> Vector3 {
-        Vector3::new(other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z,
-                     other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z,
-                     other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z)
+        Vector3::new(
+            other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z,
+            other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z,
+            other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z,
+        )
     }
 }
 
@@ -255,17 +257,18 @@ impl Mul<Matrix4> for Point3 {
     type Output = Point3;
 
     fn mul(self, other: Matrix4) -> Point3 {
-        let mut x = other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z +
-                    other[(3, 0)];
-        let mut y = other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z +
-                    other[(3, 1)];
-        let mut z = other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z +
-                    other[(3, 2)];
-        let w = other[(0, 3)] * self.x + other[(1, 3)] * self.y + other[(2, 3)] * self.z +
-                other[(3, 3)];
+        let mut x = other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z
+            + other[(3, 0)];
+        let mut y = other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z
+            + other[(3, 1)];
+        let mut z = other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z
+            + other[(3, 2)];
+        let w = other[(0, 3)] * self.x + other[(1, 3)] * self.y + other[(2, 3)] * self.z
+            + other[(3, 3)];
 
-        if !(w > (1.0 - EPSILON) && w < (1.0 + EPSILON)) &&
-           !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON)) {
+        if !(w > (1.0 - EPSILON) && w < (1.0 + EPSILON))
+            && !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON))
+        {
             assert!(false, "Bad value for w {}", w);
             x /= w;
             y /= w;
@@ -304,13 +307,15 @@ mod tests {
     fn test_at_origin() {
         let vec = Point3::at_origin();
 
-        assert_eq_point3!(vec,
-                          Point3 {
-                              x: 0.0,
-                              y: 0.0,
-                              z: 0.0,
-                          },
-                          EPSILON);
+        assert_eq_point3!(
+            vec,
+            Point3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            EPSILON
+        );
     }
 
     #[test]
@@ -348,48 +353,62 @@ mod tests {
         let result1 = vec1.cross(&vec2);
         let result2 = vec2.cross(&vec1);
 
-        assert_eq_vector3!(result1,
-                           Vector3 {
-                               x: -29.3,
-                               y: 11.39,
-                               z: 27.39,
-                           },
-                           EPSILON);
-        assert_eq_vector3!(result2,
-                           Vector3 {
-                               x: 29.3,
-                               y: -11.39,
-                               z: -27.39,
-                           },
-                           EPSILON);
+        assert_eq_vector3!(
+            result1,
+            Vector3 {
+                x: -29.3,
+                y: 11.39,
+                z: 27.39,
+            },
+            EPSILON
+        );
+        assert_eq_vector3!(
+            result2,
+            Vector3 {
+                x: 29.3,
+                y: -11.39,
+                z: -27.39,
+            },
+            EPSILON
+        );
     }
 
     #[test]
     fn test_length() {
-        let vectors = vec![(Vector3 {
-                                x: 0.0,
-                                y: 0.0,
-                                z: 0.0,
-                            },
-                            0.0),
-                           (Vector3 {
-                                x: 2.3,
-                                y: -2.1,
-                                z: 2.1,
-                            },
-                            3.756327994),
-                           (Vector3 {
-                                x: 1.0,
-                                y: 0.0,
-                                z: 0.0,
-                            },
-                            1.0),
-                           (Vector3 {
-                                x: 0.80181,
-                                y: 0.26921,
-                                z: 0.53351,
-                            },
-                            1.0)];
+        let vectors = vec![
+            (
+                Vector3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                0.0,
+            ),
+            (
+                Vector3 {
+                    x: 2.3,
+                    y: -2.1,
+                    z: 2.1,
+                },
+                3.756327994,
+            ),
+            (
+                Vector3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                1.0,
+            ),
+            (
+                Vector3 {
+                    x: 0.80181,
+                    y: 0.26921,
+                    z: 0.53351,
+                },
+                1.0,
+            ),
+        ];
 
         for (vec, length) in vectors {
             assert_eq_within_bound!(vec.length(), length, EPSILON);
@@ -533,10 +552,12 @@ mod tests {
 
     #[test]
     fn test_vector3_mul_complex() {
-        let m = Matrix4::new([[15.0, 1.3, -2.8, 0.0],
-                              [-1.4, 7.8, 3.5, 0.0],
-                              [5.0, -3.6, 1.0, 0.0],
-                              [12.3, 9.1, -1.2, 1.0]]);
+        let m = Matrix4::new([
+            [15.0, 1.3, -2.8, 0.0],
+            [-1.4, 7.8, 3.5, 0.0],
+            [5.0, -3.6, 1.0, 0.0],
+            [12.3, 9.1, -1.2, 1.0],
+        ]);
 
         let result = Vector3::new(2.4, 3.2, -1.0) * m;
 

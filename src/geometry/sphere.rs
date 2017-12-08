@@ -97,9 +97,11 @@ mod tests {
     fn test_intersection_miss() {
         let material = build_test_material();
         let sphere = Sphere::new(Point3::at_origin(), 1.0, material);
-        let ray = Ray::new(Point3::new(0.0, 0.0, 2.0),
-                           Vector3::new(0.0, 0.0, 1.0),
-                           None);
+        let ray = Ray::new(
+            Point3::new(0.0, 0.0, 2.0),
+            Vector3::new(0.0, 0.0, 1.0),
+            None,
+        );
 
         let intersection = (&sphere as &Shape).intersect(ray);
 
@@ -110,9 +112,11 @@ mod tests {
     fn test_intersection() {
         let material = build_test_material();
         let sphere = Sphere::new(Point3::at_origin(), 1.0, material);
-        let ray = Ray::new(Point3::new(0.0, 0.0, 2.0),
-                           Vector3::new(0.0, 0.0, -1.0),
-                           None);
+        let ray = Ray::new(
+            Point3::new(0.0, 0.0, 2.0),
+            Vector3::new(0.0, 0.0, -1.0),
+            None,
+        );
 
         let i = (&sphere as &Shape).intersect(ray);
         assert!(i.is_some());

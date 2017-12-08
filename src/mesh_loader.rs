@@ -16,7 +16,9 @@ pub struct MeshLoader {
 
 impl MeshLoader {
     pub fn new(root_path: PathBuf) -> MeshLoader {
-        MeshLoader { root_path: root_path }
+        MeshLoader {
+            root_path: root_path,
+        }
     }
 
     pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh>> {
@@ -37,16 +39,15 @@ impl MeshLoader {
                 None => IllumninationModel::DiffuseSpecular,
             };
 
-            let mat =
-                Box::new(Material::new(Color::new_f32(m.ambient[0], m.ambient[1], m.ambient[2]),
-                                       Color::new_f32(m.diffuse[0], m.diffuse[1], m.diffuse[2]),
-                                       Color::new_f32(m.specular[0],
-                                                      m.specular[1],
-                                                      m.specular[2]),
-                                       m.shininess,
-                                       illumination_model,
-                                       None,
-                                       Some(m.optical_density)));
+            let mat = Box::new(Material::new(
+                Color::new_f32(m.ambient[0], m.ambient[1], m.ambient[2]),
+                Color::new_f32(m.diffuse[0], m.diffuse[1], m.diffuse[2]),
+                Color::new_f32(m.specular[0], m.specular[1], m.specular[2]),
+                m.shininess,
+                illumination_model,
+                None,
+                Some(m.optical_density),
+            ));
 
             material_cache.insert(i, mat);
         }
@@ -75,27 +76,39 @@ impl MeshLoader {
                 let i2 = mesh.indices[f * 3 + 2] as usize;
 
 
-                let p0 = Point3::new(mesh.positions[i0 * 3 + 0],
-                                     mesh.positions[i0 * 3 + 1],
-                                     mesh.positions[i0 * 3 + 2]);
-                let p1 = Point3::new(mesh.positions[i1 * 3 + 0],
-                                     mesh.positions[i1 * 3 + 1],
-                                     mesh.positions[i1 * 3 + 2]);
-                let p2 = Point3::new(mesh.positions[i2 * 3 + 0],
-                                     mesh.positions[i2 * 3 + 1],
-                                     mesh.positions[i2 * 3 + 2]);
+                let p0 = Point3::new(
+                    mesh.positions[i0 * 3 + 0],
+                    mesh.positions[i0 * 3 + 1],
+                    mesh.positions[i0 * 3 + 2],
+                );
+                let p1 = Point3::new(
+                    mesh.positions[i1 * 3 + 0],
+                    mesh.positions[i1 * 3 + 1],
+                    mesh.positions[i1 * 3 + 2],
+                );
+                let p2 = Point3::new(
+                    mesh.positions[i2 * 3 + 0],
+                    mesh.positions[i2 * 3 + 1],
+                    mesh.positions[i2 * 3 + 2],
+                );
 
                 let normal;
                 if use_vertex_normals {
-                    let n0 = Vector3::new(mesh.normals[i0 * 3 + 0],
-                                          mesh.normals[i0 * 3 + 1],
-                                          mesh.normals[i0 * 3 + 2]);
-                    let n1 = Vector3::new(mesh.normals[i1 * 3 + 0],
-                                          mesh.normals[i1 * 3 + 1],
-                                          mesh.normals[i1 * 3 + 2]);
-                    let n2 = Vector3::new(mesh.normals[i2 * 3 + 0],
-                                          mesh.normals[i2 * 3 + 1],
-                                          mesh.normals[i2 * 3 + 2]);
+                    let n0 = Vector3::new(
+                        mesh.normals[i0 * 3 + 0],
+                        mesh.normals[i0 * 3 + 1],
+                        mesh.normals[i0 * 3 + 2],
+                    );
+                    let n1 = Vector3::new(
+                        mesh.normals[i1 * 3 + 0],
+                        mesh.normals[i1 * 3 + 1],
+                        mesh.normals[i1 * 3 + 2],
+                    );
+                    let n2 = Vector3::new(
+                        mesh.normals[i2 * 3 + 0],
+                        mesh.normals[i2 * 3 + 1],
+                        mesh.normals[i2 * 3 + 2],
+                    );
 
                     normal = Some(Normal::Vertex(n0, n1, n2));
                 } else {
@@ -113,7 +126,13 @@ impl MeshLoader {
                     }
                 }
 
-                triangles.push(Box::new(Triangle::new(p0, p1, p2, normal.unwrap(), *material)));
+                triangles.push(Box::new(Triangle::new(
+                    p0,
+                    p1,
+                    p2,
+                    normal.unwrap(),
+                    *material,
+                )));
             }
 
             let mesh = Box::new(Mesh::new(triangles));

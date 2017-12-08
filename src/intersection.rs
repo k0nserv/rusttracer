@@ -13,13 +13,14 @@ pub struct Intersection<'a> {
 }
 
 impl<'a> Intersection<'a> {
-    pub fn new(t: f32,
-               shape: &'a Shape,
-               point: Point3,
-               ray: Ray,
-               normal: Vector3,
-               inside: bool)
-               -> Intersection {
+    pub fn new(
+        t: f32,
+        shape: &'a Shape,
+        point: Point3,
+        ray: Ray,
+        normal: Vector3,
+        inside: bool,
+    ) -> Intersection {
         Intersection {
             t: t,
             shape: shape,
