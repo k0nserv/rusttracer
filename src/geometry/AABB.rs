@@ -1,17 +1,57 @@
 use math::Point3;
 use ray::Ray;
+use super::{BoundingVolume, Triangle};
 
 #[derive(Debug)]
 pub struct AABB {
     bounds: [Point3; 2],
 }
 
-impl AABB {
-    pub fn new(min: Point3, max: Point3) -> Self {
-        Self { bounds: [min, max] }
+impl BoundingVolume for AABB {
+    fn new(triangles: &[Box<Triangle>]) -> Self {
+        assert!(triangles.len() > 0, "Creating AABB with 0 vertices");
+        if triangles.len() == 0 {
+            return AABB {
+                bounds: [Point3::at_origin(), Point3::at_origin()],
+            };
+        }
+        let mut min = triangles[0].vertices[0];
+        let mut max = triangles[0].vertices[0];
+
+        for triangle in triangles.iter() {
+            for vertex in triangle.vertices.iter() {
+                // Max
+                if vertex.x > max.x {
+                    max.x = vertex.x;
+                }
+
+                if vertex.y > max.y {
+                    max.y = vertex.y;
+                }
+
+                if vertex.z > max.z {
+                    max.z = vertex.z;
+                }
+
+                // Min
+                if vertex.x < min.x {
+                    min.x = vertex.x;
+                }
+
+                if vertex.y < min.y {
+                    min.y = vertex.y;
+                }
+
+                if vertex.z < min.z {
+                    min.z = vertex.z;
+                }
+            }
+        }
+
+        AABB { bounds: [min, max] }
     }
 
-    pub fn intersect(&self, ray: Ray) -> bool {
+    fn intersect(&self, ray: Ray) -> bool {
         let mut tmin = (self.bounds[ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x;
         let mut tmax = (self.bounds[1 - ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x;
 

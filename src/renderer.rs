@@ -187,7 +187,6 @@ impl<'a> Renderer<'a> {
 
                     color
                 }
-                _ => Color::black(),
             };
         }
 

@@ -3,7 +3,7 @@ extern crate tobj;
 use std::path::{Path, PathBuf};
 use std::collections::HashMap;
 
-use geometry::{Mesh, Triangle};
+use geometry::{Mesh, Triangle, AABB};
 use geometry::triangle::Normal;
 use material::{IllumninationModel, Material};
 use math::{Point3, Vector3};
@@ -21,7 +21,7 @@ impl MeshLoader {
         }
     }
 
-    pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh>> {
+    pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh<AABB>>> {
         let final_path = self.root_path.join(path);
         let result = tobj::load_obj(&final_path);
         if let &Err(ref error) = &result {

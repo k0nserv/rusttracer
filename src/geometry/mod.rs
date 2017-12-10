@@ -15,7 +15,7 @@ use ray::Ray;
 use math::Transform;
 use material::Material;
 
-pub trait Intersectable: Transformable {
+pub trait Intersectable {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection>;
 }
 
@@ -25,4 +25,9 @@ pub trait Transformable {
 
 pub trait Shape: Intersectable {
     fn material(&self) -> &Material;
+}
+
+pub trait BoundingVolume {
+    fn new(triangles: &[Box<Triangle>]) -> Self;
+    fn intersect(&self, ray: Ray) -> bool;
 }
