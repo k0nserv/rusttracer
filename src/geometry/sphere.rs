@@ -84,13 +84,13 @@ mod tests {
     use math::{Point3, Vector3, EPSILON};
     use ray::Ray;
     use geometry::Shape;
-    use material::{Material, MaterialTemplate};
+    use material::{Material, MaterialTemplate, IllumninationModel};
     use color::Color;
 
     fn build_test_material() -> Material {
         let color = Color::new(0, 0, 0);
 
-        MaterialTemplate::new(color, color, color, None, None).build_material(|_ignore| {})
+        MaterialTemplate::new(color, color, color, 0.0, IllumninationModel::Constant, None, None).build_material(|_ignore| {})
     }
 
     #[test]
@@ -103,7 +103,7 @@ mod tests {
             None,
         );
 
-        let intersection = (&sphere as &Shape).intersect(ray);
+        let intersection = (&sphere as &Shape).intersect(ray, false);
 
         assert!(intersection.is_none());
     }
@@ -118,7 +118,7 @@ mod tests {
             None,
         );
 
-        let i = (&sphere as &Shape).intersect(ray);
+        let i = (&sphere as &Shape).intersect(ray, false);
         assert!(i.is_some());
 
         let intersection = i.unwrap();

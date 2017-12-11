@@ -285,12 +285,12 @@ mod tests {
             [-12.0, 24.0, 19.0, -1.0],
         ]);
 
-        assert_eq_matrix4!(m * expected, Matrix4::identity(), EPSILON);
+        assert_eq_matrix4!(m * expected, Matrix4::identity(), 1e-4);
 
         let result = m.inverse();
 
         if let Ok(inverse) = result {
-            assert_eq_matrix4!(inverse, expected, EPSILON);
+            assert_eq_matrix4!(inverse, expected, 1e-4);
         } else {
             assert!(false, "{:?} should be invertible");
         }
