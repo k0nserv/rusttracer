@@ -44,9 +44,9 @@ impl Iterator for Color {
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
         Color {
-            r: r,
-            g: g,
-            b: b,
+            r,
+            g,
+            b,
             next: NextColor::Red,
         }
     }

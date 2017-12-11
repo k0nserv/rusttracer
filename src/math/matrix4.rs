@@ -9,7 +9,7 @@ pub struct Matrix4 {
 
 impl Matrix4 {
     pub fn new(data: [[f32; 4]; 4]) -> Matrix4 {
-        Matrix4 { data: data }
+        Matrix4 { data }
     }
 
     pub fn transpose(&self) -> Matrix4 {

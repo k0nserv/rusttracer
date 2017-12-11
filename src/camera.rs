@@ -29,12 +29,12 @@ impl Camera {
         let up = direction.cross(&right);
 
         Camera {
-            width: width,
-            height: height,
+            width,
+            height,
             widthf: (width as f32),
             heightf: (height as f32),
-            scale: scale,
-            aspect_ratio: aspect_ratio,
+            scale,
+            aspect_ratio,
             camera_to_world: Self::camera_to_world_matrix(
                 right.normalize(),
                 up.normalize(),

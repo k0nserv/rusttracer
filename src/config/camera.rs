@@ -18,12 +18,12 @@ impl Camera {
         up: [f32; 3],
     ) -> Camera {
         Camera {
-            fov: fov,
-            width: width,
-            height: height,
-            position: position,
-            look_at: look_at,
-            up: up,
+            fov,
+            width,
+            height,
+            position,
+            look_at,
+            up,
         }
     }
 }

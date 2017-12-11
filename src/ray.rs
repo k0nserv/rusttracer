@@ -13,8 +13,8 @@ impl Ray {
     pub fn new(origin: Point3, direction: Vector3, medium_refraction: Option<f32>) -> Ray {
         let inv_dir = Vector3::new(1.0 / direction.x, 1.0 / direction.y, 1.0 / direction.z);
         Ray {
-            origin: origin,
-            direction: direction,
+            origin,
+            direction,
             inv_direction: inv_dir,
             sign: [
                 (inv_dir.x < 0.0) as usize,

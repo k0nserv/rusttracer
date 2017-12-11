@@ -20,7 +20,7 @@ macro_rules! define_impl {
     ($T: ident) => (
         impl $T {
             pub fn new(x: f32, y: f32, z: f32) -> $T {
-                $T { x: x, y: y, z: z }
+                $T { x, y, z }
             }
 
             pub fn new_from_slice(slice: [f32; 3]) -> $T {

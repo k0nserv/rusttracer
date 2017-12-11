@@ -17,7 +17,7 @@ pub struct MeshLoader {
 impl MeshLoader {
     pub fn new(root_path: PathBuf) -> MeshLoader {
         MeshLoader {
-            root_path: root_path,
+            root_path,
         }
     }
 

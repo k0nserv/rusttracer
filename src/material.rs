@@ -81,13 +81,13 @@ impl Material {
         refraction_coefficient: Option<f32>,
     ) -> Material {
         Material {
-            ambient_color: ambient_color,
-            diffuse_color: diffuse_color,
-            specular_color: specular_color,
-            specular_exponent: specular_exponent,
-            illumination_model: illumination_model,
-            reflection_coefficient: reflection_coefficient,
-            refraction_coefficient: refraction_coefficient,
+            ambient_color,
+            diffuse_color,
+            specular_color,
+            specular_exponent,
+            illumination_model,
+            reflection_coefficient,
+            refraction_coefficient,
         }
     }
 
@@ -145,13 +145,13 @@ impl MaterialTemplate {
         refraction_coefficient: Option<f32>,
     ) -> MaterialTemplate {
         MaterialTemplate {
-            ambient_color: ambient_color,
-            diffuse_color: diffuse_color,
-            specular_color: specular_color,
-            illumination_model: illumination_model,
-            specular_exponent: specular_exponent,
-            reflection_coefficient: reflection_coefficient,
-            refraction_coefficient: refraction_coefficient,
+            ambient_color,
+            diffuse_color,
+            specular_color,
+            illumination_model,
+            specular_exponent,
+            reflection_coefficient,
+            refraction_coefficient,
         }
     }
 }

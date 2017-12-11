@@ -47,9 +47,9 @@ impl Scene {
         clear_color: Color,
     ) -> Scene {
         Scene {
-            objects: objects,
-            lights: lights,
-            clear_color: clear_color,
+            objects,
+            lights,
+            clear_color,
         }
     }
 

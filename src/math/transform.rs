@@ -8,7 +8,7 @@ pub struct Transform {
 impl Transform {
     pub fn new(matrix: Matrix4) -> Self {
         Self {
-            matrix: matrix,
+            matrix,
             normal_matrix: matrix.transpose(),
         }
     }

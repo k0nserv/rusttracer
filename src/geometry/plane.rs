@@ -14,9 +14,9 @@ pub struct Plane {
 impl Plane {
     pub fn new(origin: Point3, normal: Vector3, material: Material) -> Plane {
         Plane {
-            origin: origin,
+            origin,
             normal: normal.normalize(),
-            material: material,
+            material,
         }
     }
 }

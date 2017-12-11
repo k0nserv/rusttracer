@@ -17,7 +17,7 @@ pub struct ConfigError<'a> {
 
 impl<'a> ConfigError<'a> {
     fn new(message: &'a str) -> Self {
-        Self { message: message }
+        Self { message }
     }
 }
 

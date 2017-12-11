@@ -14,8 +14,8 @@ impl<T: BoundingVolume> Mesh<T> {
     pub fn new(triangles: Vec<Box<Triangle>>) -> Self {
         let bounding_volume = Box::new(T::new(&triangles));
         Self {
-            triangles: triangles,
-            bounding_volume: bounding_volume,
+            triangles,
+            bounding_volume,
         }
     }
 

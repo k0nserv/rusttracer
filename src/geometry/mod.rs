@@ -1,8 +1,9 @@
-pub mod plane;
-pub mod sphere;
 pub mod triangle;
-pub mod mesh;
-pub mod aabb;
+
+mod plane;
+mod sphere;
+mod mesh;
+mod aabb;
 
 pub use self::plane::Plane;
 pub use self::sphere::Sphere;

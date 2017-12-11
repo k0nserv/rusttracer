@@ -55,10 +55,10 @@ impl RefractionProperties {
         RefractionProperties {
             n1: original_ray.medium_refraction,
             n2: refraction_coefficient,
-            n: n,
-            cos_i: cos_i,
-            c2: c2,
-            normal: normal,
+            n,
+            cos_i,
+            c2,
+            normal,
         }
     }
 
@@ -77,9 +77,9 @@ impl<'a> Renderer<'a> {
         super_sampling: SuperSampling,
     ) -> Renderer<'a> {
         Renderer {
-            scene: scene,
-            camera: camera,
-            super_sampling: super_sampling,
+            scene,
+            camera,
+            super_sampling,
         }
     }
 

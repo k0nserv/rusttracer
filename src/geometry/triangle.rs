@@ -28,10 +28,10 @@ impl Triangle {
 
         Triangle {
             vertices: [a, b, c],
-            ab: ab,
-            ac: ac,
-            normal: normal,
-            material: material,
+            ab,
+            ac,
+            normal,
+            material,
         }
     }
 }

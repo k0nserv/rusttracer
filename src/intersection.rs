@@ -22,12 +22,12 @@ impl<'a> Intersection<'a> {
         inside: bool,
     ) -> Intersection {
         Intersection {
-            t: t,
-            shape: shape,
-            point: point,
-            ray: ray,
-            normal: normal,
-            inside: inside,
+            t,
+            shape,
+            point,
+            ray,
+            normal,
+            inside,
         }
     }
 }

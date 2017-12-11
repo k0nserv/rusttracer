@@ -15,9 +15,9 @@ pub struct Sphere {
 impl Sphere {
     pub fn new(origin: Point3, radius: f32, material: Material) -> Sphere {
         Sphere {
-            origin: origin,
-            radius: radius,
-            material: material,
+            origin,
+            radius,
+            material,
         }
     }
 }

@@ -10,9 +10,9 @@ pub struct PointLight {
 impl PointLight {
     pub fn new(origin: Point3, color: Color, intensity: f32) -> PointLight {
         PointLight {
-            origin: origin,
-            color: color,
-            intensity: intensity,
+            origin,
+            color,
+            intensity,
         }
     }
 
