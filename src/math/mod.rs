@@ -30,8 +30,8 @@ macro_rules! assert_eq_point3 {
 }
 
 mod math;
-pub mod matrix4;
-pub mod transform;
+mod matrix4;
+mod transform;
 
 pub use self::math::{Point3, Vector3};
 pub use self::matrix4::Matrix4;
