@@ -1,5 +1,6 @@
 pub const EPSILON: f32 = 1e-5;
 
+#[cfg(test)]
 macro_rules! assert_eq_within_bound {
     ($x:expr, $y: expr, $bound: expr) => (
         assert!(
@@ -10,6 +11,7 @@ macro_rules! assert_eq_within_bound {
     );
 }
 
+#[cfg(test)]
 macro_rules! assert_eq_vector3 {
     ($x:expr, $y: expr, $bound: expr) => (
         assert_eq_within_bound!($x.x, $y.x, $bound);
@@ -18,6 +20,7 @@ macro_rules! assert_eq_vector3 {
     );
 }
 
+#[cfg(test)]
 macro_rules! assert_eq_point3 {
     ($x:expr, $y: expr, $bound: expr) => (
         assert_eq_within_bound!($x.x, $y.x, $bound);
@@ -26,10 +29,10 @@ macro_rules! assert_eq_point3 {
     );
 }
 
-pub mod vector3;
+mod math;
 pub mod matrix4;
 pub mod transform;
 
-pub use self::vector3::{Point3, Vector3};
+pub use self::math::{Point3, Vector3};
 pub use self::matrix4::Matrix4;
 pub use self::transform::Transform;

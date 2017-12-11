@@ -169,6 +169,7 @@ impl Mul for Matrix4 {
     }
 }
 
+#[cfg(test)]
 macro_rules! assert_eq_matrix4 {
     ($x:expr, $y: expr, $bound: expr) => (
         assert_eq_within_bound!($x[(0, 0)], $y[(0, 0)], $bound);
