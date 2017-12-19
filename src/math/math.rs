@@ -56,7 +56,7 @@ impl Vector3 {
     }
 
     pub fn length(&self) -> f32 {
-        self.dot(&self).sqrt()
+        self.dot(self).sqrt()
     }
 
     pub fn normalize(&self) -> Self {
@@ -92,7 +92,6 @@ impl Point3 {
         Vector3::new(self.x, self.y, self.z)
     }
 }
-
 
 // Operators
 macro_rules! define_scalar_add {
@@ -272,8 +271,6 @@ impl Mul<Matrix4> for Point3 {
             z /= w;
         }
 
-
-
         Point3::new(x, y, z)
     }
 }
@@ -284,14 +281,9 @@ mod tests {
     use super::{Point3, Vector3};
     use std::f32::consts::PI;
 
-
     #[test]
     fn test_constructor() {
-        let vec = Vector3::new(
-            2.0,
-            1.0,
-            0.0,
-        );
+        let vec = Vector3::new(2.0, 1.0, 0.0);
 
         assert_eq_within_bound!(vec.x, 2.0, EPSILON);
         assert_eq_within_bound!(vec.y, 1.0, EPSILON);
@@ -315,17 +307,9 @@ mod tests {
 
     #[test]
     fn test_dot() {
-        let vec1 = Vector3::new(
-            3.52,
-            8.23,
-            29.0,
-        );
+        let vec1 = Vector3::new(3.52, 8.23, 29.0);
 
-        let vec2 = Vector3::new(
-            0.0,
-            1.3,
-            -3.23,
-        );
+        let vec2 = Vector3::new(0.0, 1.3, -3.23);
 
         assert_eq_within_bound!(vec1.dot(&vec2), -82.971, EPSILON);
         assert_eq_within_bound!(vec2.dot(&vec1), -82.971, EPSILON);
@@ -333,76 +317,24 @@ mod tests {
 
     #[test]
     fn test_cross() {
-        let vec1 = Vector3::new(
-            2.4,
-            9.3,
-            -1.3,
-        );
+        let vec1 = Vector3::new(2.4, 9.3, -1.3);
 
-        let vec2 = Vector3::new(
-            -2.3,
-            2.5,
-            -3.5,
-        );
+        let vec2 = Vector3::new(-2.3, 2.5, -3.5);
 
         let result1 = vec1.cross(&vec2);
         let result2 = vec2.cross(&vec1);
 
-        assert_eq_vector3!(
-            result1,
-            Vector3::new(
-                -29.3,
-                11.39,
-                27.39,
-            ),
-            EPSILON
-        );
-        assert_eq_vector3!(
-            result2,
-            Vector3::new(
-                29.3,
-                -11.39,
-                -27.39,
-            ),
-            EPSILON
-        );
+        assert_eq_vector3!(result1, Vector3::new(-29.3, 11.39, 27.39,), EPSILON);
+        assert_eq_vector3!(result2, Vector3::new(29.3, -11.39, -27.39,), EPSILON);
     }
 
     #[test]
     fn test_length() {
         let vectors = vec![
-            (
-                Vector3::new(
-                    0.0,
-                    0.0,
-                    0.0,
-                ),
-                0.0,
-            ),
-            (
-                Vector3::new(
-                    2.3,
-                    -2.1,
-                    2.1,
-                ),
-                3.756327994,
-            ),
-            (
-                Vector3::new(
-                    1.0,
-                    0.0,
-                    0.0,
-                ),
-                1.0,
-            ),
-            (
-                Vector3::new(
-                    0.80181,
-                    0.26921,
-                    0.53351,
-                ),
-                1.0,
-            ),
+            (Vector3::new(0.0, 0.0, 0.0), 0.0),
+            (Vector3::new(2.3, -2.1, 2.1), 3.756327994),
+            (Vector3::new(1.0, 0.0, 0.0), 1.0),
+            (Vector3::new(0.80181, 0.26921, 0.53351), 1.0),
         ];
 
         for (vec, length) in vectors {
@@ -412,29 +344,17 @@ mod tests {
 
     #[test]
     fn test_normalize_zero_length() {
-        let vec = Vector3::new(
-            0.0,
-            0.0,
-            0.0,
-        );
+        let vec = Vector3::new(0.0, 0.0, 0.0);
 
         assert_eq_vector3!(vec.normalize(), vec, EPSILON);
     }
 
     #[test]
     fn test_normalize() {
-        let vec = Vector3::new(
-            4.0,
-            63.0,
-            0.5,
-        );
+        let vec = Vector3::new(4.0, 63.0, 0.5);
 
         let result = vec.normalize();
-        let expected = Vector3::new(
-            0.063362486,
-            0.99795915,
-            0.007920311,
-        );
+        let expected = Vector3::new(0.063362486, 0.99795915, 0.007920311);
 
         assert_eq_vector3!(result, expected, EPSILON);
         assert_eq_within_bound!(result.length(), 1.0, EPSILON);
@@ -442,29 +362,13 @@ mod tests {
 
     #[test]
     fn test_addition() {
-        let vec1 = Vector3::new(
-            1.0,
-            5.0,
-            3.0,
-        );
+        let vec1 = Vector3::new(1.0, 5.0, 3.0);
 
-        let vec2 = Vector3::new(
-            3.2,
-            3.1,
-            2.1,
-        );
+        let vec2 = Vector3::new(3.2, 3.1, 2.1);
 
-        let expected1 = Vector3::new(
-            4.2,
-            8.1,
-            5.1,
-        );
+        let expected1 = Vector3::new(4.2, 8.1, 5.1);
 
-        let expected2 = Vector3::new(
-            11.0,
-            15.0,
-            13.0,
-        );
+        let expected2 = Vector3::new(11.0, 15.0, 13.0);
 
         assert_eq_vector3!(vec1 + vec2, expected1, EPSILON);
 
@@ -474,30 +378,13 @@ mod tests {
 
     #[test]
     fn test_subtraction() {
-        let vec1 = Vector3::new(
-            1.0,
-            5.0,
-            3.0,
-        );
+        let vec1 = Vector3::new(1.0, 5.0, 3.0);
 
-        let vec2 = Vector3::new(
-            3.2,
-            3.1,
-            2.1,
-        );
+        let vec2 = Vector3::new(3.2, 3.1, 2.1);
 
-        let expected1 = Vector3::new(
-            -2.2,
-            1.9,
-            0.9,
-        );
+        let expected1 = Vector3::new(-2.2, 1.9, 0.9);
 
-        let expected2 = Vector3::new(
-            -19.0,
-            -15.0,
-            -17.0,
-        );
-
+        let expected2 = Vector3::new(-19.0, -15.0, -17.0);
 
         assert_eq_vector3!(vec1 - vec2, expected1, EPSILON);
 
@@ -507,28 +394,12 @@ mod tests {
 
     #[test]
     fn test_multiplication() {
-        let vec1 = Vector3::new(
-            1.0,
-            5.0,
-            3.0,
-        );
+        let vec1 = Vector3::new(1.0, 5.0, 3.0);
 
-        let vec2 = Vector3::new(
-            3.2,
-            3.1,
-            2.1,
-        );
+        let vec2 = Vector3::new(3.2, 3.1, 2.1);
 
-        let expected1 = Vector3::new(
-            3.2,
-            15.5,
-            6.3,
-        );
-        let expected2 = Vector3::new(
-            20.0,
-            100.0,
-            60.0,
-        );
+        let expected1 = Vector3::new(3.2, 15.5, 6.3);
+        let expected2 = Vector3::new(20.0, 100.0, 60.0);
 
         assert_eq_vector3!(vec1 * vec2, expected1, EPSILON);
 

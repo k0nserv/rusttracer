@@ -15,7 +15,7 @@ use rusttracer::{Camera, Color, Config, IllumninationModel, Material, MaterialTe
                  Scene, SuperSampling};
 use rusttracer::mesh_loader::MeshLoader;
 
-fn print_usage(program: &str, opts: Options) {
+fn print_usage(program: &str, opts: &Options) {
     let brief = format!("Usage: {} [options]", program);
     print!("{}", opts.usage(&brief));
 }
@@ -44,7 +44,7 @@ fn main() {
     };
 
     if matches.opt_present("h") {
-        print_usage(&program, opts);
+        print_usage(&program, &opts);
         return;
     }
 
@@ -75,7 +75,7 @@ fn main() {
         .map(|material_config| Material::new_from_config(material_config))
         .collect();
     let scene = Scene::new_from_config(
-        &config.scenes.first().unwrap(),
+        config.scenes.first().unwrap(),
         &materials,
         &mesh_loader,
         floor_material,

@@ -31,7 +31,6 @@ impl<T: BoundingVolume> Mesh<T> {
             Point3::new(-1.0, 1.0, -1.0),
         ];
 
-
         let triangles = Self::from_triangles(
             vec![
                 vertices[0],
@@ -73,9 +72,6 @@ impl<T: BoundingVolume> Mesh<T> {
             ],
             material,
         );
-
-
-
 
         Self::new(triangles)
     }

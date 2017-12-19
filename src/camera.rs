@@ -60,13 +60,11 @@ impl Camera {
         let sample_width = self.widthf * samplesf;
         let sample_height = self.heightf * samplesf;
 
-        let mut x_sample_offset = x_sample as f32;
-        let mut y_sample_offset = y_sample as f32;
-
-        if samples == 1 {
-            x_sample_offset = 0.5;
-            y_sample_offset = 0.5;
-        }
+        let (x_sample_offset, y_sample_offset) = if samples == 1 {
+            (0.5, 0.5)
+        } else {
+            (x_sample as f32, y_sample as f32)
+        };
 
         let px = ((2.0 * (((x * samples) as f32) + x_sample_offset) / sample_width) - 1.0)
             * self.aspect_ratio * self.scale;

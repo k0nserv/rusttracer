@@ -95,7 +95,6 @@ impl BoundingVolume for AABB {
             }
         }
 
-
         true
     }
 }

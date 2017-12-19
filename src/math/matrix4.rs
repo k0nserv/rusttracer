@@ -394,7 +394,6 @@ mod tests {
     fn test_rot_x() {
         let m = Matrix4::rot_x(PI / 2.0);
 
-
         let expected = Matrix4::new([
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 0.0],
@@ -409,7 +408,6 @@ mod tests {
     fn test_rot_y() {
         let m = Matrix4::rot_y(PI / 2.0);
 
-
         let expected = Matrix4::new([
             [0.0, 0.0, -1.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -423,7 +421,6 @@ mod tests {
     #[test]
     fn test_rot_z() {
         let m = Matrix4::rot_z(PI / 2.0);
-
 
         let expected = Matrix4::new([
             [0.0, 1.0, 0.0, 0.0],

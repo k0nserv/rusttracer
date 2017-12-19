@@ -40,7 +40,6 @@ impl Iterator for Color {
     }
 }
 
-
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
         Color {
@@ -95,7 +94,7 @@ impl Color {
 
     #[inline(always)]
     pub fn as_u32(&self) -> u32 {
-        0xFF000000 & (self.r as u32) & (self.g as u32) << 8 & (self.b as u32) << 16
+        0xFF00_0000 & (self.r as u32) & (self.g as u32) << 8 & (self.b as u32) << 16
     }
 
     fn clamp(value: i32) -> u8 {
@@ -160,7 +159,6 @@ impl Mul<f32> for Color {
         Color::new_f32(r, g, b)
     }
 }
-
 
 // Factor methods for common colors
 macro_rules! define_color {

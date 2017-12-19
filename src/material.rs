@@ -134,7 +134,6 @@ impl MaterialTemplate {
         material
     }
 
-
     pub fn new(
         ambient_color: Color,
         diffuse_color: Color,

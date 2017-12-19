@@ -2,7 +2,6 @@ use std::error;
 use std::fmt;
 use std::path::Path;
 
-
 use geometry::{Intersectable, Transformable};
 use color::Color;
 use ray::Ray;
@@ -103,7 +102,7 @@ impl Scene {
                 ref transforms,
             } => {
                 let mut meshes = mesh_loader.load(Path::new(&path), &fallback_material);
-                for mesh in meshes.iter_mut() {
+                for mesh in &mut meshes {
                     Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
                 }
                 let mut intersectables = meshes
@@ -131,7 +130,6 @@ impl Scene {
             })
             .collect();
 
-
         Ok(Self::new(
             objects,
             lights,
@@ -140,7 +138,7 @@ impl Scene {
     }
 
     fn apply_transforms(shape: &mut Transformable, transforms: &Option<Vec<config::Transform>>) {
-        if let &Some(ref transforms_to_apply) = transforms {
+        if let Some(ref transforms_to_apply) = *transforms {
             for transform in transforms_to_apply {
                 transform.perform(shape);
             }
@@ -150,7 +148,7 @@ impl Scene {
     pub fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
         let mut closest_intersection: Option<Intersection> = None;
 
-        for shape in self.objects.iter() {
+        for shape in &self.objects {
             if let Some(intersection) = shape.intersect(ray, cull) {
                 if let Some(closest) = closest_intersection {
                     if intersection.t < closest.t {
@@ -162,11 +160,11 @@ impl Scene {
             }
         }
 
-        return closest_intersection;
+        closest_intersection
     }
 
     pub fn first_intersection(&self, ray: Ray, cull: bool, distance: f32) -> Option<Intersection> {
-        for object in self.objects.iter() {
+        for object in &self.objects {
             if let Some(hit) = object.intersect(ray, cull) {
                 if hit.t < distance {
                     return Some(hit);
