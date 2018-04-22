@@ -29,8 +29,6 @@ fn print_triangle_stats() {
         (f64::from(number_of_hits as u32) / f64::from(number_of_tests as u32)) * 100.0
     );
 }
-#[cfg(not(feature = "stats"))]
-fn print_triangle_stats() {}
 
 fn print_usage(program: &str, opts: &Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -110,6 +108,8 @@ fn main() {
     }
 
     let buffer = renderer.render(config.max_depth);
+
+    #[cfg(feature = "stats")]
     print_triangle_stats();
 
     let timestamp = time::get_time().sec;

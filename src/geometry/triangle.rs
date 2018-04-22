@@ -34,16 +34,10 @@ fn record_triangle_intersection() {
     stats::record_triangle_intersection();
 }
 
-#[cfg(not(feature = "stats"))]
-fn record_triangle_intersection() {}
-
 #[cfg(feature = "stats")]
 fn record_triangle_hit() {
     stats::record_triangle_hit();
 }
-
-#[cfg(not(feature = "stats"))]
-fn record_triangle_hit() {}
 
 #[derive(Debug)]
 pub enum Normal {
@@ -84,6 +78,7 @@ impl Shape for Triangle {
 
 impl Intersectable for Triangle {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
+        #[cfg(feature = "stats")]
         record_triangle_intersection();
 
         let pvec = ray.direction.cross(&self.ac);
@@ -125,6 +120,7 @@ impl Intersectable for Triangle {
                 false,
             );
 
+            #[cfg(feature = "stats")]
             record_triangle_hit();
             return Some(intersection);
         }
