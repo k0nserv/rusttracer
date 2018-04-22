@@ -1,10 +1,10 @@
-use color::Color;
-use scene::Scene;
 use camera::Camera;
-use ray::Ray;
+use color::Color;
 use intersection::Intersection;
 use material::{IllumninationModel, Material};
 use math::{Vector3, EPSILON};
+use ray::Ray;
+use scene::Scene;
 
 use rayon::prelude::*;
 use std::ops::Range;
@@ -121,7 +121,6 @@ impl<'a> Renderer<'a> {
                     self.trace(ray, max_depth, true);
             }
         }
-
 
         let mut sum_r: f32 = 0.0;
         let mut sum_g: f32 = 0.0;

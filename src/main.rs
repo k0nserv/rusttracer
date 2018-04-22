@@ -6,14 +6,15 @@ extern crate time;
 
 extern crate rusttracer;
 
-use std::path::Path;
 use std::env;
+use std::path::Path;
 
 use getopts::Options;
 
-use rusttracer::{Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
-                 Scene, SuperSampling};
 use rusttracer::mesh_loader::MeshLoader;
+use rusttracer::{number_of_successful_triangle_intersections, number_of_triangle_intersections,
+                 Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
+                 Scene, SuperSampling};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -93,6 +94,14 @@ fn main() {
     }
 
     let buffer = renderer.render(config.max_depth);
+    println!(
+        "Performed {} ray-triangle intersection tests",
+        number_of_triangle_intersections()
+    );
+    println!(
+        "{} ray-triangle intersections were successful",
+        number_of_successful_triangle_intersections()
+    );
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);

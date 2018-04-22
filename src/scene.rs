@@ -2,18 +2,17 @@ use std::error;
 use std::fmt;
 use std::path::Path;
 
-
-use geometry::{Intersectable, Transformable};
 use color::Color;
-use ray::Ray;
-use intersection::Intersection;
-use lights::PointLight;
 use config;
 use config::Object;
-use mesh_loader::MeshLoader;
+use geometry::{Intersectable, Transformable};
 use geometry::{Plane, Sphere};
-use math::{Point3, Vector3};
+use intersection::Intersection;
+use lights::PointLight;
 use material::Material;
+use math::{Point3, Vector3};
+use mesh_loader::MeshLoader;
+use ray::Ray;
 
 #[derive(Debug, Clone)]
 pub struct SceneConfigLoadError;
@@ -130,7 +129,6 @@ impl Scene {
                 )),
             })
             .collect();
-
 
         Ok(Self::new(
             objects,

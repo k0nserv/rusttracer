@@ -1,8 +1,8 @@
-use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle};
 use geometry::triangle::Normal;
+use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle};
+use intersection::Intersection;
 use math::{Point3, Transform};
 use ray::Ray;
-use intersection::Intersection;
 
 #[derive(Debug)]
 pub struct Mesh<T: BoundingVolume> {
@@ -30,7 +30,6 @@ impl<T: BoundingVolume> Mesh<T> {
             Point3::new(1.0, 1.0, -1.0),
             Point3::new(-1.0, 1.0, -1.0),
         ];
-
 
         let triangles = Self::from_triangles(
             vec![
@@ -73,9 +72,6 @@ impl<T: BoundingVolume> Mesh<T> {
             ],
             material,
         );
-
-
-
 
         Self::new(triangles)
     }

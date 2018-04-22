@@ -1,20 +1,21 @@
 pub mod triangle;
 
+mod aabb;
+mod mesh;
 mod plane;
 mod sphere;
-mod mesh;
-mod aabb;
 
+pub use self::aabb::AABB;
+pub use self::mesh::Mesh;
 pub use self::plane::Plane;
 pub use self::sphere::Sphere;
-pub use self::triangle::Triangle;
-pub use self::mesh::Mesh;
-pub use self::aabb::AABB;
+pub use self::triangle::{number_of_successful_triangle_intersections,
+                         number_of_triangle_intersections, Triangle};
 
 use intersection::Intersection;
-use ray::Ray;
-use math::Transform;
 use material::Material;
+use math::Transform;
+use ray::Ray;
 
 pub trait Intersectable {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection>;

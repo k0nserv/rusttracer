@@ -1,8 +1,8 @@
-use math::{Point3, Transform};
 use geometry::{Intersectable, Shape, Transformable};
 use intersection::Intersection;
-use ray::Ray;
 use material::Material;
+use math::{Point3, Transform};
+use ray::Ray;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -10,7 +10,6 @@ pub struct Sphere {
     pub radius: f32,
     material: Material,
 }
-
 
 impl Sphere {
     pub fn new(origin: Point3, radius: f32, material: Material) -> Sphere {
@@ -67,7 +66,6 @@ impl Intersectable for Sphere {
             return Some(intersection);
         }
 
-
         None
     }
 }
@@ -81,16 +79,24 @@ impl Transformable for Sphere {
 #[cfg(test)]
 mod tests {
     use super::Sphere;
+    use color::Color;
+    use geometry::Shape;
+    use material::{IllumninationModel, Material, MaterialTemplate};
     use math::{Point3, Vector3, EPSILON};
     use ray::Ray;
-    use geometry::Shape;
-    use material::{Material, MaterialTemplate, IllumninationModel};
-    use color::Color;
 
     fn build_test_material() -> Material {
         let color = Color::new(0, 0, 0);
 
-        MaterialTemplate::new(color, color, color, 0.0, IllumninationModel::Constant, None, None).build_material(|_ignore| {})
+        MaterialTemplate::new(
+            color,
+            color,
+            color,
+            0.0,
+            IllumninationModel::Constant,
+            None,
+            None,
+        ).build_material(|_ignore| {})
     }
 
     #[test]

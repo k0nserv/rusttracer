@@ -1,14 +1,13 @@
 extern crate tobj;
 
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
-use geometry::{Mesh, Triangle, AABB};
+use color::Color;
 use geometry::triangle::Normal;
+use geometry::{Mesh, Triangle, AABB};
 use material::{IllumninationModel, Material};
 use math::{Point3, Vector3};
-use color::Color;
-
 
 pub struct MeshLoader {
     root_path: PathBuf,
@@ -16,9 +15,7 @@ pub struct MeshLoader {
 
 impl MeshLoader {
     pub fn new(root_path: PathBuf) -> MeshLoader {
-        MeshLoader {
-            root_path,
-        }
+        MeshLoader { root_path }
     }
 
     pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh<AABB>>> {
@@ -69,12 +66,10 @@ impl MeshLoader {
                 println!("Using vertex normals");
             }
 
-
             for f in 0..mesh.indices.len() / 3 {
                 let i0 = mesh.indices[f * 3 + 0] as usize;
                 let i1 = mesh.indices[f * 3 + 1] as usize;
                 let i2 = mesh.indices[f * 3 + 2] as usize;
-
 
                 let p0 = Point3::new(
                     mesh.positions[i0 * 3 + 0],
@@ -117,7 +112,6 @@ impl MeshLoader {
 
                     normal = Some(Normal::Face(ab.cross(&ac).normalize()));
                 }
-
 
                 let mut material = fallback_material;
                 if let Some(id) = mesh.material_id {

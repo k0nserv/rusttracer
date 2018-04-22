@@ -1,5 +1,5 @@
-use super::object::Object;
 use super::light::Light;
+use super::object::Object;
 
 #[derive(Deserialize, Debug)]
 pub struct Scene {

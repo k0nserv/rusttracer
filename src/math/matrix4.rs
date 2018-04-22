@@ -1,5 +1,5 @@
-use std::ops::{Index, IndexMut, Mul};
 use math::EPSILON;
+use std::ops::{Index, IndexMut, Mul};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Matrix4 {
@@ -171,7 +171,7 @@ impl Mul for Matrix4 {
 
 #[cfg(test)]
 macro_rules! assert_eq_matrix4 {
-    ($x:expr, $y: expr, $bound: expr) => (
+    ($x:expr, $y:expr, $bound:expr) => {
         assert_eq_within_bound!($x[(0, 0)], $y[(0, 0)], $bound);
         assert_eq_within_bound!($x[(0, 1)], $y[(0, 1)], $bound);
         assert_eq_within_bound!($x[(0, 2)], $y[(0, 2)], $bound);
@@ -185,13 +185,13 @@ macro_rules! assert_eq_matrix4 {
         assert_eq_within_bound!($x[(3, 1)], $y[(3, 1)], $bound);
         assert_eq_within_bound!($x[(3, 2)], $y[(3, 2)], $bound);
         assert_eq_within_bound!($x[(3, 3)], $y[(3, 3)], $bound);
-    );
+    };
 }
 
 #[cfg(test)]
 mod tests {
-    use math::EPSILON;
     use super::Matrix4;
+    use math::EPSILON;
     use std::f32::consts::PI;
 
     #[test]
@@ -394,7 +394,6 @@ mod tests {
     fn test_rot_x() {
         let m = Matrix4::rot_x(PI / 2.0);
 
-
         let expected = Matrix4::new([
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 1.0, 0.0],
@@ -409,7 +408,6 @@ mod tests {
     fn test_rot_y() {
         let m = Matrix4::rot_y(PI / 2.0);
 
-
         let expected = Matrix4::new([
             [0.0, 0.0, -1.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -423,7 +421,6 @@ mod tests {
     #[test]
     fn test_rot_z() {
         let m = Matrix4::rot_z(PI / 2.0);
-
 
         let expected = Matrix4::new([
             [0.0, 1.0, 0.0, 0.0],

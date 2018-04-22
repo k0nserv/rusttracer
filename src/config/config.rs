@@ -1,14 +1,14 @@
-use std::fs::File;
-use std::io::prelude::*;
 use std::error;
 use std::fmt;
+use std::fs::File;
+use std::io::prelude::*;
 
 use serde_json;
 
-use renderer::SuperSampling;
 use super::camera::Camera;
-use super::scene::Scene;
 use super::material::Material;
+use super::scene::Scene;
+use renderer::SuperSampling;
 
 #[derive(Debug, Clone)]
 pub struct ConfigError<'a> {

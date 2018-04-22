@@ -1,9 +1,22 @@
-use math::{Point3, Transform, Vector3};
+use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
+
 use geometry::{Intersectable, Shape, Transformable};
-use ray::Ray;
-use material::Material;
 use intersection::Intersection;
+use material::Material;
 use math::EPSILON;
+use math::{Point3, Transform, Vector3};
+use ray::Ray;
+
+static TRIANGLE_INTERSECTION_TEST_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
+static TRIANGLE_INTERSECTION_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
+
+pub fn number_of_triangle_intersections() -> usize {
+    TRIANGLE_INTERSECTION_TEST_COUNT.load(Ordering::SeqCst)
+}
+
+pub fn number_of_successful_triangle_intersections() -> usize {
+    TRIANGLE_INTERSECTION_COUNT.load(Ordering::SeqCst)
+}
 
 #[derive(Debug)]
 pub enum Normal {
@@ -44,6 +57,7 @@ impl Shape for Triangle {
 
 impl Intersectable for Triangle {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
+        TRIANGLE_INTERSECTION_TEST_COUNT.fetch_add(1, Ordering::SeqCst);
         let pvec = ray.direction.cross(&self.ac);
         let det = self.ab.dot(&pvec);
 
@@ -83,6 +97,7 @@ impl Intersectable for Triangle {
                 false,
             );
 
+            TRIANGLE_INTERSECTION_COUNT.fetch_add(1, Ordering::SeqCst);
             return Some(intersection);
         }
 

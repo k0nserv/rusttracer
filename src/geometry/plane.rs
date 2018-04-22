@@ -1,9 +1,9 @@
-use math::{Point3, Transform, Vector3};
 use geometry::{Intersectable, Shape, Transformable};
-use material::Material;
 use intersection::Intersection;
-use ray::Ray;
+use material::Material;
 use math::EPSILON;
+use math::{Point3, Transform, Vector3};
+use ray::Ray;
 
 pub struct Plane {
     pub origin: Point3,

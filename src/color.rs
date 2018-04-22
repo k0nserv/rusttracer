@@ -1,6 +1,6 @@
 use std::fmt;
-use std::ops::{Add, Mul, Sub};
 use std::iter::Iterator;
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
@@ -39,7 +39,6 @@ impl Iterator for Color {
         }
     }
 }
-
 
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Color {
@@ -161,15 +160,14 @@ impl Mul<f32> for Color {
     }
 }
 
-
 // Factor methods for common colors
 macro_rules! define_color {
-    ($name: ident, $r: expr, $g: expr, $b: expr) => (
+    ($name:ident, $r:expr, $g:expr, $b:expr) => {
         #[inline(always)]
         pub fn $name() -> Color {
             Color::new($r, $g, $b)
         }
-    )
+    };
 }
 
 impl Color {

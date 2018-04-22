@@ -7,22 +7,24 @@ extern crate serde_json;
 
 #[macro_use]
 mod math;
-mod geometry;
-mod ray;
-mod lights;
 mod intersection;
+mod lights;
+mod ray;
 
-pub mod color;
-pub mod material;
-pub mod scene;
 pub mod camera;
-pub mod renderer;
-pub mod mesh_loader;
+pub mod color;
 mod config;
+pub mod geometry;
+pub mod material;
+pub mod mesh_loader;
+pub mod renderer;
+pub mod scene;
 
-pub use self::scene::Scene;
-pub use self::color::Color;
 pub use self::camera::Camera;
+pub use self::color::Color;
+pub use self::config::Config;
+pub use self::geometry::{number_of_successful_triangle_intersections,
+                         number_of_triangle_intersections};
 pub use self::material::{IllumninationModel, Material, MaterialTemplate};
 pub use self::renderer::{Renderer, SuperSampling};
-pub use self::config::Config;
+pub use self::scene::Scene;

@@ -1,6 +1,6 @@
+use super::{BoundingVolume, Triangle};
 use math::Point3;
 use ray::Ray;
-use super::{BoundingVolume, Triangle};
 
 #[derive(Debug)]
 pub struct AABB {
@@ -94,7 +94,6 @@ impl BoundingVolume for AABB {
                 return false;
             }
         }
-
 
         true
     }

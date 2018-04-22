@@ -1,6 +1,6 @@
+use geometry::Shape;
 use math::{Point3, Vector3};
 use ray::Ray;
-use geometry::Shape;
 
 #[derive(Copy, Clone)]
 pub struct Intersection<'a> {

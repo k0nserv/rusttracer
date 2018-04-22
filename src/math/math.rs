@@ -3,31 +3,35 @@ use std::ops::{Add, Mul, Neg, Sub};
 use math::{Matrix4, EPSILON};
 
 macro_rules! define_struct {
-    ($T: ident) => (
+    ($T:ident) => {
         #[derive(Debug, Copy, Clone, Deserialize)]
         pub struct $T {
             pub x: f32,
             pub y: f32,
             pub z: f32,
         }
-    )
+    };
 }
 
 define_struct!(Vector3);
 define_struct!(Point3);
 
 macro_rules! define_impl {
-    ($T: ident) => (
+    ($T:ident) => {
         impl $T {
             pub fn new(x: f32, y: f32, z: f32) -> $T {
                 $T { x, y, z }
             }
 
             pub fn new_from_slice(slice: [f32; 3]) -> $T {
-                $T { x: slice[0], y: slice[1], z: slice[2] }
+                $T {
+                    x: slice[0],
+                    y: slice[1],
+                    z: slice[2],
+                }
             }
         }
-    )
+    };
 }
 
 define_impl!(Vector3);
@@ -93,11 +97,10 @@ impl Point3 {
     }
 }
 
-
 // Operators
 
 macro_rules! define_scalar_add {
-    ($T: ty) => (
+    ($T:ty) => {
         impl Add<$T> for Vector3 {
             type Output = Vector3;
 
@@ -109,11 +112,11 @@ macro_rules! define_scalar_add {
                 }
             }
         }
-    )
+    };
 }
 
 macro_rules! define_add {
-    ($T: ident, $V: ident, $U: ident) => (
+    ($T:ident, $V:ident, $U:ident) => {
         impl Add<$V> for $T {
             type Output = $U;
 
@@ -125,12 +128,11 @@ macro_rules! define_add {
                 }
             }
         }
-    )
+    };
 }
 
 define_add!(Vector3, Vector3, Vector3);
 define_add!(Point3, Vector3, Vector3);
-
 
 define_scalar_add!(f64);
 define_scalar_add!(f32);
@@ -144,7 +146,7 @@ define_scalar_add!(u32);
 define_scalar_add!(u64);
 
 macro_rules! define_scalar_sub {
-    ($T: ty) => (
+    ($T:ty) => {
         impl Sub<$T> for Vector3 {
             type Output = Vector3;
 
@@ -156,11 +158,11 @@ macro_rules! define_scalar_sub {
                 }
             }
         }
-    )
+    };
 }
 
 macro_rules! define_sub {
-    ($T: ident, $V: ident, $U: ident) => (
+    ($T:ident, $V:ident, $U:ident) => {
         impl Sub<$V> for $T {
             type Output = $U;
 
@@ -172,7 +174,7 @@ macro_rules! define_sub {
                 }
             }
         }
-    )
+    };
 }
 
 define_sub!(Point3, Point3, Vector3);
@@ -201,9 +203,8 @@ impl Neg for Vector3 {
     }
 }
 
-
 macro_rules! define_scalar_mul {
-    ($T: ty) => (
+    ($T:ty) => {
         impl Mul<$T> for Vector3 {
             type Output = Vector3;
 
@@ -215,7 +216,7 @@ macro_rules! define_scalar_mul {
                 }
             }
         }
-    )
+    };
 }
 
 impl Mul for Vector3 {
@@ -275,20 +276,16 @@ impl Mul<Matrix4> for Point3 {
             z /= w;
         }
 
-
-
         Point3::new(x, y, z)
     }
 }
 
-
 // TOOD: Improve tests for Point3
 #[cfg(test)]
 mod tests {
-    use math::{Matrix4, EPSILON};
     use super::{Point3, Vector3};
+    use math::{Matrix4, EPSILON};
     use std::f32::consts::PI;
-
 
     #[test]
     fn test_constructor() {
@@ -502,7 +499,6 @@ mod tests {
             y: -15.0,
             z: -17.0,
         };
-
 
         assert_eq_vector3!(vec1 - vec2, expected1, EPSILON);
 

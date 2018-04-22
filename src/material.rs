@@ -1,6 +1,6 @@
-use std::convert::From;
 use color::Color;
 use config;
+use std::convert::From;
 
 /// See http://paulbourke.net/dataformats/mtl/
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Eq)]
@@ -133,7 +133,6 @@ impl MaterialTemplate {
 
         material
     }
-
 
     pub fn new(
         ambient_color: Color,

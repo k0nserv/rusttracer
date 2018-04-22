@@ -1,5 +1,5 @@
-use math::Point3;
 use color::Color;
+use math::Point3;
 
 pub struct PointLight {
     pub origin: Point3,

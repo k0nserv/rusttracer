@@ -1,6 +1,6 @@
-use ray::Ray;
-use math::{Matrix4, Point3, Vector3};
 use config;
+use math::{Matrix4, Point3, Vector3};
+use ray::Ray;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Camera {
