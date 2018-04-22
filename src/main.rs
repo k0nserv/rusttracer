@@ -16,7 +16,7 @@ use rusttracer::{number_of_successful_triangle_intersections, number_of_triangle
                  Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
                  Scene, SuperSampling};
 
-fn print_usage(program: &str, opts: Options) {
+fn print_usage(program: &str, opts: &Options) {
     let brief = format!("Usage: {} [options]", program);
     print!("{}", opts.usage(&brief));
 }
@@ -45,7 +45,7 @@ fn main() {
     };
 
     if matches.opt_present("h") {
-        print_usage(&program, opts);
+        print_usage(&program, &opts);
         return;
     }
 
