@@ -21,7 +21,7 @@ impl MeshLoader {
     pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh<AABB>>> {
         let final_path = self.root_path.join(path);
         let result = tobj::load_obj(&final_path);
-        if let &Err(ref error) = &result {
+        if let Err(ref error) = result {
             println!("Load error: {}", error);
         }
         assert!(result.is_ok());
@@ -60,58 +60,57 @@ impl MeshLoader {
             println!("Num indices: {}", mesh.indices.len());
             println!("Num vertices: {}", mesh.positions.len());
             println!("Num normals: {}", mesh.normals.len());
-            let use_vertex_normals = mesh.normals.len() > 0;
+            let use_vertex_normals = !mesh.normals.is_empty();
 
             if use_vertex_normals {
                 println!("Using vertex normals");
             }
 
             for f in 0..mesh.indices.len() / 3 {
-                let i0 = mesh.indices[f * 3 + 0] as usize;
+                let i0 = mesh.indices[f * 3] as usize;
                 let i1 = mesh.indices[f * 3 + 1] as usize;
                 let i2 = mesh.indices[f * 3 + 2] as usize;
 
                 let p0 = Point3::new(
-                    mesh.positions[i0 * 3 + 0],
+                    mesh.positions[i0 * 3],
                     mesh.positions[i0 * 3 + 1],
                     mesh.positions[i0 * 3 + 2],
                 );
                 let p1 = Point3::new(
-                    mesh.positions[i1 * 3 + 0],
+                    mesh.positions[i1 * 3],
                     mesh.positions[i1 * 3 + 1],
                     mesh.positions[i1 * 3 + 2],
                 );
                 let p2 = Point3::new(
-                    mesh.positions[i2 * 3 + 0],
+                    mesh.positions[i2 * 3],
                     mesh.positions[i2 * 3 + 1],
                     mesh.positions[i2 * 3 + 2],
                 );
 
-                let normal;
-                if use_vertex_normals {
+                let normal = if use_vertex_normals {
                     let n0 = Vector3::new(
-                        mesh.normals[i0 * 3 + 0],
+                        mesh.normals[i0 * 3],
                         mesh.normals[i0 * 3 + 1],
                         mesh.normals[i0 * 3 + 2],
                     );
                     let n1 = Vector3::new(
-                        mesh.normals[i1 * 3 + 0],
+                        mesh.normals[i1 * 3],
                         mesh.normals[i1 * 3 + 1],
                         mesh.normals[i1 * 3 + 2],
                     );
                     let n2 = Vector3::new(
-                        mesh.normals[i2 * 3 + 0],
+                        mesh.normals[i2 * 3],
                         mesh.normals[i2 * 3 + 1],
                         mesh.normals[i2 * 3 + 2],
                     );
 
-                    normal = Some(Normal::Vertex(n0, n1, n2));
+                    Some(Normal::Vertex(n0, n1, n2))
                 } else {
                     let ab = p0 - p1;
                     let ac = p0 - p2;
 
-                    normal = Some(Normal::Face(ab.cross(&ac).normalize()));
-                }
+                    Some(Normal::Face(ab.cross(&ac).normalize()))
+                };
 
                 let mut material = fallback_material;
                 if let Some(id) = mesh.material_id {

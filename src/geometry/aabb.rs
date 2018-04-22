@@ -9,8 +9,8 @@ pub struct AABB {
 
 impl BoundingVolume for AABB {
     fn new(triangles: &[Box<Triangle>]) -> Self {
-        assert!(triangles.len() > 0, "Creating AABB with 0 vertices");
-        if triangles.len() == 0 {
+        assert!(!triangles.is_empty(), "Creating AABB with 0 vertices");
+        if triangles.is_empty() {
             return AABB {
                 bounds: [Point3::at_origin(), Point3::at_origin()],
             };
@@ -19,7 +19,7 @@ impl BoundingVolume for AABB {
         let mut max = triangles[0].vertices[0];
 
         for triangle in triangles.iter() {
-            for vertex in triangle.vertices.iter() {
+            for vertex in &triangle.vertices {
                 // Max
                 if vertex.x > max.x {
                     max.x = vertex.x;

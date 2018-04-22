@@ -23,7 +23,7 @@ impl Sphere {
 
 impl Shape for Sphere {
     fn material(&self) -> &Material {
-        return &self.material;
+        &self.material
     }
 }
 
@@ -41,27 +41,22 @@ impl Intersectable for Sphere {
         let t1 = b + c.sqrt();
         let t2 = b - c.sqrt();
 
-        let mut t: Option<f32> = None;
-        let mut hit = false;
-        let mut inside = false;
-
-        if t1 > 0.01 {
+        let (t, hit, inside) = if t1 > 0.01 {
             if t2 < 0.0 {
-                t = Some(t1);
-                hit = true;
-                inside = true;
+                (Some(t1), true, true)
             } else {
-                t = Some(t2);
-                hit = true;
+                (Some(t2), true, false)
             }
-        }
+        } else {
+            (None, false, false)
+        };
 
         if hit {
             assert!(t.is_some());
             let point: Point3 = (ray.origin + ray.direction * t.unwrap()).as_point();
-            let n = (point - self.origin).normalize();
+            let normal = (point - self.origin).normalize();
 
-            let intersection = Intersection::new(t.unwrap(), self, point, ray, n, inside);
+            let intersection = Intersection::new(t.unwrap(), self, point, ray, normal, inside);
 
             return Some(intersection);
         }

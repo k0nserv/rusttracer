@@ -32,21 +32,21 @@ pub struct RefractionProperties {
 
 impl RefractionProperties {
     fn new(intersection: &Intersection, original_ray: &Ray) -> RefractionProperties {
-        let mut refraction_coefficient = intersection
-            .shape
-            .material()
-            .refraction_coefficient
-            .unwrap_or(1.0);
-
-        if intersection.inside {
-            // Leaving refractive material
-            refraction_coefficient = 1.0;
-        }
+        let refraction_coefficient = if intersection.inside {
+            1.0
+        } else {
+            intersection
+                .shape
+                .material()
+                .refraction_coefficient
+                .unwrap_or(1.0)
+        };
 
         let n = original_ray.medium_refraction / refraction_coefficient;
-        let normal = match intersection.inside {
-            true => -intersection.normal,
-            false => intersection.normal,
+        let normal = if intersection.inside {
+            -intersection.normal
+        } else {
+            intersection.normal
         };
 
         let cos_i = normal.dot(&original_ray.direction);
@@ -197,7 +197,7 @@ impl<'a> Renderer<'a> {
         let mut result = material.ambient_color;
 
         // TODO: Move lights iteration to Scene
-        for light in self.scene.lights.iter() {
+        for light in &self.scene.lights {
             let distance_to_light = (intersection.point - light.origin).length();
             let light_direction = (light.origin - intersection.point).normalize();
             let ray = Ray::new(
@@ -301,7 +301,7 @@ impl<'a> Renderer<'a> {
             return refraction_color * transparency;
         }
 
-        return Color::black();
+        Color::black()
     }
 
     fn fresnel(&self, refraction_properties: &RefractionProperties) -> f32 {
@@ -317,6 +317,6 @@ impl<'a> Renderer<'a> {
         let rs = ((n2 * cos_i) - (n1 * cos_t)) / ((n2 * cos_i) + (n1 * cos_t));
         let rp = ((n1 * cos_t) - (n2 * cos_i)) / ((n1 * cos_t) + (n2 * cos_i));
 
-        return (rs * rs + rp * rp) / 2.0;
+        (rs * rs + rp * rp) / 2.0
     }
 }

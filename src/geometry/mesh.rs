@@ -32,7 +32,7 @@ impl<T: BoundingVolume> Mesh<T> {
         ];
 
         let triangles = Self::from_triangles(
-            vec![
+            &[
                 vertices[0],
                 vertices[1],
                 vertices[2],
@@ -76,7 +76,7 @@ impl<T: BoundingVolume> Mesh<T> {
         Self::new(triangles)
     }
 
-    fn from_triangles(vertices: Vec<Point3>, material: Material) -> Vec<Box<Triangle>> {
+    fn from_triangles(vertices: &[Point3], material: Material) -> Vec<Box<Triangle>> {
         assert!(
             vertices.len() % 3 == 0,
             "Number of vertices should be a multiple of 3"
@@ -104,7 +104,7 @@ impl<T: BoundingVolume> Mesh<T> {
 
 impl<T: BoundingVolume> Transformable for Mesh<T> {
     fn transform(&mut self, transform: &Transform) {
-        for boxed_triangle in self.triangles.iter_mut() {
+        for boxed_triangle in &mut self.triangles {
             boxed_triangle.as_mut().transform(transform);
         }
 
@@ -120,7 +120,7 @@ impl<T: BoundingVolume> Intersectable for Mesh<T> {
 
         let mut nearest_intersection: Option<Intersection> = None;
 
-        for boxed_triangle in self.triangles.iter() {
+        for boxed_triangle in &self.triangles {
             let potential_intersection = boxed_triangle.intersect(ray, cull);
 
             if let Some(intersection) = potential_intersection {

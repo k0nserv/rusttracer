@@ -106,9 +106,9 @@ macro_rules! define_scalar_add {
 
             fn add(self, other: $T) -> Vector3 {
                 Vector3 {
-                    x: self.x + (other as f32),
-                    y: self.y + (other as f32),
-                    z: self.z + (other as f32),
+                    x: self.x + f32::from(other),
+                    y: self.y + f32::from(other),
+                    z: self.z + f32::from(other),
                 }
             }
         }
@@ -134,16 +134,11 @@ macro_rules! define_add {
 define_add!(Vector3, Vector3, Vector3);
 define_add!(Point3, Vector3, Vector3);
 
-define_scalar_add!(f64);
 define_scalar_add!(f32);
 define_scalar_add!(i8);
 define_scalar_add!(i16);
-define_scalar_add!(i32);
-define_scalar_add!(i64);
 define_scalar_add!(u8);
 define_scalar_add!(u16);
-define_scalar_add!(u32);
-define_scalar_add!(u64);
 
 macro_rules! define_scalar_sub {
     ($T:ty) => {
@@ -152,9 +147,9 @@ macro_rules! define_scalar_sub {
 
             fn sub(self, other: $T) -> Vector3 {
                 Vector3 {
-                    x: self.x - (other as f32),
-                    y: self.y - (other as f32),
-                    z: self.z - (other as f32),
+                    x: self.x - f32::from(other),
+                    y: self.y - f32::from(other),
+                    z: self.z - f32::from(other),
                 }
             }
         }
@@ -180,16 +175,11 @@ macro_rules! define_sub {
 define_sub!(Point3, Point3, Vector3);
 define_sub!(Vector3, Vector3, Vector3);
 
-define_scalar_sub!(f64);
 define_scalar_sub!(f32);
 define_scalar_sub!(i8);
 define_scalar_sub!(i16);
-define_scalar_sub!(i32);
-define_scalar_sub!(i64);
 define_scalar_sub!(u8);
 define_scalar_sub!(u16);
-define_scalar_sub!(u32);
-define_scalar_sub!(u64);
 
 impl Neg for Vector3 {
     type Output = Vector3;
@@ -210,9 +200,9 @@ macro_rules! define_scalar_mul {
 
             fn mul(self, other: $T) -> Vector3 {
                 Vector3 {
-                    x: self.x * (other as f32),
-                    y: self.y * (other as f32),
-                    z: self.z * (other as f32),
+                    x: self.x * f32::from(other),
+                    y: self.y * f32::from(other),
+                    z: self.z * f32::from(other),
                 }
             }
         }
@@ -231,16 +221,11 @@ impl Mul for Vector3 {
     }
 }
 
-define_scalar_mul!(f64);
 define_scalar_mul!(f32);
 define_scalar_mul!(i8);
 define_scalar_mul!(i16);
-define_scalar_mul!(i32);
-define_scalar_mul!(i64);
 define_scalar_mul!(u8);
 define_scalar_mul!(u16);
-define_scalar_mul!(u32);
-define_scalar_mul!(u64);
 
 impl Mul<Matrix4> for Vector3 {
     type Output = Vector3;
@@ -267,8 +252,8 @@ impl Mul<Matrix4> for Point3 {
         let w = other[(0, 3)] * self.x + other[(1, 3)] * self.y + other[(2, 3)] * self.z
             + other[(3, 3)];
 
-        if !(w > (1.0 - EPSILON) && w < (1.0 + EPSILON))
-            && !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON))
+        if !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON)
+            || w > (1.0 - EPSILON) && w < (1.0 + EPSILON))
         {
             assert!(false, "Bad value for w {}", w);
             x /= w;

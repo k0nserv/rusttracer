@@ -69,7 +69,7 @@ impl Color {
 
     #[inline(always)]
     pub fn r_f32(&self) -> f32 {
-        self.r() as f32 / 255.0
+        f32::from(self.r()) / 255.0
     }
 
     #[inline(always)]
@@ -79,7 +79,7 @@ impl Color {
 
     #[inline(always)]
     pub fn g_f32(&self) -> f32 {
-        self.g() as f32 / 255.0
+        f32::from(self.g()) / 255.0
     }
 
     #[inline(always)]
@@ -89,18 +89,18 @@ impl Color {
 
     #[inline(always)]
     pub fn b_f32(&self) -> f32 {
-        self.b() as f32 / 255.0
+        f32::from(self.b()) / 255.0
     }
 
     #[inline(always)]
     pub fn as_u32(&self) -> u32 {
-        0xFF000000 & (self.r as u32) & (self.g as u32) << 8 & (self.b as u32) << 16
+        0xFF00_0000 & u32::from(self.r) & u32::from(self.g) << 8 & u32::from(self.b) << 16
     }
 
     fn clamp(value: i32) -> u8 {
         match value {
             v if v < 0 => 0,
-            v if v > (u8::max_value() as i32) => u8::max_value(),
+            v if v > i32::from(u8::max_value()) => u8::max_value(),
             v => v as u8,
         }
     }
@@ -118,7 +118,7 @@ impl Add for Color {
     type Output = Color;
 
     fn add(self, other: Color) -> Color {
-        let f = |f: fn(&Color) -> u8| Color::clamp((f(&self) as i32) + (f(&other) as i32));
+        let f = |f: fn(&Color) -> u8| Color::clamp(i32::from(f(&self)) + i32::from(f(&other)));
 
         Color::new(f(Color::r), f(Color::g), f(Color::b))
     }
@@ -128,9 +128,9 @@ impl Sub for Color {
     type Output = Color;
 
     fn sub(self, other: Color) -> Color {
-        let r = Color::clamp((self.r() as i32) - (other.r() as i32));
-        let g = Color::clamp((self.g() as i32) - (other.g() as i32));
-        let b = Color::clamp((self.b() as i32) - (other.b() as i32));
+        let r = Color::clamp(i32::from(self.r()) - i32::from(other.r()));
+        let g = Color::clamp(i32::from(self.g()) - i32::from(other.g()));
+        let b = Color::clamp(i32::from(self.b()) - i32::from(other.b()));
 
         Color::new(r, g, b)
     }
