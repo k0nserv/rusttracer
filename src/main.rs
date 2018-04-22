@@ -11,10 +11,26 @@ use std::path::Path;
 
 use getopts::Options;
 
+#[cfg(feature = "stats")]
+use rusttracer::geometry::triangle::stats;
 use rusttracer::mesh_loader::MeshLoader;
-use rusttracer::{number_of_successful_triangle_intersections, number_of_triangle_intersections,
-                 Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
+use rusttracer::{Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
                  Scene, SuperSampling};
+
+#[cfg(feature = "stats")]
+fn print_triangle_stats() {
+    let number_of_tests = stats::number_of_triangle_intersections();
+    let number_of_hits = stats::number_of_triangle_hits();
+
+    println!("Total number of ray-triangle tests: {}", number_of_tests);
+    println!("Total number of ray-triangle hits: {}", number_of_hits);
+    println!(
+        "Efficiency: {:.5}%",
+        (f64::from(number_of_hits as u32) / f64::from(number_of_tests as u32)) * 100.0
+    );
+}
+#[cfg(not(feature = "stats"))]
+fn print_triangle_stats() {}
 
 fn print_usage(program: &str, opts: &Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -94,14 +110,7 @@ fn main() {
     }
 
     let buffer = renderer.render(config.max_depth);
-    println!(
-        "Performed {} ray-triangle intersection tests",
-        number_of_triangle_intersections()
-    );
-    println!(
-        "{} ray-triangle intersections were successful",
-        number_of_successful_triangle_intersections()
-    );
+    print_triangle_stats();
 
     let timestamp = time::get_time().sec;
     let filename = format!("images/{}.png", timestamp);

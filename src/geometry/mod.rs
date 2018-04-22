@@ -1,16 +1,14 @@
-pub mod triangle;
-
 mod aabb;
 mod mesh;
 mod plane;
 mod sphere;
+pub mod triangle;
 
 pub use self::aabb::AABB;
 pub use self::mesh::Mesh;
 pub use self::plane::Plane;
 pub use self::sphere::Sphere;
-pub use self::triangle::{number_of_successful_triangle_intersections,
-                         number_of_triangle_intersections, Triangle};
+pub use self::triangle::Triangle;
 
 use intersection::Intersection;
 use material::Material;

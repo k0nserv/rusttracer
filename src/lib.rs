@@ -25,8 +25,6 @@ pub mod scene;
 pub use self::camera::Camera;
 pub use self::color::Color;
 pub use self::config::Config;
-pub use self::geometry::{number_of_successful_triangle_intersections,
-                         number_of_triangle_intersections};
 pub use self::material::{IllumninationModel, Material, MaterialTemplate};
 pub use self::renderer::{Renderer, SuperSampling};
 pub use self::scene::Scene;

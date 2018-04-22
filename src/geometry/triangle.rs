@@ -1,5 +1,3 @@
-use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
-
 use geometry::{Intersectable, Shape, Transformable};
 use intersection::Intersection;
 use material::Material;
@@ -7,16 +5,45 @@ use math::EPSILON;
 use math::{Point3, Transform, Vector3};
 use ray::Ray;
 
-static TRIANGLE_INTERSECTION_TEST_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
-static TRIANGLE_INTERSECTION_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
+#[cfg(feature = "stats")]
+pub mod stats {
+    use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
 
-pub fn number_of_triangle_intersections() -> usize {
-    TRIANGLE_INTERSECTION_TEST_COUNT.load(Ordering::SeqCst)
+    static TRIANGLE_INTERSECTION_TEST_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
+    static TRIANGLE_INTERSECTION_HIT_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
+
+    pub fn record_triangle_intersection() {
+        TRIANGLE_INTERSECTION_TEST_COUNT.fetch_add(1, Ordering::SeqCst);
+    }
+
+    pub fn record_triangle_hit() {
+        TRIANGLE_INTERSECTION_HIT_COUNT.fetch_add(1, Ordering::SeqCst);
+    }
+
+    pub fn number_of_triangle_intersections() -> usize {
+        TRIANGLE_INTERSECTION_TEST_COUNT.load(Ordering::SeqCst)
+    }
+
+    pub fn number_of_triangle_hits() -> usize {
+        TRIANGLE_INTERSECTION_HIT_COUNT.load(Ordering::SeqCst)
+    }
 }
 
-pub fn number_of_successful_triangle_intersections() -> usize {
-    TRIANGLE_INTERSECTION_COUNT.load(Ordering::SeqCst)
+#[cfg(feature = "stats")]
+fn record_triangle_intersection() {
+    stats::record_triangle_intersection();
 }
+
+#[cfg(not(feature = "stats"))]
+fn record_triangle_intersection() {}
+
+#[cfg(feature = "stats")]
+fn record_triangle_hit() {
+    stats::record_triangle_hit();
+}
+
+#[cfg(not(feature = "stats"))]
+fn record_triangle_hit() {}
 
 #[derive(Debug)]
 pub enum Normal {
@@ -57,7 +84,8 @@ impl Shape for Triangle {
 
 impl Intersectable for Triangle {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
-        TRIANGLE_INTERSECTION_TEST_COUNT.fetch_add(1, Ordering::SeqCst);
+        record_triangle_intersection();
+
         let pvec = ray.direction.cross(&self.ac);
         let det = self.ab.dot(&pvec);
 
@@ -97,7 +125,7 @@ impl Intersectable for Triangle {
                 false,
             );
 
-            TRIANGLE_INTERSECTION_COUNT.fetch_add(1, Ordering::SeqCst);
+            record_triangle_hit();
             return Some(intersection);
         }
 
