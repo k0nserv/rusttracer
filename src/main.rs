@@ -79,7 +79,7 @@ fn main() {
         None,
         None,
     );
-    let floor_material = template.build_material(|material| {
+    let fallback_material = template.build_material(|material| {
         material.ambient_color = Color::white() * 0.05;
         material.diffuse_color = Color::white() * 0.6;
     });
@@ -93,7 +93,7 @@ fn main() {
         &config.scenes.first().unwrap(),
         &materials,
         &mesh_loader,
-        floor_material,
+        &fallback_material,
     ).expect("Invalid scene");
     let camera_config = config.cameras.first().unwrap();
     let camera = Camera::from_config(camera_config);

@@ -56,7 +56,7 @@ impl Scene {
         scene: &config::Scene,
         materials: &Vec<Material>,
         mesh_loader: &MeshLoader,
-        fallback_material: Material,
+        fallback_material: &Material,
     ) -> Result<Scene, SceneConfigLoadError> {
         let mut objects: Vec<Box<Intersectable>> = vec![];
 
@@ -67,7 +67,7 @@ impl Scene {
                 material_id,
             } => {
                 let material = match material_id {
-                    None => fallback_material,
+                    None => *fallback_material,
                     Some(id) => {
                         assert!(id < materials.len(), "Invalid material_id");
                         materials[id]
@@ -83,7 +83,7 @@ impl Scene {
                 material_id,
             } => {
                 let material = match material_id {
-                    None => fallback_material,
+                    None => *fallback_material,
                     Some(id) => {
                         assert!(id < materials.len(), "Invalid material_id");
                         materials[id]
