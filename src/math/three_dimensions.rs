@@ -454,7 +454,7 @@ mod tests {
 
         assert_eq_vector3!(vec1 + vec2, expected1, EPSILON);
 
-        let result: Vector3 = vec1 + 10;
+        let result: Vector3 = vec1 + 10u16;
         assert_eq_vector3!(result, expected2, EPSILON);
     }
 
