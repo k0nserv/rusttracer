@@ -199,7 +199,6 @@ impl Neg for Vector2 {
 mod tests {
     use super::{Point2, Vector2};
     use math::EPSILON;
-    use std::f32::consts::PI;
 
     #[test]
     fn test_new() {

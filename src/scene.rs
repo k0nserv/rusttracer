@@ -1,6 +1,7 @@
 use std::error;
 use std::fmt;
 use std::path::Path;
+use std::rc::Rc;
 
 use color::Color;
 use config;
@@ -54,9 +55,9 @@ impl Scene {
 
     pub fn new_from_config(
         scene: &config::Scene,
-        materials: &Vec<Material>,
+        materials: &Vec<Rc<Material>>,
         mesh_loader: &MeshLoader,
-        fallback_material: &Material,
+        fallback_material: Rc<Material>,
     ) -> Result<Scene, SceneConfigLoadError> {
         let mut objects: Vec<Box<Intersectable>> = vec![];
 
@@ -67,10 +68,10 @@ impl Scene {
                 material_id,
             } => {
                 let material = match material_id {
-                    None => *fallback_material,
+                    None => fallback_material.clone(),
                     Some(id) => {
                         assert!(id < materials.len(), "Invalid material_id");
-                        materials[id]
+                        materials[id].clone()
                     }
                 };
                 let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
@@ -83,10 +84,10 @@ impl Scene {
                 material_id,
             } => {
                 let material = match material_id {
-                    None => *fallback_material,
+                    None => fallback_material.clone(),
                     Some(id) => {
                         assert!(id < materials.len(), "Invalid material_id");
-                        materials[id]
+                        materials[id].clone()
                     }
                 };
                 let mut plane = Box::new(Plane::new(
@@ -101,7 +102,7 @@ impl Scene {
                 ref path,
                 ref transforms,
             } => {
-                let mut meshes = mesh_loader.load(Path::new(&path), &fallback_material);
+                let mut meshes = mesh_loader.load(Path::new(&path), fallback_material.clone());
                 for mesh in &mut meshes {
                     Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
                 }

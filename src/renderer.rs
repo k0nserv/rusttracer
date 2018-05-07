@@ -194,7 +194,7 @@ impl<'a> Renderer<'a> {
 
     fn shade(&self, intersection: &Intersection, original_ray: Ray, specular: bool) -> Color {
         let material: &Material = intersection.shape.material();
-        let mut result = material.ambient_color;
+        let mut result = material.ambient_color(intersection.texture_coord);
 
         // TODO: Move lights iteration to Scene
         for light in &self.scene.lights {
@@ -218,7 +218,7 @@ impl<'a> Renderer<'a> {
             // Diffuse
             if dot > 0.0 {
                 result = result
-                    + (light.color * material.diffuse_color) * dot
+                    + (light.color * material.diffuse_color(intersection.texture_coord)) * dot
                         * light.intensity(distance_to_light);
             }
 

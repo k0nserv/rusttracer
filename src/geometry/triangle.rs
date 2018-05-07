@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use geometry::{Intersectable, Shape, Transformable};
 use intersection::Intersection;
 use material::Material;
@@ -52,11 +54,17 @@ pub struct Triangle {
     pub ab: Vector3, // B - A
     pub ac: Vector3, // C - A
     pub normal: Normal,
-    material: Material,
+    material: Rc<Material>,
 }
 
 impl Triangle {
-    pub fn new(a: Point3, b: Point3, c: Point3, normal: Normal, material: Material) -> Triangle {
+    pub fn new(
+        a: Point3,
+        b: Point3,
+        c: Point3,
+        normal: Normal,
+        material: Rc<Material>,
+    ) -> Triangle {
         let ab = b - a;
         let ac = c - a;
 
@@ -118,6 +126,7 @@ impl Intersectable for Triangle {
                 ray,
                 self.normal_at_intersection(u, v),
                 false,
+                None,
             );
 
             #[cfg(feature = "stats")]

@@ -6,6 +6,9 @@ use math;
 pub enum Transform {
     Translate { value: [f32; 3] },
     Scale { value: [f32; 3] },
+    RotateX { value: f32 },
+    RotateY { value: f32 },
+    RotateZ { value: f32 },
 }
 
 impl Transform {
@@ -17,6 +20,9 @@ impl Transform {
             Transform::Scale { value } => {
                 math::Transform::new(math::Matrix4::scale(value[0], value[1], value[2]))
             }
+            Transform::RotateX { value } => math::Transform::new(math::Matrix4::rot_x(value)),
+            Transform::RotateY { value } => math::Transform::new(math::Matrix4::rot_y(value)),
+            Transform::RotateZ { value } => math::Transform::new(math::Matrix4::rot_z(value)),
         };
 
         transformable.transform(&transform);

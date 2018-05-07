@@ -1,6 +1,7 @@
 use geometry::Shape;
 use math::{Point3, Vector3};
 use ray::Ray;
+use texture::TextureCoord;
 
 #[derive(Copy, Clone)]
 pub struct Intersection<'a> {
@@ -10,6 +11,7 @@ pub struct Intersection<'a> {
     pub ray: Ray,
     pub normal: Vector3,
     pub inside: bool,
+    pub texture_coord: Option<TextureCoord>,
 }
 
 impl<'a> Intersection<'a> {
@@ -20,6 +22,7 @@ impl<'a> Intersection<'a> {
         ray: Ray,
         normal: Vector3,
         inside: bool,
+        texture_coord: Option<TextureCoord>,
     ) -> Intersection {
         Intersection {
             t,
@@ -28,6 +31,7 @@ impl<'a> Intersection<'a> {
             ray,
             normal,
             inside,
+            texture_coord,
         }
     }
 }

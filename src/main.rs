@@ -7,13 +7,16 @@ extern crate time;
 extern crate rusttracer;
 
 use std::env;
+use std::f32::consts::PI;
 use std::path::Path;
+use std::rc::Rc;
 
 use getopts::Options;
 
 #[cfg(feature = "stats")]
 use rusttracer::geometry::triangle::stats;
 use rusttracer::mesh_loader::MeshLoader;
+use rusttracer::texture;
 use rusttracer::{Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
                  Scene, SuperSampling};
 
@@ -79,21 +82,28 @@ fn main() {
         None,
         None,
     );
-    let fallback_material = template.build_material(|material| {
+    let fallback_material = Rc::new(template.build_material(|material| {
         material.ambient_color = Color::white() * 0.05;
-        material.diffuse_color = Color::white() * 0.6;
-    });
+        material.diffuse_color = Color::white() * 0.0;
+        material.ambient_texture = Some(Box::new(texture::Procedural::new(|uv| {
+            Color::new_f32(
+                ((uv.x * 32.0 * PI).sin() + (uv.y * 32.0 * PI).cos() + 1.0) * 0.5,
+                0.0,
+                0.0,
+            )
+        })));
+    }));
 
     let materials = config
         .materials
         .iter()
-        .map(|material_config| Material::new_from_config(material_config))
+        .map(|material_config| Rc::new(Material::new_from_config(material_config)))
         .collect();
     let scene = Scene::new_from_config(
         &config.scenes.first().unwrap(),
         &materials,
         &mesh_loader,
-        &fallback_material,
+        fallback_material,
     ).expect("Invalid scene");
     let camera_config = config.cameras.first().unwrap();
     let camera = Camera::from_config(camera_config);

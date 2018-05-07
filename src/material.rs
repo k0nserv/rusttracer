@@ -1,6 +1,7 @@
 use color::Color;
 use config;
 use std::convert::From;
+use texture::{Texture, TextureCoord};
 
 /// See http://paulbourke.net/dataformats/mtl/
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Eq)]
@@ -46,11 +47,16 @@ impl From<u8> for IllumninationModel {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+type OptionalTexture = Option<Box<Texture>>;
+
+#[derive(Debug)]
 pub struct Material {
     pub ambient_color: Color,
+    pub ambient_texture: OptionalTexture,
     pub diffuse_color: Color,
+    pub diffuse_texture: OptionalTexture,
     pub specular_color: Color,
+    pub specular_texture: OptionalTexture,
     pub specular_exponent: f32,
     pub illumination_model: IllumninationModel,
     pub reflection_coefficient: Option<f32>,
@@ -82,8 +88,11 @@ impl Material {
     ) -> Material {
         Material {
             ambient_color,
+            ambient_texture: None,
             diffuse_color,
+            diffuse_texture: None,
             specular_color,
+            specular_texture: None,
             specular_exponent,
             illumination_model,
             reflection_coefficient,
@@ -101,6 +110,20 @@ impl Material {
             config.reflection_coefficient,
             config.refraction_coefficient,
         )
+    }
+
+    pub fn ambient_color(&self, uv: Option<TextureCoord>) -> Color {
+        match &self.ambient_texture {
+            None => self.ambient_color,
+            Some(texture) => uv.map_or(self.ambient_color, |coord| texture.lookup(&coord)),
+        }
+    }
+
+    pub fn diffuse_color(&self, uv: Option<TextureCoord>) -> Color {
+        match &self.diffuse_texture {
+            None => self.diffuse_color,
+            Some(texture) => uv.map_or(self.ambient_color, |coord| texture.lookup(&coord)),
+        }
     }
 }
 

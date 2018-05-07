@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use geometry::triangle::Normal;
 use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle};
 use intersection::Intersection;
@@ -19,7 +21,7 @@ impl<T: BoundingVolume> Mesh<T> {
         }
     }
 
-    pub fn cube(material: Material) -> Self {
+    pub fn cube(material: Rc<Material>) -> Self {
         let vertices = [
             Point3::new(-1.0, -1.0, 1.0),
             Point3::new(1.0, -1.0, 1.0),
@@ -76,7 +78,7 @@ impl<T: BoundingVolume> Mesh<T> {
         Self::new(triangles)
     }
 
-    fn from_triangles(vertices: &[Point3], material: Material) -> Vec<Box<Triangle>> {
+    fn from_triangles(vertices: &[Point3], material: Rc<Material>) -> Vec<Box<Triangle>> {
         assert!(
             vertices.len() % 3 == 0,
             "Number of vertices should be a multiple of 3"
@@ -95,7 +97,7 @@ impl<T: BoundingVolume> Mesh<T> {
                     vertices[i * 3 + 1],
                     vertices[i * 3 + 2],
                     Normal::Face(normal),
-                    material,
+                    material.clone(),
                 ))
             })
             .collect()

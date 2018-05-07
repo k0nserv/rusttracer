@@ -21,6 +21,7 @@ pub mod material;
 pub mod mesh_loader;
 pub mod renderer;
 pub mod scene;
+pub mod texture;
 
 pub use self::camera::Camera;
 pub use self::color::Color;

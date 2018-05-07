@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use geometry::{Intersectable, Shape, Transformable};
 use intersection::Intersection;
 use material::Material;
@@ -8,11 +10,11 @@ use ray::Ray;
 pub struct Plane {
     pub origin: Point3,
     pub normal: Vector3,
-    material: Material,
+    material: Rc<Material>,
 }
 
 impl Plane {
-    pub fn new(origin: Point3, normal: Vector3, material: Material) -> Plane {
+    pub fn new(origin: Point3, normal: Vector3, material: Rc<Material>) -> Plane {
         Plane {
             origin,
             normal: normal.normalize(),
@@ -41,7 +43,7 @@ impl Intersectable for Plane {
             let intersection_point = (ray.origin + ray.direction * t).as_point();
 
             let intersection =
-                Intersection::new(t, self, intersection_point, ray, self.normal, false);
+                Intersection::new(t, self, intersection_point, ray, self.normal, false, None);
 
             return Some(intersection);
         }

@@ -112,6 +112,14 @@ impl fmt::Display for Color {
     }
 }
 
+impl PartialEq for Color {
+    fn eq(&self, other: &Color) -> bool {
+        self.r == other.r && self.g == other.g && self.b == other.b
+    }
+}
+
+impl Eq for Color {}
+
 // Math
 
 impl Add for Color {

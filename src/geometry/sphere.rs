@@ -1,18 +1,22 @@
+use std::f32::consts::PI;
+use std::rc::Rc;
+
 use geometry::{Intersectable, Shape, Transformable};
 use intersection::Intersection;
 use material::Material;
 use math::{Point3, Transform};
 use ray::Ray;
+use texture::TextureCoord;
 
 #[derive(Debug)]
 pub struct Sphere {
     pub origin: Point3,
     pub radius: f32,
-    material: Material,
+    material: Rc<Material>,
 }
 
 impl Sphere {
-    pub fn new(origin: Point3, radius: f32, material: Material) -> Sphere {
+    pub fn new(origin: Point3, radius: f32, material: Rc<Material>) -> Sphere {
         Sphere {
             origin,
             radius,
@@ -55,8 +59,20 @@ impl Intersectable for Sphere {
             assert!(t.is_some());
             let point: Point3 = (ray.origin + ray.direction * t.unwrap()).as_point();
             let normal = (point - self.origin).normalize();
+            let texture_coord = TextureCoord::new(
+                normal.x.atan2(normal.z) / (2.0 * PI) + 0.5,
+                normal.y * 0.5 + 0.5,
+            );
 
-            let intersection = Intersection::new(t.unwrap(), self, point, ray, normal, inside);
+            let intersection = Intersection::new(
+                t.unwrap(),
+                self,
+                point,
+                ray,
+                normal,
+                inside,
+                Some(texture_coord),
+            );
 
             return Some(intersection);
         }
@@ -73,6 +89,8 @@ impl Transformable for Sphere {
 
 #[cfg(test)]
 mod tests {
+    use std::rc::Rc;
+
     use super::Sphere;
     use color::Color;
     use geometry::Shape;
@@ -80,18 +98,20 @@ mod tests {
     use math::{Point3, Vector3, EPSILON};
     use ray::Ray;
 
-    fn build_test_material() -> Material {
+    fn build_test_material() -> Rc<Material> {
         let color = Color::new(0, 0, 0);
 
-        MaterialTemplate::new(
-            color,
-            color,
-            color,
-            0.0,
-            IllumninationModel::Constant,
-            None,
-            None,
-        ).build_material(|_ignore| {})
+        Rc::new(
+            MaterialTemplate::new(
+                color,
+                color,
+                color,
+                0.0,
+                IllumninationModel::Constant,
+                None,
+                None,
+            ).build_material(|_ignore| {}),
+        )
     }
 
     #[test]

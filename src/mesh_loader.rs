@@ -2,6 +2,7 @@ extern crate tobj;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::rc::Rc;
 
 use color::Color;
 use geometry::triangle::Normal;
@@ -18,7 +19,7 @@ impl MeshLoader {
         MeshLoader { root_path }
     }
 
-    pub fn load(&self, path: &Path, fallback_material: &Material) -> Vec<Box<Mesh<AABB>>> {
+    pub fn load(&self, path: &Path, fallback_material: Rc<Material>) -> Vec<Box<Mesh<AABB>>> {
         let final_path = self.root_path.join(path);
         let result = tobj::load_obj(&final_path);
         if let Err(ref error) = result {
@@ -36,7 +37,7 @@ impl MeshLoader {
                 None => IllumninationModel::DiffuseSpecular,
             };
 
-            let mat = Box::new(Material::new(
+            let mat = Rc::new(Material::new(
                 Color::new_f32(m.ambient[0], m.ambient[1], m.ambient[2]),
                 Color::new_f32(m.diffuse[0], m.diffuse[1], m.diffuse[2]),
                 Color::new_f32(m.specular[0], m.specular[1], m.specular[2]),
@@ -112,10 +113,10 @@ impl MeshLoader {
                     Some(Normal::Face(ab.cross(&ac).normalize()))
                 };
 
-                let mut material = fallback_material;
+                let mut material = fallback_material.clone();
                 if let Some(id) = mesh.material_id {
                     if let Some(m) = material_cache.get(&id) {
-                        material = m;
+                        material = m.clone();
                     }
                 }
 
@@ -124,7 +125,7 @@ impl MeshLoader {
                     p1,
                     p2,
                     normal.unwrap(),
-                    *material,
+                    material.clone(),
                 )));
             }
 
