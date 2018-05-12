@@ -11,7 +11,7 @@ extern crate serde_json;
 #[macro_use]
 mod math;
 mod intersection;
-mod lights;
+mod light;
 mod ray;
 
 pub mod camera;

@@ -9,7 +9,7 @@ use config::Object;
 use geometry::{Intersectable, Transformable};
 use geometry::{Plane, Sphere};
 use intersection::Intersection;
-use lights::PointLight;
+use light;
 use material::Material;
 use math::{Point3, Vector3};
 use mesh_loader::MeshLoader;
@@ -44,7 +44,7 @@ impl Error for SceneConfigLoadError {
 
 pub struct Scene {
     pub objects: Vec<Box<Intersectable>>,
-    pub lights: Vec<Box<PointLight>>,
+    pub lights: Vec<Box<light::Light>>,
     pub ambient_color: Color,
     pub clear_color: Color,
 }
@@ -52,7 +52,7 @@ pub struct Scene {
 impl Scene {
     pub fn new(
         objects: Vec<Box<Intersectable>>,
-        lights: Vec<Box<PointLight>>,
+        lights: Vec<Box<light::Light>>,
         ambient_color: Color,
         clear_color: Color,
     ) -> Scene {
@@ -137,7 +137,7 @@ impl Scene {
             }
         }
 
-        let lights = scene
+        let lights: Vec<Box<light::Light>> = scene
             .lights
             .iter()
             .map(|light| match *light {
@@ -145,11 +145,21 @@ impl Scene {
                     origin,
                     color,
                     intensity,
-                } => Box::new(PointLight::new(
+                } => Box::new(light::Point::new(
                     Point3::new_from_slice(origin),
                     Color::new_from_slice(color),
                     intensity,
-                )),
+                )) as Box<light::Light>,
+
+                config::Light::DirectionalLight {
+                    direction,
+                    color,
+                    intensity,
+                } => Box::new(light::Directional::new(
+                    Vector3::new_from_slice(direction),
+                    Color::new_from_slice(color),
+                    intensity,
+                )) as Box<light::Light>,
             })
             .collect();
 

@@ -199,14 +199,8 @@ impl<'a> Renderer<'a> {
 
         // TODO: Move lights iteration to Scene
         for light in &self.scene.lights {
-            let distance_to_light = (intersection.point - light.origin).length();
-            let light_direction = (light.origin - intersection.point).normalize();
-            let ray = Ray::new(
-                (intersection.point + light_direction * EPSILON).as_point(),
-                light_direction,
-                Some(original_ray.medium_refraction),
-            );
-
+            let ray = light.create_shadow_ray(intersection, Some(original_ray.medium_refraction));
+            let distance_to_light = light.distance_to_light(&intersection);
             if self.scene
                 .first_intersection(ray, false, distance_to_light)
                 .is_some()
@@ -214,26 +208,19 @@ impl<'a> Renderer<'a> {
                 continue;
             }
 
-            let mut dot = light_direction.dot(&intersection.normal);
-
-            // Diffuse
-            if dot > 0.0 {
-                result = result
-                    + (light.color * material.diffuse_color(intersection.texture_coord)) * dot
-                        * light.intensity(distance_to_light);
+            if let Some(diffuse_color) =
+                light.diffuse_color(intersection, material, distance_to_light)
+            {
+                result = result + diffuse_color;
             }
 
-            dot = original_ray
-                .direction
-                .dot(&light_direction.reflect(&intersection.normal));
-
             // Specular
-            if specular && dot > 0.0 {
-                let spec = dot.powf(material.specular_exponent);
-
-                result = result
-                    + (light.color * material.specular_color(intersection.texture_coord)) * spec
-                        * light.intensity(distance_to_light);
+            if specular {
+                if let Some(specular_color) =
+                    light.specular_color(intersection, material, &original_ray, distance_to_light)
+                {
+                    result = result + specular_color;
+                }
             }
         }
 
