@@ -11,6 +11,7 @@
   }],
   "scenes": [{
     "clear_color": [0.0, 0.0, 0.0],
+    "ambient_color": [0.0, 0.0, 0.0],
     "objects": [{
       "type": "Mesh",
       "path": "rlogo.obj"

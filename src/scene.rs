@@ -45,6 +45,7 @@ impl Error for SceneConfigLoadError {
 pub struct Scene {
     pub objects: Vec<Box<Intersectable>>,
     pub lights: Vec<Box<PointLight>>,
+    pub ambient_color: Color,
     pub clear_color: Color,
 }
 
@@ -52,11 +53,13 @@ impl Scene {
     pub fn new(
         objects: Vec<Box<Intersectable>>,
         lights: Vec<Box<PointLight>>,
+        ambient_color: Color,
         clear_color: Color,
     ) -> Scene {
         Scene {
             objects,
             lights,
+            ambient_color,
             clear_color,
         }
     }
@@ -153,6 +156,7 @@ impl Scene {
         Ok(Self::new(
             objects,
             lights,
+            Color::new_from_slice(scene.ambient_color),
             Color::new_from_slice(scene.clear_color),
         ))
     }

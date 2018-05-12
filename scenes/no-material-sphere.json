@@ -13,6 +13,7 @@
   }],
   "scenes": [{
     "clear_color": [0.0, 0.0, 0.0],
+    "ambient_color": [1.0, 1.0, 1.0],
     "objects": [{
       "type": "Plane",
       "normal": [0.0, 1.0, 0.0],

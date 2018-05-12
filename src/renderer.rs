@@ -194,7 +194,8 @@ impl<'a> Renderer<'a> {
 
     fn shade(&self, intersection: &Intersection, original_ray: Ray, specular: bool) -> Color {
         let material: &Material = intersection.shape.material();
-        let mut result = material.ambient_color(intersection.texture_coord);
+        let mut result =
+            material.ambient_color(intersection.texture_coord) * self.scene.ambient_color;
 
         // TODO: Move lights iteration to Scene
         for light in &self.scene.lights {
