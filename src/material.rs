@@ -85,7 +85,7 @@ impl Material {
         illumination_model: IllumninationModel,
         reflection_coefficient: Option<f32>,
         refraction_coefficient: Option<f32>,
-    ) -> Material {
+    ) -> Self {
         Material {
             ambient_color,
             ambient_texture: None,
@@ -93,6 +93,32 @@ impl Material {
             diffuse_texture: None,
             specular_color,
             specular_texture: None,
+            specular_exponent,
+            illumination_model,
+            reflection_coefficient,
+            refraction_coefficient,
+        }
+    }
+
+    pub fn new_with_textures(
+        ambient_color: Color,
+        ambient_texture: OptionalTexture,
+        diffuse_color: Color,
+        diffuse_texture: OptionalTexture,
+        specular_color: Color,
+        specular_texture: OptionalTexture,
+        specular_exponent: f32,
+        illumination_model: IllumninationModel,
+        reflection_coefficient: Option<f32>,
+        refraction_coefficient: Option<f32>,
+    ) -> Self {
+        Material {
+            ambient_color,
+            ambient_texture,
+            diffuse_color,
+            diffuse_texture,
+            specular_color,
+            specular_texture,
             specular_exponent,
             illumination_model,
             reflection_coefficient,
@@ -115,14 +141,27 @@ impl Material {
     pub fn ambient_color(&self, uv: Option<TextureCoord>) -> Color {
         match &self.ambient_texture {
             None => self.ambient_color,
-            Some(texture) => uv.map_or(self.ambient_color, |coord| texture.lookup(&coord)),
+            Some(texture) => uv.map_or(self.ambient_color, |coord| {
+                self.ambient_color * texture.lookup(&coord)
+            }),
         }
     }
 
     pub fn diffuse_color(&self, uv: Option<TextureCoord>) -> Color {
         match &self.diffuse_texture {
             None => self.diffuse_color,
-            Some(texture) => uv.map_or(self.ambient_color, |coord| texture.lookup(&coord)),
+            Some(texture) => uv.map_or(self.diffuse_color, |coord| {
+                self.diffuse_color * texture.lookup(&coord)
+            }),
+        }
+    }
+
+    pub fn specular_color(&self, uv: Option<TextureCoord>) -> Color {
+        match &self.specular_texture {
+            None => self.specular_color,
+            Some(texture) => uv.map_or(self.specular_color, |coord| {
+                self.specular_color * texture.lookup(&coord)
+            }),
         }
     }
 }

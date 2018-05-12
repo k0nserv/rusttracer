@@ -1,4 +1,4 @@
-use std::error;
+use std::error::Error;
 use std::fmt;
 use std::path::Path;
 use std::rc::Rc;
@@ -16,20 +16,28 @@ use mesh_loader::MeshLoader;
 use ray::Ray;
 
 #[derive(Debug, Clone)]
-pub struct SceneConfigLoadError;
+pub struct SceneConfigLoadError {
+    description: String,
+}
 
-impl fmt::Display for SceneConfigLoadError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "failed to load scene from config")
+impl SceneConfigLoadError {
+    fn new(description: String) -> Self {
+        SceneConfigLoadError { description }
     }
 }
 
-impl error::Error for SceneConfigLoadError {
+impl fmt::Display for SceneConfigLoadError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Failed to load scene from config. {}", self.description)
+    }
+}
+
+impl Error for SceneConfigLoadError {
     fn description(&self) -> &str {
-        "failed to load scene from config"
+        "Failed to load scene from config"
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&Error> {
         None
     }
 }
@@ -61,59 +69,70 @@ impl Scene {
     ) -> Result<Scene, SceneConfigLoadError> {
         let mut objects: Vec<Box<Intersectable>> = vec![];
 
-        scene.objects.iter().for_each(|object| match *object {
-            Object::Sphere {
-                radius,
-                ref transforms,
-                material_id,
-            } => {
-                let material = match material_id {
-                    None => fallback_material.clone(),
-                    Some(id) => {
-                        assert!(id < materials.len(), "Invalid material_id");
-                        materials[id].clone()
-                    }
-                };
-                let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
-                Self::apply_transforms(sphere.as_mut() as &mut Transformable, transforms);
-                objects.push(sphere as Box<Intersectable>);
-            }
-            Object::Plane {
-                normal,
-                ref transforms,
-                material_id,
-            } => {
-                let material = match material_id {
-                    None => fallback_material.clone(),
-                    Some(id) => {
-                        assert!(id < materials.len(), "Invalid material_id");
-                        materials[id].clone()
-                    }
-                };
-                let mut plane = Box::new(Plane::new(
-                    Point3::at_origin(),
-                    Vector3::new_from_slice(normal),
-                    material,
-                ));
-                Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
-                objects.push(plane as Box<Intersectable>);
-            }
-            Object::Mesh {
-                ref path,
-                ref transforms,
-            } => {
-                let mut meshes = mesh_loader.load(Path::new(&path), fallback_material.clone());
-                for mesh in &mut meshes {
-                    Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
+        for object in &scene.objects {
+            match *object {
+                Object::Sphere {
+                    radius,
+                    ref transforms,
+                    material_id,
+                } => {
+                    let material = match material_id {
+                        None => fallback_material.clone(),
+                        Some(id) => {
+                            assert!(id < materials.len(), "Invalid material_id");
+                            materials[id].clone()
+                        }
+                    };
+                    let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
+                    Self::apply_transforms(sphere.as_mut() as &mut Transformable, transforms);
+                    objects.push(sphere as Box<Intersectable>);
                 }
-                let mut intersectables = meshes
-                    .into_iter()
-                    .map(|mesh| mesh as Box<Intersectable>)
-                    .collect();
+                Object::Plane {
+                    normal,
+                    ref transforms,
+                    material_id,
+                } => {
+                    let material = match material_id {
+                        None => fallback_material.clone(),
+                        Some(id) => {
+                            assert!(id < materials.len(), "Invalid material_id");
+                            materials[id].clone()
+                        }
+                    };
+                    let mut plane = Box::new(Plane::new(
+                        Point3::at_origin(),
+                        Vector3::new_from_slice(normal),
+                        material,
+                    ));
+                    Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
+                    objects.push(plane as Box<Intersectable>);
+                }
+                Object::Mesh {
+                    ref path,
+                    ref transforms,
+                } => {
+                    let mut meshes = match mesh_loader
+                        .load(Path::new(&path), fallback_material.clone())
+                    {
+                        Ok(meshes) => meshes,
+                        Err(error) => {
+                            println!("Failed to load scene: {}", error);
+                            return Err(SceneConfigLoadError::new(error.description().to_string()));
+                        }
+                    };
 
-                objects.append(&mut intersectables);
+                    for mesh in &mut meshes {
+                        Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
+                    }
+                    let mut intersectables = meshes
+                        .into_iter()
+                        .map(|mesh| mesh as Box<Intersectable>)
+                        .collect();
+
+                    objects.append(&mut intersectables);
+                }
             }
-        });
+        }
 
         let lights = scene
             .lights

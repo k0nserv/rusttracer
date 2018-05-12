@@ -151,7 +151,7 @@ impl<'a> Renderer<'a> {
             let material = hit.shape.material();
 
             result = match material.illumination_model {
-                IllumninationModel::Constant => material.diffuse_color,
+                IllumninationModel::Constant => material.diffuse_color(hit.texture_coord),
                 IllumninationModel::Diffuse => self.shade(&hit, ray, false),
                 IllumninationModel::DiffuseSpecular => self.shade(&hit, ray, true),
                 IllumninationModel::DiffuseSpecularReflective => {
@@ -231,7 +231,7 @@ impl<'a> Renderer<'a> {
                 let spec = dot.powf(material.specular_exponent);
 
                 result = result
-                    + (light.color * material.specular_color) * spec
+                    + (light.color * material.specular_color(intersection.texture_coord)) * spec
                         * light.intensity(distance_to_light);
             }
         }
@@ -291,7 +291,11 @@ impl<'a> Renderer<'a> {
             );
 
             let refraction_color = self.trace(new_ray, current_depth - 1, false);
-            let absorbance = intersection.shape.material().ambient_color * 0.15 * -intersection.t;
+            let absorbance = intersection
+                .shape
+                .material()
+                .ambient_color(intersection.texture_coord) * 0.15
+                * -intersection.t;
             let transparency = Color::new_f32(
                 absorbance.r_f32().exp(),
                 absorbance.g_f32().exp(),

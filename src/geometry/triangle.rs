@@ -6,6 +6,7 @@ use material::Material;
 use math::EPSILON;
 use math::{Point3, Transform, Vector3};
 use ray::Ray;
+use texture::TextureCoord;
 
 #[cfg(feature = "stats")]
 pub mod stats {
@@ -54,6 +55,8 @@ pub struct Triangle {
     pub ab: Vector3, // B - A
     pub ac: Vector3, // C - A
     pub normal: Normal,
+    // Texture coords for A, b, C
+    texture_coords: Option<[TextureCoord; 3]>,
     material: Rc<Material>,
 }
 
@@ -63,6 +66,7 @@ impl Triangle {
         b: Point3,
         c: Point3,
         normal: Normal,
+        texture_coords: Option<[TextureCoord; 3]>,
         material: Rc<Material>,
     ) -> Triangle {
         let ab = b - a;
@@ -73,6 +77,7 @@ impl Triangle {
             ab,
             ac,
             normal,
+            texture_coords,
             material,
         }
     }
@@ -119,6 +124,17 @@ impl Intersectable for Triangle {
         let t = self.ac.dot(&qvec) * inv_det;
         if t > EPSILON {
             let intersection_point = (ray.origin + ray.direction * t).as_point();
+            let texture_coord = if let Some([ta, tb, tc]) = self.texture_coords {
+                let w = 1.0 - v - u;
+
+                Some(TextureCoord::new(
+                    w * (ta.x as f32) + u * (tb.x as f32) + v * (tc.x as f32),
+                    w * (ta.y as f32) + u * (tb.y as f32) + v * (tc.y as f32),
+                ))
+            } else {
+                None
+            };
+
             let intersection = Intersection::new(
                 t,
                 self,
@@ -126,7 +142,7 @@ impl Intersectable for Triangle {
                 ray,
                 self.normal_at_intersection(u, v),
                 false,
-                None,
+                texture_coord,
             );
 
             #[cfg(feature = "stats")]

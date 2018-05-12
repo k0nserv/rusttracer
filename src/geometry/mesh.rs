@@ -97,6 +97,7 @@ impl<T: BoundingVolume> Mesh<T> {
                     vertices[i * 3 + 1],
                     vertices[i * 3 + 2],
                     Normal::Face(normal),
+                    None,
                     material.clone(),
                 ))
             })
