@@ -43,12 +43,7 @@ fn main() {
 
     let program = args[0].clone();
     let mut opts = Options::new();
-    opts.optopt(
-        "c",
-        "config-path",
-        "config file path, uses `default.json` if not specified",
-        "CONFIG_PATH",
-    );
+    opts.optopt("c", "config-path", "config file path", "CONFIG_PATH");
     opts.optflag(
         "b",
         "benchmark",
@@ -97,7 +92,12 @@ fn main() {
     let materials = config
         .materials
         .iter()
-        .map(|material_config| Rc::new(Material::new_from_config(material_config)))
+        .map(|material_config| {
+            (
+                material_config.name.to_owned(),
+                Rc::new(Material::new_from_config(material_config)),
+            )
+        })
         .collect();
     let scene = Scene::new_from_config(
         &config.scenes.first().unwrap(),

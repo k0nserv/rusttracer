@@ -4,25 +4,32 @@ use material::Material;
 use math::{Point3, EPSILON};
 use ray::Ray;
 
-use super::Light;
+use super::{Falloff, Light};
 
 pub struct Point {
     pub origin: Point3,
     pub color: Color,
     intensity: f32,
+    falloff: Falloff,
 }
 
 impl Point {
-    pub fn new(origin: Point3, color: Color, intensity: f32) -> Self {
+    pub fn new(origin: Point3, color: Color, intensity: f32, falloff: Falloff) -> Self {
         Self {
             origin,
             color,
             intensity,
+            falloff,
         }
     }
 
     pub fn intensity(&self, distance_to_light: f32) -> f32 {
-        1.0 / (distance_to_light * distance_to_light) * self.intensity
+        match self.falloff {
+            Falloff::InverseSquare => {
+                1.0 / (distance_to_light * distance_to_light) * self.intensity
+            }
+            Falloff::InverseLinear => 1.0 / distance_to_light * self.intensity,
+        }
     }
 }
 

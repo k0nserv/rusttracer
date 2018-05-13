@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 use std::path::Path;
@@ -66,7 +67,7 @@ impl Scene {
 
     pub fn new_from_config(
         scene: &config::Scene,
-        materials: &Vec<Rc<Material>>,
+        materials: &HashMap<String, Rc<Material>>,
         mesh_loader: &MeshLoader,
         fallback_material: Rc<Material>,
     ) -> Result<Scene, SceneConfigLoadError> {
@@ -77,13 +78,17 @@ impl Scene {
                 Object::Sphere {
                     radius,
                     ref transforms,
-                    material_id,
+                    ref material_name,
                 } => {
-                    let material = match material_id {
+                    let material = match material_name {
                         None => fallback_material.clone(),
-                        Some(id) => {
-                            assert!(id < materials.len(), "Invalid material_id");
-                            materials[id].clone()
+                        Some(name) => {
+                            assert!(
+                                materials.contains_key(name),
+                                "Invalid material name: {}",
+                                name
+                            );
+                            materials[name].clone()
                         }
                     };
                     let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
@@ -93,13 +98,17 @@ impl Scene {
                 Object::Plane {
                     normal,
                     ref transforms,
-                    material_id,
+                    ref material_name,
                 } => {
-                    let material = match material_id {
+                    let material = match material_name {
                         None => fallback_material.clone(),
-                        Some(id) => {
-                            assert!(id < materials.len(), "Invalid material_id");
-                            materials[id].clone()
+                        Some(name) => {
+                            assert!(
+                                materials.contains_key(name),
+                                "Invalid material name: {}",
+                                name
+                            );
+                            materials[name].clone()
                         }
                     };
                     let mut plane = Box::new(Plane::new(
@@ -145,10 +154,12 @@ impl Scene {
                     origin,
                     color,
                     intensity,
+                    falloff,
                 } => Box::new(light::Point::new(
                     Point3::new_from_slice(origin),
                     Color::new_from_slice(color),
                     intensity,
+                    falloff.unwrap_or(light::Falloff::InverseSquare),
                 )) as Box<light::Light>,
 
                 config::Light::DirectionalLight {

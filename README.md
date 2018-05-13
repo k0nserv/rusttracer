@@ -2,34 +2,34 @@
 
 YAR(Yet Another Raytracer).
 
-I like to write raytracers to learn new programming languages. They're fun and are a natural way to learn most OOP languages. Naturally I'm writing a raytracer in rust called rusttracer 🙂.. This is largely a port of my SwiftTracer.
+I like to write raytracers to learn new programming languages. They're fun and are a natural way to learn most OOP languages. Naturally I'm writing a raytracer in rust called rusttracer 🙂.
 
-## Running it
+## Building
 
-Make sure you have the rust toolchain installed then run
-
-```bash
-cargo run
-```
-
-To benchmark the implementation first build for release with
+Make sure you have the rust nightly toolchain installed then run
 
 ```bash
 cargo build --release
 ```
 
-then run
+## Running
+
+The project uses a json based configuration format. For an example see the [`rgb-spheres.json`](scenes/rgb-spheres.json) scene. To render it run:
 
 ```bash
-target/release/rusttracer --benchmark
+target/release/rusttracer --config-path scenes/rgb-spheres.json
 ```
 
-The benchmark is fairly naive and currently just renders the scene setup in `main.rs` several times.
+## Usage
 
-To see all available commands run
+```bash
+Usage: target/release/rusttracer [options]
 
-```
-target/release/rusttracer --help
+Options:
+    -c, --config-path CONFIG_PATH
+                        config file path, uses `default.json` if not specified
+    -b, --benchmark     Benchmark by rendering the scene multiple times
+    -h, --help          prints this help menu
 ```
 
 ## Renders

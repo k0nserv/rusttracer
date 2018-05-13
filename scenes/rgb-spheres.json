@@ -8,7 +8,7 @@
     "width": 2560,
     "height": 1440,
     "position": [0.0, 5.0, 0.0],
-    "look_at": [0.0, 2.0, -45.0],
+    "look_at": [0.0, 2.0, -30.0],
     "up": [0.0, 1.0, 0.0]
   }],
   "scenes": [{
@@ -17,38 +17,38 @@
     "objects": [{
       "type": "Plane",
       "normal": [0.0, 1.0, 0.0],
-      "material_id": 3
+      "material_name": "wall"
     }, {
       "type": "Plane",
       "normal": [0.0, 0.0, 1.0],
-      "material_id": 3,
+      "material_name": "wall",
       "transforms": [{
         "type": "Translate",
-        "value": [0.0, 0.0, -50.0]
+        "value": [0.0, 0.0, -35.0]
       }]
     }, {
       "type": "Sphere",
       "radius": 1.5,
-      "material_id": 1,
+      "material_name": "green_sphere",
       "transforms": [{
         "type": "Translate",
-        "value": [0.0, 2.0, -45.0]
+        "value": [0.0, 2.0, -30.0]
       }]
     }, {
       "type": "Sphere",
       "radius": 1.5,
-      "material_id": 2,
+      "material_name": "blue_sphere",
       "transforms": [{
         "type": "Translate",
-        "value": [15.0, 2.0, -45.0]
+        "value": [15.0, 2.0, -30.0]
       }]
     }, {
       "type": "Sphere",
       "radius": 1.5,
-      "material_id": 0,
+      "material_name": "red_sphere",
       "transforms": [{
         "type": "Translate",
-        "value": [-15.0, 2.0, -45.0]
+        "value": [-15.0, 2.0, -30.0]
       }]
     }],
     "lights": [{
@@ -58,40 +58,44 @@
       "intensity": 100.0
     }, {
       "type": "PointLight",
-      "origin": [0.0, 8.0, -45.0],
+      "origin": [0.0, 8.0, -30.0],
       "color": [0.262745098, 0.976470588, 0.992156863],
       "intensity": 5.0
     }, {
       "type": "PointLight",
-      "origin": [-15.0, 8.0, -45.0],
+      "origin": [-15.0, 8.0, -30.0],
       "color": [0.360784314, 0.992156863, 0.262745098],
       "intensity": 5.0
     }, {
       "type": "PointLight",
-      "origin": [15.0, 8.0, -45.0],
+      "origin": [15.0, 8.0, -30.0],
       "color": [0.992156863, 0.450980392, 0.023529412],
       "intensity": 5.0
     }]
   }],
   "materials": [{
+    "name": "red_sphere",
     "ambient_color": [0.0, 0.0, 0.0],
     "diffuse_color": [0.86, 0.0, 0.31],
     "specular_color": [0.0, 0.0, 0.0],
     "specular_exponent": 0,
     "illumination_model": "Diffuse"
   }, {
+    "name": "green_sphere",
     "ambient_color": [0.0, 0.0, 0.0],
     "diffuse_color": [0.0, 0.86, 0.31],
     "specular_color": [0.0, 0.0, 0.0],
     "specular_exponent": 0,
     "illumination_model": "Diffuse"
   }, {
+    "name": "blue_sphere",
     "ambient_color": [0.0, 0.0, 0.0],
     "diffuse_color": [0.0, 0.31, 0.86],
     "specular_color": [0.0, 0.0, 0.0],
     "specular_exponent": 0,
     "illumination_model": "Diffuse"
   }, {
+    "name": "wall",
     "ambient_color": [0.1, 0.1, 0.1],
     "diffuse_color": [1.0, 1.0, 1.0],
     "specular_color": [0.0, 0.0, 0.0],

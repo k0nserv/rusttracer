@@ -9,6 +9,14 @@ pub mod point;
 pub use self::directional::Directional;
 pub use self::point::Point;
 
+#[derive(Deserialize, Debug, Copy, Clone)]
+pub enum Falloff {
+    // Light falls off with the inverse square of the distance
+    InverseSquare,
+    // Light falls off linearly with the distance
+    InverseLinear,
+}
+
 pub trait Light {
     fn create_shadow_ray(&self, intersection: &Intersection, medium_refraction: Option<f32>)
         -> Ray;

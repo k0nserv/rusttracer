@@ -11,14 +11,17 @@ use super::Light;
 
 pub struct Directional {
     pub direction: Vector3,
+    inverse_direction: Vector3,
     pub color: Color,
     intensity: f32,
 }
 
 impl Directional {
     pub fn new(direction: Vector3, color: Color, intensity: f32) -> Self {
+        let normalized_direction = direction.normalize();
         Self {
-            direction: direction.normalize(),
+            direction: normalized_direction,
+            inverse_direction: -normalized_direction,
             color,
             intensity,
         }
@@ -35,9 +38,10 @@ impl Light for Directional {
         intersection: &Intersection,
         medium_refraction: Option<f32>,
     ) -> Ray {
+        let direction = self.inverse_direction;
         Ray::new(
-            (intersection.point + self.direction * EPSILON).as_point(),
-            self.direction,
+            (intersection.point + direction * EPSILON).as_point(),
+            direction,
             medium_refraction,
         )
     }
@@ -52,7 +56,7 @@ impl Light for Directional {
         material: &Material,
         distance_to_light: f32,
     ) -> Option<Color> {
-        let dot = self.direction.dot(&intersection.normal);
+        let dot = self.inverse_direction.dot(&intersection.normal);
 
         if dot > 0.0 {
             Some(
@@ -72,7 +76,7 @@ impl Light for Directional {
         distance_to_light: f32,
     ) -> Option<Color> {
         let dot = ray.direction
-            .dot(&self.direction.reflect(&intersection.normal));
+            .dot(&self.inverse_direction.reflect(&intersection.normal));
 
         if dot > 0.0 {
             let spec = dot.powf(material.specular_exponent);

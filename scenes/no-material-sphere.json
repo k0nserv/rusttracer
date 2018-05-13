@@ -17,11 +17,11 @@
     "objects": [{
       "type": "Plane",
       "normal": [0.0, 1.0, 0.0],
-      "material_id": 0
+      "material_name": "wall"
     }, {
       "type": "Plane",
       "normal": [0.0, 0.0, 1.0],
-      "material_id": 0,
+      "material_name": "wall",
       "transforms": [{
         "type": "Translate",
         "value": [0.0, 0.0, -50.0]
@@ -29,7 +29,7 @@
     }, {
       "type": "Plane",
       "normal": [-1.0, 0.0, 0.0],
-      "material_id": 0,
+      "material_name": "wall",
       "transforms": [{
         "type": "Translate",
         "value": [50.0, 0.0, 0.0]
@@ -37,7 +37,7 @@
     }, {
       "type": "Plane",
       "normal": [1.0, 0.0, 0.0],
-      "material_id": 0,
+      "material_name": "wall",
       "transforms": [{
         "type": "Translate",
         "value": [-50.0, 0.0, 0.0]
@@ -58,6 +58,7 @@
     }]
   }],
   "materials": [{
+    "name": "wall",
     "ambient_color": [0.1, 0.1, 0.1],
     "diffuse_color": [1.0, 1.0, 1.0],
     "specular_color": [0.0, 0.0, 0.0],
