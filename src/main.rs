@@ -106,7 +106,7 @@ fn main() {
         fallback_material,
     ).expect("Invalid scene");
     let camera_config = config.cameras.first().unwrap();
-    let camera = Camera::from_config(camera_config);
+    let camera = Camera::from(camera_config);
     let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
 
     if benchmark {

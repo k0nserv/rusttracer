@@ -21,14 +21,14 @@ impl Camera {
         position: Point3,
         look_at: Point3,
         tmp_up: Vector3,
-    ) -> Camera {
+    ) -> Self {
         let aspect_ratio = (width as f32) / (height as f32);
         let scale = (fov * 0.5).tan();
         let direction = (position - look_at).normalize();
         let right = tmp_up.normalize().cross(&direction);
         let up = direction.cross(&right);
 
-        Camera {
+        Self {
             width,
             height,
             widthf: (width as f32),
@@ -42,17 +42,6 @@ impl Camera {
                 position,
             ),
         }
-    }
-
-    pub fn from_config(camera: &config::Camera) -> Camera {
-        Self::new(
-            camera.fov,
-            camera.width,
-            camera.height,
-            Point3::from(camera.position),
-            Point3::from(camera.look_at),
-            Vector3::from(camera.up),
-        )
     }
 
     pub fn create_ray(&self, x: u32, y: u32, x_sample: u32, y_sample: u32, samples: u32) -> Ray {
@@ -102,8 +91,19 @@ impl Camera {
         result[(3, 1)] = position.y;
         result[(3, 2)] = position.z;
 
-        println!("Camera to world matrix {:?}", result);
-
         result
+    }
+}
+
+impl<'a> From<&'a config::Camera> for Camera {
+    fn from(config: &config::Camera) -> Self {
+        Self::new(
+            config.fov,
+            config.width,
+            config.height,
+            Point3::from(config.position),
+            Point3::from(config.look_at),
+            Vector3::from(config.up),
+        )
     }
 }
