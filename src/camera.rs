@@ -2,7 +2,7 @@ use config;
 use math::{Matrix4, Point3, Vector3};
 use ray::Ray;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct Camera {
     pub width: u32,
     pub height: u32,
