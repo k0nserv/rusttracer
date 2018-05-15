@@ -49,9 +49,9 @@ impl Camera {
             camera.fov,
             camera.width,
             camera.height,
-            Point3::new_from_slice(camera.position),
-            Point3::new_from_slice(camera.look_at),
-            Vector3::new_from_slice(camera.up),
+            Point3::from(camera.position),
+            Point3::from(camera.look_at),
+            Vector3::from(camera.up),
         )
     }
 

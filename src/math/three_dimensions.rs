@@ -21,20 +21,32 @@ macro_rules! define_impl {
             pub fn new(x: f32, y: f32, z: f32) -> $T {
                 $T { x, y, z }
             }
-
-            pub fn new_from_slice(slice: [f32; 3]) -> $T {
-                $T {
-                    x: slice[0],
-                    y: slice[1],
-                    z: slice[2],
-                }
-            }
         }
     };
 }
 
 define_impl!(Vector3);
 define_impl!(Point3);
+
+macro_rules! define_from {
+    ($T:ident) => {
+        impl From<[f32; 3]> for $T {
+            fn from(values: [f32; 3]) -> $T {
+                $T::new(values[0], values[1], values[2])
+            }
+        }
+
+        impl From<Vec<f32>> for $T {
+            fn from(values: Vec<f32>) -> $T {
+                assert!(values.len() == 3, "Invalid value for from");
+                $T::new(values[0], values[1], values[2])
+            }
+        }
+    };
+}
+
+define_from!(Vector3);
+define_from!(Point3);
 
 // Vector 3 specific
 impl Vector3 {
@@ -586,5 +598,17 @@ mod tests {
         let m = Matrix4::rot_z(PI / 2.0);
 
         assert_eq_vector3!(Vector3::new(0.0, 1.0, 1.0), v * m, EPSILON);
+    }
+
+    #[test]
+    fn test_from() {
+        let v = Vector3::new(1.0, 2.0, 3.0);
+        let p = Point3::new(1.0, 2.0, 3.0);
+
+        assert_eq_vector3!(Vector3::from([1.0, 2.0, 3.0]), v, EPSILON);
+        assert_eq_vector3!(Vector3::from(vec![1.0, 2.0, 3.0]), v, EPSILON);
+
+        assert_eq_point3!(Point3::from([1.0, 2.0, 3.0]), p, EPSILON);
+        assert_eq_point3!(Point3::from(vec![1.0, 2.0, 3.0]), p, EPSILON);
     }
 }

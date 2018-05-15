@@ -19,19 +19,32 @@ macro_rules! define_impl {
             pub fn new(x: f32, y: f32) -> $T {
                 $T { x, y }
             }
-
-            pub fn new_from_slice(slice: [f32; 2]) -> $T {
-                $T {
-                    x: slice[0],
-                    y: slice[1],
-                }
-            }
         }
     };
 }
 
 define_impl!(Vector2);
 define_impl!(Point2);
+
+macro_rules! define_from {
+    ($T:ident) => {
+        impl From<[f32; 2]> for $T {
+            fn from(values: [f32; 2]) -> $T {
+                $T::new(values[0], values[1])
+            }
+        }
+
+        impl From<Vec<f32>> for $T {
+            fn from(values: Vec<f32>) -> $T {
+                assert!(values.len() == 2, "Invalid value for from");
+                $T::new(values[0], values[1])
+            }
+        }
+    };
+}
+
+define_from!(Vector2);
+define_from!(Point2);
 
 // Vector 3 specific
 impl Vector2 {
@@ -212,18 +225,6 @@ mod tests {
         assert_eq_within_bound!(p.y, 1.0, EPSILON);
     }
 
-    #[test]
-    fn test_new_from_slice() {
-        let v = Vector2::new_from_slice([2.0, 1.0]);
-        let p = Point2::new_from_slice([2.0, 1.0]);
-
-        assert_eq_within_bound!(v.x, 2.0, EPSILON);
-        assert_eq_within_bound!(v.y, 1.0, EPSILON);
-
-        assert_eq_within_bound!(p.x, 2.0, EPSILON);
-        assert_eq_within_bound!(p.y, 1.0, EPSILON);
-    }
-
     // Vector2 specifics
     #[test]
     fn test_vector2_as_point() {
@@ -319,5 +320,17 @@ mod tests {
         let v = Vector2::new(2.0, 3.0);
 
         assert_eq_vector2!(p + v, Vector2 { x: 5.0, y: 4.5 }, EPSILON);
+    }
+
+    #[test]
+    fn test_from() {
+        let p = Point2::new(3.0, 1.5);
+        let v = Vector2::new(2.0, 3.0);
+
+        assert_eq_vector2!(Vector2::from([2.0, 3.0]), v, EPSILON);
+        assert_eq_vector2!(Vector2::from(vec![2.0, 3.0]), v, EPSILON);
+
+        assert_eq_point2!(Point2::from([3.0, 1.5]), p, EPSILON);
+        assert_eq_point2!(Point2::from(vec![3.0, 1.5]), p, EPSILON);
     }
 }

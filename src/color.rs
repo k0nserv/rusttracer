@@ -58,10 +58,6 @@ impl Color {
         )
     }
 
-    pub fn new_from_slice(slice: [f32; 3]) -> Color {
-        Self::new_f32(slice[0], slice[1], slice[2])
-    }
-
     #[inline(always)]
     pub fn r(&self) -> u8 {
         self.r
@@ -120,6 +116,16 @@ impl PartialEq for Color {
 
 impl Eq for Color {}
 
+impl From<[f32; 3]> for Color {
+    fn from(values: [f32; 3]) -> Self {
+        Self::new(
+            Self::clamp((values[0] * 255.0) as i32),
+            Self::clamp((values[1] * 255.0) as i32),
+            Self::clamp((values[2] * 255.0) as i32),
+        )
+    }
+}
+
 // Math
 
 impl Add for Color {
@@ -168,7 +174,7 @@ impl Mul<f32> for Color {
     }
 }
 
-// Factor methods for common colors
+// Factory methods for common colors
 macro_rules! define_color {
     ($name:ident, $r:expr, $g:expr, $b:expr) => {
         #[inline(always)]

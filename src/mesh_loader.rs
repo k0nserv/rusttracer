@@ -98,7 +98,7 @@ impl MeshLoader {
                 specular_texture,
                 m.shininess,
                 illumination_model,
-                None,
+                Some(1000.0 / m.shininess),
                 Some(m.optical_density),
             ));
 

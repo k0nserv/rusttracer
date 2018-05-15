@@ -128,9 +128,9 @@ impl Material {
 
     pub fn new_from_config(config: &config::Material) -> Self {
         Self::new(
-            Color::new_from_slice(config.ambient_color),
-            Color::new_from_slice(config.diffuse_color),
-            Color::new_from_slice(config.specular_color),
+            Color::from(config.ambient_color),
+            Color::from(config.diffuse_color),
+            Color::from(config.specular_color),
             config.specular_exponent,
             config.illumination_model,
             config.reflection_coefficient,

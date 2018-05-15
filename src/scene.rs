@@ -113,7 +113,7 @@ impl Scene {
                     };
                     let mut plane = Box::new(Plane::new(
                         Point3::at_origin(),
-                        Vector3::new_from_slice(normal),
+                        Vector3::from(normal),
                         material,
                     ));
                     Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
@@ -156,8 +156,8 @@ impl Scene {
                     intensity,
                     falloff,
                 } => Box::new(light::Point::new(
-                    Point3::new_from_slice(origin),
-                    Color::new_from_slice(color),
+                    Point3::from(origin),
+                    Color::from(color),
                     intensity,
                     falloff.unwrap_or(light::Falloff::InverseSquare),
                 )) as Box<light::Light>,
@@ -167,8 +167,8 @@ impl Scene {
                     color,
                     intensity,
                 } => Box::new(light::Directional::new(
-                    Vector3::new_from_slice(direction),
-                    Color::new_from_slice(color),
+                    Vector3::from(direction),
+                    Color::from(color),
                     intensity,
                 )) as Box<light::Light>,
             })
@@ -177,8 +177,8 @@ impl Scene {
         Ok(Self::new(
             objects,
             lights,
-            Color::new_from_slice(scene.ambient_color),
-            Color::new_from_slice(scene.clear_color),
+            Color::from(scene.ambient_color),
+            Color::from(scene.clear_color),
         ))
     }
 
