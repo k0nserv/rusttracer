@@ -105,7 +105,10 @@ fn main() {
         &mesh_loader,
         fallback_material,
     ).expect("Invalid scene");
-    let camera_config = config.cameras.first().unwrap();
+    let camera_config = config
+        .cameras
+        .first()
+        .expect("Config should contain at least one valid camera");
     let camera = Camera::from(camera_config);
     let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
 
