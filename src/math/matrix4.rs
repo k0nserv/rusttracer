@@ -8,12 +8,12 @@ pub struct Matrix4 {
 }
 
 impl Matrix4 {
-    pub fn new(data: [[f32; 4]; 4]) -> Matrix4 {
+    pub fn new(data: [[f32; 4]; 4]) -> Self {
         Matrix4 { data }
     }
 
-    pub fn transpose(&self) -> Matrix4 {
-        Matrix4::new([
+    pub fn transpose(&self) -> Self {
+        Self::new([
             [self[(0, 0)], self[(1, 0)], self[(2, 0)], self[(3, 0)]],
             [self[(0, 1)], self[(1, 1)], self[(2, 1)], self[(3, 1)]],
             [self[(0, 2)], self[(1, 2)], self[(2, 2)], self[(3, 2)]],
@@ -70,7 +70,7 @@ impl Matrix4 {
         Ok(result)
     }
 
-    pub fn identity() -> Matrix4 {
+    pub fn identity() -> Self {
         Self::new([
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.],
@@ -79,7 +79,7 @@ impl Matrix4 {
         ])
     }
 
-    pub fn translate(x: f32, y: f32, z: f32) -> Matrix4 {
+    pub fn translate(x: f32, y: f32, z: f32) -> Self {
         Self::new([
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -88,7 +88,7 @@ impl Matrix4 {
         ])
     }
 
-    pub fn scale(x: f32, y: f32, z: f32) -> Matrix4 {
+    pub fn scale(x: f32, y: f32, z: f32) -> Self {
         Self::new([
             [x, 0.0, 0.0, 0.0],
             [0.0, y, 0.0, 0.],
@@ -97,11 +97,11 @@ impl Matrix4 {
         ])
     }
 
-    pub fn scale_uniform(scale: f32) -> Matrix4 {
+    pub fn scale_uniform(scale: f32) -> Self {
         Self::scale(scale, scale, scale)
     }
 
-    pub fn rot_x(theta: f32) -> Matrix4 {
+    pub fn rot_x(theta: f32) -> Self {
         Self::new([
             [1.0, 0.0, 0.0, 0.0],
             [0.0, theta.cos(), theta.sin(), 0.0],
@@ -110,7 +110,7 @@ impl Matrix4 {
         ])
     }
 
-    pub fn rot_y(theta: f32) -> Matrix4 {
+    pub fn rot_y(theta: f32) -> Self {
         Self::new([
             [theta.cos(), 0.0, -theta.sin(), 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -119,7 +119,7 @@ impl Matrix4 {
         ])
     }
 
-    pub fn rot_z(theta: f32) -> Matrix4 {
+    pub fn rot_z(theta: f32) -> Self {
         Self::new([
             [theta.cos(), theta.sin(), 0.0, 0.0],
             [-theta.sin(), theta.cos(), 0.0, 0.0],

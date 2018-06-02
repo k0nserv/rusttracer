@@ -68,11 +68,11 @@ impl Triangle {
         normal: Normal,
         texture_coords: Option<[TextureCoord; 3]>,
         material: Rc<Material>,
-    ) -> Triangle {
+    ) -> Self {
         let ab = b - a;
         let ac = c - a;
 
-        Triangle {
+        Self {
             vertices: [a, b, c],
             ab,
             ac,
