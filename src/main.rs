@@ -38,7 +38,7 @@ fn print_usage(program: &str, opts: &Options) {
     print!("{}", opts.usage(&brief));
 }
 
-fn main() {
+fn main() -> Result<(), Box<std::error::Error>> {
     let args: Vec<String> = env::args().collect();
 
     let program = args[0].clone();
@@ -58,13 +58,13 @@ fn main() {
 
     if matches.opt_present("h") {
         print_usage(&program, &opts);
-        return;
+        return Ok(());
     }
 
     let benchmark = matches.opt_present("b");
     let config_path = matches.opt_str("c").expect("No config provided");
 
-    let config = Config::new_from_file(&config_path).expect("Invalid configuration");
+    let config = Config::new_from_file(&config_path)?;
 
     let scene_path = Path::new(&config_path).parent().unwrap();
     let mesh_loader = MeshLoader::new(scene_path.to_path_buf());
@@ -104,7 +104,7 @@ fn main() {
         &materials,
         &mesh_loader,
         fallback_material,
-    ).expect("Invalid scene");
+    )?;
     let camera_config = config
         .cameras
         .first()
@@ -117,7 +117,7 @@ fn main() {
             let _ = renderer.render(config.max_depth);
         }
 
-        return;
+        return Ok(());
     }
 
     let buffer = renderer.render(config.max_depth);
@@ -134,4 +134,6 @@ fn main() {
         camera_config.height,
         image::RGB(8),
     ).unwrap();
+
+    Ok(())
 }

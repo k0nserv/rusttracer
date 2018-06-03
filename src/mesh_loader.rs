@@ -18,8 +18,8 @@ pub enum MeshLoadError {
     TextureLoadError(texture::file::FileError),
 }
 
-impl MeshLoadError {
-    fn new_from_texture_error(texture_error: texture::file::FileError) -> Self {
+impl From<texture::file::FileError> for MeshLoadError {
+    fn from(texture_error: texture::file::FileError) -> Self {
         MeshLoadError::TextureLoadError(texture_error)
     }
 }
@@ -231,10 +231,8 @@ impl MeshLoader {
         } else {
             PathBuf::from(texture)
         };
+        let texture = texture::file::File::new(full_path)?;
 
-        match texture::file::File::new(full_path) {
-            Ok(texture) => Ok(Some(Box::new(texture))),
-            Err(error) => Err(MeshLoadError::new_from_texture_error(error)),
-        }
+        Ok(Some(Box::new(texture)))
     }
 }

@@ -14,8 +14,8 @@ pub struct FileError {
     cause: image::ImageError,
 }
 
-impl FileError {
-    fn new(cause: image::ImageError) -> Self {
+impl From<image::ImageError> for FileError {
+    fn from(cause: image::ImageError) -> Self {
         let description = String::from(cause.description());
         FileError { cause, description }
     }
@@ -44,10 +44,8 @@ pub struct File {
 
 impl File {
     pub fn new(path: PathBuf) -> Result<Self, FileError> {
-        match image::open(&path) {
-            Err(error) => Err(FileError::new(error)),
-            Ok(image) => Ok(File { path, image }),
-        }
+        let image = image::open(&path)?;
+        Ok(File { path, image })
     }
 }
 
