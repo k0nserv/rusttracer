@@ -3,7 +3,7 @@ use std::fmt;
 use std::path::PathBuf;
 
 use image;
-use image::GenericImage;
+use image::GenericImageView;
 
 use super::{Texture, TextureCoord};
 use color::Color;
