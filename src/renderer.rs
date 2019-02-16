@@ -1,10 +1,10 @@
-use color::Color;
-use scene::Scene;
 use camera::Camera;
-use ray::Ray;
+use color::Color;
 use intersection::Intersection;
 use material::{IllumninationModel, Material};
 use math::{Vector3, EPSILON};
+use ray::Ray;
+use scene::Scene;
 
 use rayon::prelude::*;
 use std::ops::Range;
@@ -92,7 +92,7 @@ impl<'a> Renderer<'a> {
             .into_par_iter()
             .flat_map(|y| {
                 (0..width)
-                    .flat_map(move |x| self.render_point(max_depth, x, y).into_iter())
+                    .flat_map(move |x| self.render_point(max_depth, x, y))
                     .collect::<Vec<u8>>()
                     .into_par_iter()
             })
@@ -202,7 +202,8 @@ impl<'a> Renderer<'a> {
                 Some(original_ray.medium_refraction),
             );
 
-            if self.scene
+            if self
+                .scene
                 .first_intersection(ray, false, distance_to_light)
                 .is_some()
             {
@@ -214,7 +215,8 @@ impl<'a> Renderer<'a> {
             // Diffuse
             if dot > 0.0 {
                 result = result
-                    + (light.color * material.diffuse_color) * dot
+                    + (light.color * material.diffuse_color)
+                        * dot
                         * light.intensity(distance_to_light);
             }
 
@@ -227,7 +229,8 @@ impl<'a> Renderer<'a> {
                 let spec = dot.powf(material.specular_exponent);
 
                 result = result
-                    + (light.color * material.specular_color) * spec
+                    + (light.color * material.specular_color)
+                        * spec
                         * light.intensity(distance_to_light);
             }
         }

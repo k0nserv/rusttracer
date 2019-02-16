@@ -6,14 +6,16 @@ extern crate time;
 
 extern crate rusttracer;
 
-use std::path::Path;
 use std::env;
+use std::path::Path;
 
 use getopts::Options;
 
-use rusttracer::{Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
-                 Scene, SuperSampling};
 use rusttracer::mesh_loader::MeshLoader;
+use rusttracer::{
+    Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer, Scene,
+    SuperSampling,
+};
 
 fn print_usage(program: &str, opts: &Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -69,7 +71,7 @@ fn main() {
         material.diffuse_color = Color::white() * 0.6;
     });
 
-    let materials = config
+    let materials: Vec<Material> = config
         .materials
         .iter()
         .map(|material_config| Material::new_from_config(material_config))
@@ -79,7 +81,8 @@ fn main() {
         &materials,
         &mesh_loader,
         floor_material,
-    ).expect("Invalid scene");
+    )
+    .expect("Invalid scene");
     let camera_config = config.cameras.first().unwrap();
     let camera = Camera::from_config(camera_config);
     let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
@@ -102,5 +105,6 @@ fn main() {
         camera_config.width,
         camera_config.height,
         image::RGB(8),
-    ).unwrap();
+    )
+    .unwrap();
 }

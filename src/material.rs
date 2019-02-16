@@ -2,7 +2,7 @@ use std::convert::From;
 use color::Color;
 use config;
 
-/// See http://paulbourke.net/dataformats/mtl/
+/// See <http://paulbourke.net/dataformats/mtl/>
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Eq)]
 pub enum IllumninationModel {
     /// Mode 0, constant diffuse color
@@ -35,7 +35,7 @@ impl From<u8> for IllumninationModel {
         match value {
             0 => IllumninationModel::Constant,
             1 => IllumninationModel::Diffuse,
-            2 => IllumninationModel::DiffuseSpecular,
+            // 2 is covered by wildcard
             3 => IllumninationModel::DiffuseSpecularReflective,
             4 => IllumninationModel::DiffuseSpecularReflectiveGlass,
             5 => IllumninationModel::DiffuseSpecularFresnel,

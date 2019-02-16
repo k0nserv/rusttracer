@@ -12,7 +12,6 @@ serde = "1.0.12"
 serde_derive = "1.0.12"
 serde_json = "1.0"
 getopts = "0.2.4"
-clippy={version = "*", optional = true}
 toml="0.4"
 
 [features]
