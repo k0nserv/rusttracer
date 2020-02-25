@@ -17,8 +17,10 @@ use getopts::Options;
 use rusttracer::geometry::triangle::stats;
 use rusttracer::mesh_loader::MeshLoader;
 use rusttracer::texture;
-use rusttracer::{Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer,
-                 Scene, SuperSampling};
+use rusttracer::{
+    Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer, Scene,
+    SuperSampling,
+};
 
 #[cfg(feature = "stats")]
 fn print_triangle_stats() {
@@ -38,7 +40,7 @@ fn print_usage(program: &str, opts: &Options) {
     print!("{}", opts.usage(&brief));
 }
 
-fn main() -> Result<(), Box<std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
 
     let program = args[0].clone();
@@ -133,7 +135,8 @@ fn main() -> Result<(), Box<std::error::Error>> {
         camera_config.width,
         camera_config.height,
         image::RGB(8),
-    ).unwrap();
+    )
+    .unwrap();
 
     Ok(())
 }

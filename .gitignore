@@ -3,3 +3,4 @@ images/
 *.obj
 *.mtl
 scenes/*/
+.DS_Store

@@ -60,7 +60,8 @@ impl Light for Directional {
 
         if dot > 0.0 {
             Some(
-                (self.color * material.diffuse_color(intersection.texture_coord)) * dot
+                (self.color * material.diffuse_color(intersection.texture_coord))
+                    * dot
                     * self.intensity(distance_to_light),
             )
         } else {
@@ -75,13 +76,15 @@ impl Light for Directional {
         ray: &Ray,
         distance_to_light: f32,
     ) -> Option<Color> {
-        let dot = ray.direction
+        let dot = ray
+            .direction
             .dot(&self.inverse_direction.reflect(&intersection.normal));
 
         if dot > 0.0 {
             let spec = dot.powf(material.specular_exponent);
             Some(
-                (self.color * material.specular_color(intersection.texture_coord)) * spec
+                (self.color * material.specular_color(intersection.texture_coord))
+                    * spec
                     * self.intensity(distance_to_light),
             )
         } else {

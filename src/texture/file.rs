@@ -32,7 +32,7 @@ impl Error for FileError {
         self.description.as_ref()
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         Some(&self.cause)
     }
 }

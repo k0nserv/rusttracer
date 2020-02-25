@@ -12,7 +12,7 @@ pub enum Transform {
 }
 
 impl Transform {
-    pub fn perform(&self, transformable: &mut Transformable) {
+    pub fn perform(&self, transformable: &mut dyn Transformable) {
         let transform = match *self {
             Transform::Translate { value } => {
                 math::Transform::new(math::Matrix4::translate(value[0], value[1], value[2]))

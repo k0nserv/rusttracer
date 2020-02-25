@@ -43,7 +43,7 @@ impl Error for MeshLoadError {
         }
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         match self {
             MeshLoadError::TextureLoadError(inner_error) => Some(inner_error),
         }
@@ -221,7 +221,7 @@ impl MeshLoader {
         &self,
         obj_path: &Path,
         texture: &str,
-    ) -> Result<Option<Box<texture::Texture>>, MeshLoadError> {
+    ) -> Result<Option<Box<dyn texture::Texture>>, MeshLoadError> {
         if texture.is_empty() {
             return Ok(None);
         }

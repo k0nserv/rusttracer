@@ -38,22 +38,22 @@ impl Error for SceneConfigLoadError {
         "Failed to load scene from config"
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         None
     }
 }
 
 pub struct Scene {
-    pub objects: Vec<Box<Intersectable>>,
-    pub lights: Vec<Box<light::Light>>,
+    pub objects: Vec<Box<dyn Intersectable>>,
+    pub lights: Vec<Box<dyn light::Light>>,
     pub ambient_color: Color,
     pub clear_color: Color,
 }
 
 impl Scene {
     pub fn new(
-        objects: Vec<Box<Intersectable>>,
-        lights: Vec<Box<light::Light>>,
+        objects: Vec<Box<dyn Intersectable>>,
+        lights: Vec<Box<dyn light::Light>>,
         ambient_color: Color,
         clear_color: Color,
     ) -> Scene {
@@ -71,7 +71,7 @@ impl Scene {
         mesh_loader: &MeshLoader,
         fallback_material: Rc<Material>,
     ) -> Result<Scene, SceneConfigLoadError> {
-        let mut objects: Vec<Box<Intersectable>> = vec![];
+        let mut objects: Vec<Box<dyn Intersectable>> = vec![];
 
         for object in &scene.objects {
             match *object {
@@ -92,8 +92,8 @@ impl Scene {
                         }
                     };
                     let mut sphere = Box::new(Sphere::new(Point3::at_origin(), radius, material));
-                    Self::apply_transforms(sphere.as_mut() as &mut Transformable, transforms);
-                    objects.push(sphere as Box<Intersectable>);
+                    Self::apply_transforms(sphere.as_mut() as &mut dyn Transformable, transforms);
+                    objects.push(sphere as Box<dyn Intersectable>);
                 }
                 Object::Plane {
                     normal,
@@ -116,8 +116,8 @@ impl Scene {
                         Vector3::from(normal),
                         material,
                     ));
-                    Self::apply_transforms(plane.as_mut() as &mut Transformable, transforms);
-                    objects.push(plane as Box<Intersectable>);
+                    Self::apply_transforms(plane.as_mut() as &mut dyn Transformable, transforms);
+                    objects.push(plane as Box<dyn Intersectable>);
                 }
                 Object::Mesh {
                     ref path,
@@ -134,11 +134,11 @@ impl Scene {
                     };
 
                     for mesh in &mut meshes {
-                        Self::apply_transforms(mesh.as_mut() as &mut Transformable, transforms);
+                        Self::apply_transforms(mesh.as_mut() as &mut dyn Transformable, transforms);
                     }
                     let mut intersectables = meshes
                         .into_iter()
-                        .map(|mesh| mesh as Box<Intersectable>)
+                        .map(|mesh| mesh as Box<dyn Intersectable>)
                         .collect();
 
                     objects.append(&mut intersectables);
@@ -146,7 +146,7 @@ impl Scene {
             }
         }
 
-        let lights: Vec<Box<light::Light>> = scene
+        let lights: Vec<Box<dyn light::Light>> = scene
             .lights
             .iter()
             .map(|light| match *light {
@@ -160,7 +160,7 @@ impl Scene {
                     Color::from(color),
                     intensity,
                     falloff.unwrap_or(light::Falloff::InverseSquare),
-                )) as Box<light::Light>,
+                )) as Box<dyn light::Light>,
 
                 config::Light::DirectionalLight {
                     direction,
@@ -170,7 +170,7 @@ impl Scene {
                     Vector3::from(direction),
                     Color::from(color),
                     intensity,
-                )) as Box<light::Light>,
+                )) as Box<dyn light::Light>,
             })
             .collect();
 
@@ -182,7 +182,10 @@ impl Scene {
         ))
     }
 
-    fn apply_transforms(shape: &mut Transformable, transforms: &Option<Vec<config::Transform>>) {
+    fn apply_transforms(
+        shape: &mut dyn Transformable,
+        transforms: &Option<Vec<config::Transform>>,
+    ) {
         if let Some(ref transforms_to_apply) = *transforms {
             for transform in transforms_to_apply {
                 transform.perform(shape);

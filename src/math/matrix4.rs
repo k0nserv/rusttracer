@@ -159,7 +159,8 @@ impl Mul for Matrix4 {
 
         for i in 0..4 {
             for j in 0..4 {
-                result[(i, j)] = self[(i, 0)] * other[(0, j)] + self[(i, 1)] * other[(1, j)]
+                result[(i, j)] = self[(i, 0)] * other[(0, j)]
+                    + self[(i, 1)] * other[(1, j)]
                     + self[(i, 2)] * other[(2, j)]
                     + self[(i, 3)] * other[(3, j)];
             }

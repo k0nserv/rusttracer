@@ -24,12 +24,12 @@ use renderer::SuperSampling;
 
 #[derive(Debug)]
 pub struct ConfigError {
-    cause: Option<Box<Error>>,
+    cause: Option<Box<dyn Error>>,
     message: String,
 }
 
 impl ConfigError {
-    fn new(message: String, cause: Option<Box<Error>>) -> Self {
+    fn new(message: String, cause: Option<Box<dyn Error>>) -> Self {
         ConfigError { message, cause }
     }
 }
@@ -48,7 +48,7 @@ impl Error for ConfigError {
         self.message.as_ref()
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         match self.cause {
             Some(ref error) => Some(error.as_ref()),
             None => None,

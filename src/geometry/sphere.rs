@@ -110,7 +110,8 @@ mod tests {
                 IllumninationModel::Constant,
                 None,
                 None,
-            ).build_material(|_ignore| {}),
+            )
+            .build_material(|_ignore| {}),
         )
     }
 

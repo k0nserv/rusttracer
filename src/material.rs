@@ -47,7 +47,7 @@ impl From<u8> for IllumninationModel {
     }
 }
 
-type OptionalTexture = Option<Box<Texture>>;
+type OptionalTexture = Option<Box<dyn Texture>>;
 
 #[derive(Debug)]
 pub struct Material {

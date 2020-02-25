@@ -6,7 +6,7 @@ use texture::TextureCoord;
 #[derive(Copy, Clone)]
 pub struct Intersection<'a> {
     pub t: f32,
-    pub shape: &'a Shape,
+    pub shape: &'a dyn Shape,
     pub point: Point3,
     pub ray: Ray,
     pub normal: Vector3,
@@ -17,7 +17,7 @@ pub struct Intersection<'a> {
 impl<'a> Intersection<'a> {
     pub fn new(
         t: f32,
-        shape: &'a Shape,
+        shape: &'a dyn Shape,
         point: Point3,
         ray: Ray,
         normal: Vector3,

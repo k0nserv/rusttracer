@@ -53,7 +53,8 @@ impl Camera {
         let y_sample_offset = if samples == 1 { 0.5 } else { y_sample as f32 };
 
         let px = ((2.0 * (((x * samples) as f32) + x_sample_offset) / sample_width) - 1.0)
-            * self.aspect_ratio * self.scale;
+            * self.aspect_ratio
+            * self.scale;
         let py =
             ((2.0 * (((y * samples) as f32) + y_sample_offset) / sample_height) - 1.0) * self.scale;
 
