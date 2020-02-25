@@ -142,7 +142,7 @@ impl Material {
         match &self.ambient_texture {
             None => self.ambient_color,
             Some(texture) => uv.map_or(self.ambient_color, |coord| {
-                self.ambient_color * texture.lookup(&coord)
+                self.ambient_color * texture.lookup(coord)
             }),
         }
     }
@@ -151,7 +151,7 @@ impl Material {
         match &self.diffuse_texture {
             None => self.diffuse_color,
             Some(texture) => uv.map_or(self.diffuse_color, |coord| {
-                self.diffuse_color * texture.lookup(&coord)
+                self.diffuse_color * texture.lookup(coord)
             }),
         }
     }
@@ -160,7 +160,7 @@ impl Material {
         match &self.specular_texture {
             None => self.specular_color,
             Some(texture) => uv.map_or(self.specular_color, |coord| {
-                self.specular_color * texture.lookup(&coord)
+                self.specular_color * texture.lookup(coord)
             }),
         }
     }

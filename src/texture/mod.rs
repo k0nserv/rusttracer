@@ -13,5 +13,5 @@ pub use self::solid::Solid;
 pub type TextureCoord = Point2;
 
 pub trait Texture: Debug {
-    fn lookup(&self, uv: &TextureCoord) -> Color;
+    fn lookup(&self, uv: TextureCoord) -> Color;
 }

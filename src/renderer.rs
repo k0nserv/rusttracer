@@ -88,11 +88,10 @@ impl<'a> Renderer<'a> {
         let width = self.camera.width as usize;
 
         range
-            .clone()
             .into_par_iter()
             .flat_map(|y| {
                 (0..width)
-                    .flat_map(move |x| self.render_point(max_depth, x, y).into_iter())
+                    .flat_map(move |x| self.render_point(max_depth, x, y))
                     .collect::<Vec<u8>>()
                     .into_par_iter()
             })
@@ -201,7 +200,8 @@ impl<'a> Renderer<'a> {
         for light in &self.scene.lights {
             let ray = light.create_shadow_ray(intersection, Some(original_ray.medium_refraction));
             let distance_to_light = light.distance_to_light(&intersection);
-            if self.scene
+            if self
+                .scene
                 .first_intersection(ray, false, distance_to_light)
                 .is_some()
             {
@@ -282,7 +282,8 @@ impl<'a> Renderer<'a> {
             let absorbance = intersection
                 .shape
                 .material()
-                .ambient_color(intersection.texture_coord) * 0.15
+                .ambient_color(intersection.texture_coord)
+                * 0.15
                 * -intersection.t;
             let transparency = Color::new_f32(
                 absorbance.r_f32().exp(),

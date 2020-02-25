@@ -6,14 +6,14 @@ use color::Color;
 #[derive(Clone)]
 pub struct Procedural<F>
 where
-    F: Fn(&TextureCoord) -> Color,
+    F: Fn(TextureCoord) -> Color,
 {
     callback: F,
 }
 
 impl<F> Procedural<F>
 where
-    F: Fn(&TextureCoord) -> Color,
+    F: Fn(TextureCoord) -> Color,
 {
     pub fn new(callback: F) -> Self {
         Procedural { callback }
@@ -22,16 +22,16 @@ where
 
 impl<F> Texture for Procedural<F>
 where
-    F: Fn(&TextureCoord) -> Color,
+    F: Fn(TextureCoord) -> Color,
 {
-    fn lookup(&self, uv: &TextureCoord) -> Color {
+    fn lookup(&self, uv: TextureCoord) -> Color {
         (self.callback)(uv)
     }
 }
 
 impl<F> fmt::Debug for Procedural<F>
 where
-    F: Fn(&TextureCoord) -> Color,
+    F: Fn(TextureCoord) -> Color,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Procedural {{ }}")

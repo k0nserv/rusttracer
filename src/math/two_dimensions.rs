@@ -48,15 +48,15 @@ define_from!(Point2);
 
 // Vector 3 specific
 impl Vector2 {
-    pub fn dot(&self, other: &Self) -> f32 {
+    pub fn dot(self, other: &Self) -> f32 {
         self.x * other.x + self.y * other.y
     }
 
-    pub fn length(&self) -> f32 {
+    pub fn length(self) -> f32 {
         self.dot(&self).sqrt()
     }
 
-    pub fn normalize(&self) -> Self {
+    pub fn normalize(self) -> Self {
         let l = self.length();
 
         if l == 0.0 {
@@ -69,7 +69,7 @@ impl Vector2 {
         }
     }
 
-    pub fn as_point(&self) -> Point2 {
+    pub fn as_point(self) -> Point2 {
         Point2::new(self.x, self.y)
     }
 }

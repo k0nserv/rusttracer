@@ -13,7 +13,7 @@ impl Solid {
 }
 
 impl Texture for Solid {
-    fn lookup(&self, _uv: &TextureCoord) -> Color {
+    fn lookup(&self, _uv: TextureCoord) -> Color {
         self.color
     }
 }

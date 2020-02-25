@@ -50,7 +50,7 @@ impl File {
 }
 
 impl Texture for File {
-    fn lookup(&self, uv: &TextureCoord) -> Color {
+    fn lookup(&self, uv: TextureCoord) -> Color {
         // assert!(
         //     uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0,
         //     "Incorrect uv coordinate: {:?}",

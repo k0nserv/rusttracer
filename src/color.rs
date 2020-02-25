@@ -59,37 +59,37 @@ impl Color {
     }
 
     #[inline(always)]
-    pub fn r(&self) -> u8 {
+    pub fn r(self) -> u8 {
         self.r
     }
 
     #[inline(always)]
-    pub fn r_f32(&self) -> f32 {
+    pub fn r_f32(self) -> f32 {
         f32::from(self.r()) / 255.0
     }
 
     #[inline(always)]
-    pub fn g(&self) -> u8 {
+    pub fn g(self) -> u8 {
         self.g
     }
 
     #[inline(always)]
-    pub fn g_f32(&self) -> f32 {
+    pub fn g_f32(self) -> f32 {
         f32::from(self.g()) / 255.0
     }
 
     #[inline(always)]
-    pub fn b(&self) -> u8 {
+    pub fn b(self) -> u8 {
         self.b
     }
 
     #[inline(always)]
-    pub fn b_f32(&self) -> f32 {
+    pub fn b_f32(self) -> f32 {
         f32::from(self.b()) / 255.0
     }
 
     #[inline(always)]
-    pub fn as_u32(&self) -> u32 {
+    pub fn as_u32(self) -> u32 {
         0xFF00_0000 & u32::from(self.r) & u32::from(self.g) << 8 & u32::from(self.b) << 16
     }
 
@@ -132,7 +132,7 @@ impl Add for Color {
     type Output = Color;
 
     fn add(self, other: Color) -> Color {
-        let f = |f: fn(&Color) -> u8| Color::clamp(i32::from(f(&self)) + i32::from(f(&other)));
+        let f = |f: fn(Color) -> u8| Color::clamp(i32::from(f(self)) + i32::from(f(other)));
 
         Color::new(f(Color::r), f(Color::g), f(Color::b))
     }
