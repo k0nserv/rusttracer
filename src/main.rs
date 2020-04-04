@@ -2,7 +2,6 @@
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 extern crate getopts;
 extern crate image;
-extern crate time;
 
 extern crate rusttracer;
 
@@ -10,6 +9,7 @@ use std::env;
 use std::f32::consts::PI;
 use std::path::Path;
 use std::rc::Rc;
+use std::time::SystemTime;
 
 use getopts::Options;
 
@@ -127,7 +127,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "stats")]
     print_triangle_stats();
 
-    let timestamp = time::get_time().sec;
+    let now = SystemTime::now();
+    let timestamp = now.duration_since(SystemTime::UNIX_EPOCH)?.as_secs();
     let filename = format!("images/{}.png", timestamp);
     image::save_buffer(
         &Path::new(&filename),
