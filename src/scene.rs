@@ -34,11 +34,7 @@ impl fmt::Display for SceneConfigLoadError {
 }
 
 impl Error for SceneConfigLoadError {
-    fn description(&self) -> &str {
-        "Failed to load scene from config"
-    }
-
-    fn cause(&self) -> Option<&dyn Error> {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
         None
     }
 }
@@ -123,15 +119,14 @@ impl Scene {
                     ref path,
                     ref transforms,
                 } => {
-                    let mut meshes = match mesh_loader
-                        .load(Path::new(&path), fallback_material.clone())
-                    {
-                        Ok(meshes) => meshes,
-                        Err(error) => {
-                            println!("Failed to load scene: {}", error);
-                            return Err(SceneConfigLoadError::new(error.description().to_string()));
-                        }
-                    };
+                    let mut meshes =
+                        match mesh_loader.load(Path::new(&path), fallback_material.clone()) {
+                            Ok(meshes) => meshes,
+                            Err(error) => {
+                                println!("Failed to load scene: {}", error);
+                                return Err(SceneConfigLoadError::new(error.to_string()));
+                            }
+                        };
 
                     for mesh in &mut meshes {
                         Self::apply_transforms(mesh.as_mut() as &mut dyn Transformable, transforms);

@@ -16,7 +16,7 @@ pub struct FileError {
 
 impl From<image::ImageError> for FileError {
     fn from(cause: image::ImageError) -> Self {
-        let description = String::from(cause.description());
+        let description = String::from(cause.to_string());
         FileError { cause, description }
     }
 }

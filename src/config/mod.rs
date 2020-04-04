@@ -44,11 +44,7 @@ impl fmt::Display for ConfigError {
 }
 
 impl Error for ConfigError {
-    fn description(&self) -> &str {
-        self.message.as_ref()
-    }
-
-    fn cause(&self) -> Option<&dyn Error> {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self.cause {
             Some(ref error) => Some(error.as_ref()),
             None => None,

@@ -1,7 +1,37 @@
+use std::convert::TryFrom;
+use std::error::Error;
+use std::fmt;
+
 use color::Color;
 use config;
-use std::convert::From;
 use texture::{Texture, TextureCoord};
+
+#[derive(Debug)]
+pub struct IllumninationModelParsingError {
+    invalid_model: u8,
+}
+
+impl IllumninationModelParsingError {
+    fn new(invalid_model: u8) -> Self {
+        Self { invalid_model }
+    }
+}
+
+impl fmt::Display for IllumninationModelParsingError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Failed to parse illumination model: {}",
+            self.invalid_model
+        )
+    }
+}
+
+impl Error for IllumninationModelParsingError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
+}
 
 /// See http://paulbourke.net/dataformats/mtl/
 #[derive(Deserialize, Debug, Copy, Clone, PartialEq, Eq)]
@@ -30,19 +60,20 @@ pub enum IllumninationModel {
     DiffuseSpecularRefractedFresnel = 7,
 }
 
-// TODO: Make it possible for this to fail
-impl From<u8> for IllumninationModel {
-    fn from(value: u8) -> Self {
+impl TryFrom<u8> for IllumninationModel {
+    type Error = IllumninationModelParsingError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            0 => IllumninationModel::Constant,
-            1 => IllumninationModel::Diffuse,
-            2 => IllumninationModel::DiffuseSpecular,
-            3 => IllumninationModel::DiffuseSpecularReflective,
-            4 => IllumninationModel::DiffuseSpecularReflectiveGlass,
-            5 => IllumninationModel::DiffuseSpecularFresnel,
-            6 => IllumninationModel::DiffuseSpecularRefracted,
-            7 => IllumninationModel::DiffuseSpecularRefractedFresnel,
-            _ => IllumninationModel::DiffuseSpecular,
+            0 => Ok(IllumninationModel::Constant),
+            1 => Ok(IllumninationModel::Diffuse),
+            2 => Ok(IllumninationModel::DiffuseSpecular),
+            3 => Ok(IllumninationModel::DiffuseSpecularReflective),
+            4 => Ok(IllumninationModel::DiffuseSpecularReflectiveGlass),
+            5 => Ok(IllumninationModel::DiffuseSpecularFresnel),
+            6 => Ok(IllumninationModel::DiffuseSpecularRefracted),
+            7 => Ok(IllumninationModel::DiffuseSpecularRefractedFresnel),
+            _ => Err(IllumninationModelParsingError::new(value)),
         }
     }
 }

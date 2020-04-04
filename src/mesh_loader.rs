@@ -1,6 +1,7 @@
 extern crate tobj;
 
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -9,18 +10,25 @@ use std::rc::Rc;
 use color::Color;
 use geometry::triangle::Normal;
 use geometry::{Mesh, Triangle, AABB};
-use material::{IllumninationModel, Material};
+use material::{IllumninationModel, IllumninationModelParsingError, Material};
 use math::{Point3, Vector3};
 use texture;
 
 #[derive(Debug)]
 pub enum MeshLoadError {
     TextureLoadError(texture::file::FileError),
+    IllumenationModelParsingError(IllumninationModelParsingError),
 }
 
 impl From<texture::file::FileError> for MeshLoadError {
     fn from(texture_error: texture::file::FileError) -> Self {
         MeshLoadError::TextureLoadError(texture_error)
+    }
+}
+
+impl From<IllumninationModelParsingError> for MeshLoadError {
+    fn from(illumination_model_error: IllumninationModelParsingError) -> Self {
+        MeshLoadError::IllumenationModelParsingError(illumination_model_error)
     }
 }
 
@@ -32,20 +40,20 @@ impl fmt::Display for MeshLoadError {
                 "Failed to load meshes with texture load error: {}",
                 inner_error
             ),
+            MeshLoadError::IllumenationModelParsingError(inner_error) => write!(
+                f,
+                "Failed to load meshes with illumination model error: {}",
+                inner_error
+            ),
         }
     }
 }
 
 impl Error for MeshLoadError {
-    fn description(&self) -> &str {
-        match self {
-            MeshLoadError::TextureLoadError(_) => "Mesh load failed due to texture loading error",
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn Error> {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             MeshLoadError::TextureLoadError(inner_error) => Some(inner_error),
+            MeshLoadError::IllumenationModelParsingError(inner_error) => Some(inner_error),
         }
     }
 }
@@ -78,7 +86,7 @@ impl MeshLoader {
 
         for (i, m) in materials.iter().enumerate() {
             let illumination_model = match m.illumination_model {
-                Some(model) => IllumninationModel::from(model),
+                Some(model) => IllumninationModel::try_from(model)?,
                 None => IllumninationModel::DiffuseSpecular,
             };
 
