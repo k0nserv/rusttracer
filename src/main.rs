@@ -134,7 +134,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         &buffer[..],
         camera_config.width,
         camera_config.height,
-        image::RGB(8),
+        image::ColorType::Rgb8,
     )
     .unwrap();
 
