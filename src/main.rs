@@ -112,7 +112,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .first()
         .expect("Config should contain at least one valid camera");
     let camera = Camera::from(camera_config);
-    let renderer = Renderer::new(&scene, &camera, SuperSampling::On(2));
+    let renderer = Renderer::new(&scene, &camera, config.super_sampling);
 
     if benchmark {
         for _ in 0..10 {
