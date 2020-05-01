@@ -3,10 +3,12 @@ use math::Point2;
 use std::fmt::Debug;
 
 pub mod file;
+mod mandelbrot;
 mod procedural;
 mod solid;
 
 pub use self::file::File;
+pub use self::mandelbrot::mandelbrot;
 pub use self::procedural::Procedural;
 pub use self::solid::Solid;
 

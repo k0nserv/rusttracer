@@ -15,9 +15,9 @@ pub enum SuperSampling {
     On(u32),
 }
 
-pub struct Renderer<'a> {
-    scene: &'a Scene,
-    camera: &'a Camera,
+pub struct Renderer {
+    scene: Scene,
+    camera: Camera,
     super_sampling: SuperSampling,
 }
 
@@ -67,15 +67,11 @@ impl RefractionProperties {
     }
 }
 
-unsafe impl<'a> Sync for Renderer<'a> {}
-unsafe impl<'a> Send for Renderer<'a> {}
+unsafe impl Sync for Renderer {}
+unsafe impl Send for Renderer {}
 
-impl<'a> Renderer<'a> {
-    pub fn new(
-        scene: &'a Scene,
-        camera: &'a Camera,
-        super_sampling: SuperSampling,
-    ) -> Renderer<'a> {
+impl Renderer {
+    pub fn new(scene: Scene, camera: Camera, super_sampling: SuperSampling) -> Renderer {
         Renderer {
             scene,
             camera,

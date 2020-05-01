@@ -10,7 +10,7 @@ use std::rc::Rc;
 use color::Color;
 use geometry::triangle::Normal;
 use geometry::{Mesh, Triangle, AABB};
-use material::{IllumninationModel, IllumninationModelParsingError, Material};
+use material::{IllumninationModel, IllumninationModelParsingError, Material, OptionalTexture};
 use math::{Point3, Vector3};
 use texture;
 
@@ -229,7 +229,7 @@ impl MeshLoader {
         &self,
         obj_path: &Path,
         texture: &str,
-    ) -> Result<Option<Box<dyn texture::Texture>>, MeshLoadError> {
+    ) -> Result<OptionalTexture, MeshLoadError> {
         if texture.is_empty() {
             return Ok(None);
         }
@@ -241,6 +241,6 @@ impl MeshLoader {
         };
         let texture = texture::file::File::new(full_path)?;
 
-        Ok(Some(Box::new(texture)))
+        Ok(Some(Rc::new(texture)))
     }
 }

@@ -107,6 +107,7 @@ impl Scene {
                             materials[name].clone()
                         }
                     };
+
                     let mut plane = Box::new(Plane::new(
                         Point3::at_origin(),
                         Vector3::from(normal),
@@ -118,15 +119,27 @@ impl Scene {
                 Object::Mesh {
                     ref path,
                     ref transforms,
+                    ref material_name,
                 } => {
-                    let mut meshes =
-                        match mesh_loader.load(Path::new(&path), fallback_material.clone()) {
-                            Ok(meshes) => meshes,
-                            Err(error) => {
-                                println!("Failed to load scene: {}", error);
-                                return Err(SceneConfigLoadError::new(error.to_string()));
-                            }
-                        };
+                    let material = match material_name {
+                        None => fallback_material.clone(),
+                        Some(name) => {
+                            assert!(
+                                materials.contains_key(name),
+                                "Invalid material name: {}",
+                                name
+                            );
+                            materials[name].clone()
+                        }
+                    };
+
+                    let mut meshes = match mesh_loader.load(Path::new(&path), material) {
+                        Ok(meshes) => meshes,
+                        Err(error) => {
+                            println!("Failed to load scene: {}", error);
+                            return Err(SceneConfigLoadError::new(error.to_string()));
+                        }
+                    };
 
                     for mesh in &mut meshes {
                         Self::apply_transforms(mesh.as_mut() as &mut dyn Transformable, transforms);

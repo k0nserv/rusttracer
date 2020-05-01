@@ -58,6 +58,29 @@ impl Color {
         )
     }
 
+    pub fn new_hsv(hue: f32, saturation: f32, value: f32) -> Color {
+        let normalized_hue = hue % 360.0;
+        let normalized_saturation = saturation.min(1.0).max(0.0);
+        let normalized_value = value.min(1.0).max(0.0);
+
+        let chroma = normalized_saturation * normalized_value;
+        let hue_d = normalized_hue / 60.0;
+        let x = chroma * (1.0 - ((hue_d % 2.0) - 1.0).abs());
+
+        let color = match hue_d {
+            v if v >= 0.0 && v <= 1.0 => (chroma, x, 0.0),
+            v if v > 1.0 && v <= 2.0 => (x, chroma, 0.0),
+            v if v > 2.0 && v <= 3.0 => (0.0, chroma, x),
+            v if v > 3.0 && v <= 4.0 => (0.0, x, chroma),
+            v if v > 4.0 && v <= 5.0 => (x, 0.0, chroma),
+            v if v > 5.0 && v <= 6.0 => (chroma, 0.0, x),
+            _ => (0.0, 0.0, 0.0),
+        };
+
+        let m = normalized_value - chroma;
+        Color::new_f32(color.0 + m, color.1 + m, color.2 + m)
+    }
+
     #[inline(always)]
     pub fn r(self) -> u8 {
         self.r

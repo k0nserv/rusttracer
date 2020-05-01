@@ -1,9 +1,9 @@
 use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt;
+use std::rc::Rc;
 
 use color::Color;
-use config;
 use texture::{Texture, TextureCoord};
 
 #[derive(Debug)]
@@ -78,7 +78,7 @@ impl TryFrom<u8> for IllumninationModel {
     }
 }
 
-type OptionalTexture = Option<Box<dyn Texture>>;
+pub type OptionalTexture = Option<Rc<dyn Texture>>;
 
 #[derive(Debug)]
 pub struct Material {
@@ -155,18 +155,6 @@ impl Material {
             reflection_coefficient,
             refraction_coefficient,
         }
-    }
-
-    pub fn new_from_config(config: &config::Material) -> Self {
-        Self::new(
-            Color::from(config.ambient_color),
-            Color::from(config.diffuse_color),
-            Color::from(config.specular_color),
-            config.specular_exponent,
-            config.illumination_model,
-            config.reflection_coefficient,
-            config.refraction_coefficient,
-        )
     }
 
     pub fn ambient_color(&self, uv: Option<TextureCoord>) -> Color {

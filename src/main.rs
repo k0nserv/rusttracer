@@ -15,12 +15,8 @@ use getopts::Options;
 
 #[cfg(feature = "stats")]
 use rusttracer::geometry::triangle::stats;
-use rusttracer::mesh_loader::MeshLoader;
 use rusttracer::texture;
-use rusttracer::{
-    Camera, Color, Config, IllumninationModel, Material, MaterialTemplate, Renderer, Scene,
-    SuperSampling,
-};
+use rusttracer::{Color, ConfigLoader, IllumninationModel, MaterialTemplate};
 
 #[cfg(feature = "stats")]
 fn print_triangle_stats() {
@@ -66,10 +62,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let benchmark = matches.opt_present("b");
     let config_path = matches.opt_str("c").expect("No config provided");
 
-    let config = Config::new_from_file(&config_path)?;
-
-    let scene_path = Path::new(&config_path).parent().unwrap();
-    let mesh_loader = MeshLoader::new(scene_path.to_path_buf());
     let template = MaterialTemplate::new(
         Color::blue() * 0.02,
         Color::black(),
@@ -82,7 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fallback_material = Rc::new(template.build_material(|material| {
         material.ambient_color = Color::white() * 0.05;
         material.diffuse_color = Color::white() * 0.0;
-        material.ambient_texture = Some(Box::new(texture::Procedural::new(|uv| {
+        material.ambient_texture = Some(Rc::new(texture::Procedural::new(|uv| {
             Color::new_f32(
                 ((uv.x * 32.0 * PI).sin() + (uv.y * 32.0 * PI).cos() + 1.0) * 0.5,
                 0.0,
@@ -90,29 +82,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             )
         })));
     }));
-
-    let materials = config
-        .materials
-        .iter()
-        .map(|material_config| {
-            (
-                material_config.name.to_owned(),
-                Rc::new(Material::new_from_config(material_config)),
-            )
-        })
-        .collect();
-    let scene = Scene::new_from_config(
-        &config.scenes.first().unwrap(),
-        &materials,
-        &mesh_loader,
-        fallback_material,
-    )?;
-    let camera_config = config
-        .cameras
-        .first()
-        .expect("Config should contain at least one valid camera");
-    let camera = Camera::from(camera_config);
-    let renderer = Renderer::new(&scene, &camera, config.super_sampling);
+    let mut config_loader = ConfigLoader::new(fallback_material);
+    config_loader.register_named_texture(
+        "mandelbrot",
+        Rc::new(texture::Procedural::new(texture::mandelbrot)),
+    );
+    let (renderer, config) = config_loader.load_renderer_from_config(&config_path)?;
+    let camera_config = config.cameras.first().unwrap();
 
     if benchmark {
         for _ in 0..10 {
