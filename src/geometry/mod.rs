@@ -28,6 +28,6 @@ pub trait Shape: Intersectable {
 }
 
 pub trait BoundingVolume {
-    fn new(triangles: &[Box<Triangle>]) -> Self;
+    fn new(triangles: &[Triangle]) -> Self;
     fn intersect(&self, ray: Ray) -> bool;
 }

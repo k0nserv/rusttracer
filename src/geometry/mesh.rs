@@ -8,12 +8,12 @@ use ray::Ray;
 
 #[derive(Debug)]
 pub struct Mesh<T: BoundingVolume> {
-    triangles: Vec<Box<Triangle>>,
+    triangles: Vec<Triangle>,
     bounding_volume: Box<T>,
 }
 
 impl<T: BoundingVolume> Mesh<T> {
-    pub fn new(triangles: Vec<Box<Triangle>>) -> Self {
+    pub fn new(triangles: Vec<Triangle>) -> Self {
         let bounding_volume = Box::new(T::new(&triangles));
         Self {
             triangles,
@@ -78,7 +78,7 @@ impl<T: BoundingVolume> Mesh<T> {
         Self::new(triangles)
     }
 
-    fn from_triangles(vertices: &[Point3], material: Rc<Material>) -> Vec<Box<Triangle>> {
+    fn from_triangles(vertices: &[Point3], material: Rc<Material>) -> Vec<Triangle> {
         assert!(
             vertices.len() % 3 == 0,
             "Number of vertices should be a multiple of 3"
@@ -92,14 +92,14 @@ impl<T: BoundingVolume> Mesh<T> {
                 let ac = a - c;
                 let normal = ab.cross(&ac).normalize();
 
-                Box::new(Triangle::new(
+                Triangle::new(
                     vertices[i * 3],
                     vertices[i * 3 + 1],
                     vertices[i * 3 + 2],
                     Normal::Face(normal),
                     None,
                     material.clone(),
-                ))
+                )
             })
             .collect()
     }
@@ -108,7 +108,7 @@ impl<T: BoundingVolume> Mesh<T> {
 impl<T: BoundingVolume> Transformable for Mesh<T> {
     fn transform(&mut self, transform: &Transform) {
         for boxed_triangle in &mut self.triangles {
-            boxed_triangle.as_mut().transform(transform);
+            boxed_triangle.transform(transform);
         }
 
         self.bounding_volume = Box::new(T::new(&self.triangles));

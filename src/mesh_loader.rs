@@ -208,14 +208,7 @@ impl MeshLoader {
                     }
                 }
 
-                triangles.push(Box::new(Triangle::new(
-                    p0,
-                    p1,
-                    p2,
-                    normal,
-                    texture_coords,
-                    material,
-                )));
+                triangles.push(Triangle::new(p0, p1, p2, normal, texture_coords, material));
             }
 
             let mesh = Box::new(Mesh::new(triangles));

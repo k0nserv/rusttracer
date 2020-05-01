@@ -8,7 +8,7 @@ pub struct AABB {
 }
 
 impl BoundingVolume for AABB {
-    fn new(triangles: &[Box<Triangle>]) -> Self {
+    fn new(triangles: &[Triangle]) -> Self {
         assert!(!triangles.is_empty(), "Creating AABB with 0 vertices");
         if triangles.is_empty() {
             return AABB {
