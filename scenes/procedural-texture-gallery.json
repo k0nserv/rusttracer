@@ -1,0 +1,176 @@
+{
+  "max_depth": 10,
+  "super_sampling": {
+    "On": 4
+  },
+  "cameras": [{
+    "fov": 1.570796,
+    "width": 2560,
+    "height": 1440,
+    "position": [0.0, 5.0, -15.0],
+    "look_at": [0.0, 5.0, -35.0],
+    "up": [0.0, 1.0, 0.0]
+  }],
+  "scenes": [{
+    "clear_color": [0.0, 0.0, 0.0],
+    "ambient_color": [0.2, 0.2, 0.2],
+    "objects": [{
+      "type": "Mesh",
+      "path": "wall.obj",
+      "material_name": "mandelbrot",
+      "transforms": [ {
+        "type": "Scale",
+        "value": [3.0, 3.0, 3.0]
+      }, {
+        "type": "Scale",
+        "value": [3.1, 1.0, 2.4]
+      }, {
+        "type": "RotateX",
+        "value": 1.570796327
+      },{
+        "type": "Translate",
+        "value": [-10.0, 10.0, -34.899]
+      }]
+    }, {
+      "type": "Mesh",
+      "path": "wall.obj",
+      "material_name": "frame",
+      "transforms": [ {
+        "type": "Scale",
+        "value": [3.2, 3.2, 3.2]
+      }, {
+        "type": "Scale",
+        "value": [3.1, 1.0, 2.4]
+      }, {
+        "type": "RotateX",
+        "value": 1.570796327
+      },{
+        "type": "Translate",
+        "value": [-10.0, 10.0, -34.9]
+      }]
+    }, {
+      "type": "Mesh",
+      "path": "wall.obj",
+      "material_name": "julia",
+      "transforms": [{
+        "type": "Scale",
+        "value": [8.0, 8.0, 8.0]
+      }, {
+        "type": "RotateX",
+        "value": 1.570796327
+      },{
+        "type": "Translate",
+        "value": [10.0, 10.0, -34.899]
+      }]
+    }, {
+      "type": "Mesh",
+      "path": "wall.obj",
+      "material_name": "frame",
+      "transforms": [{
+        "type": "Scale",
+        "value": [8.5, 8.5, 8.5]
+      },  {
+        "type": "RotateX",
+        "value": 1.570796327
+      },{
+        "type": "Translate",
+        "value": [10.0, 10.0, -34.9]
+      }]
+    },  {
+      "type": "Plane",
+      "normal": [0.0, 1.0, 0.0],
+      "material_name": "mirror",
+      "transforms": [{
+        "type": "Translate",
+        "value": [0.0, 0.0, -5.0]
+      }]
+    }, {
+      "type": "Plane",
+      "normal": [0.0, 0.0, 1.0],
+      "material_name": "wall",
+      "transforms": [{
+        "type": "Translate",
+        "value": [0.0, 0.0, -35.0]
+      }]
+    }, {
+      "type": "Sphere",
+      "radius": 1.5,
+      "material_name": "glass_ball",
+      "transforms": [{
+        "type": "Translate",
+        "value": [3.0, 8.0, -25]
+      }]
+
+    }],
+    "lights": [{
+      "type": "DirectionalLight",
+      "direction": [0.0, -1.0, -0.1],
+      "color": [1.0, 0.91372549, 0.682352941],
+      "intensity": 0.6,
+      "specular": false
+    }, {
+      "type": "DirectionalLight",
+      "direction": [0.0, 0.0, -1.0],
+      "color": [1.0, 0.91372549, 0.682352941],
+      "intensity": 0.3,
+      "specular": false
+    },  {
+      "type": "PointLight",
+      "origin": [1.0, 30.0, -15.0],
+      "color": [1.0, 1.0, 1.0],
+      "intensity": 200.0
+    }]
+  }],
+  "materials": [{
+      "name": "mandelbrot",
+      "ambient_color": [0.0, 0.0, 0.0],
+      "diffuse_color": [1.0, 1.0, 1.0],
+      "diffuse_texture": {
+        "name": "mandelbrot"
+      },
+      "specular_color": [0.0, 0.0, 0.0],
+      "specular_exponent": 0,
+      "illumination_model": "Diffuse"
+    }, {
+      "name": "julia",
+      "ambient_color": [0.0, 0.0, 0.0],
+      "diffuse_color": [1.0, 1.0, 1.0],
+      "diffuse_texture": {
+        "name": "julia"
+      },
+      "specular_color": [0.0, 0.0, 0.0],
+      "specular_exponent": 0,
+      "illumination_model": "Diffuse"
+    }, {
+      "name": "mirror",
+      "ambient_color": [0.0, 0.0, 0.0],
+      "diffuse_color": [0.188235294, 0.164705882, 0.11372549],
+      "specular_color": [1.0, 1.0, 0.603921569],
+      "specular_exponent": 1,
+      "illumination_model": "DiffuseSpecularReflectiveGlass",
+      "reflection_coefficient": 0.15
+    }, {
+      "name": "wall",
+      "ambient_color": [0.1, 0.1, 0.1],
+      "diffuse_color": [1.0, 1.0, 1.0],
+      "specular_color": [0.0, 0.0, 0.0],
+      "specular_exponent": 0,
+      "illumination_model": "Diffuse"
+  }, {
+      "name": "frame",
+      "ambient_color": [0.0, 0.0, 0.0],
+      "diffuse_color": [0.160784314, 0.133333333, 0.133333333],
+      "specular_color": [0.0, 0.0, 0.0],
+      "specular_exponent": 0,
+      "illumination_model": "Diffuse"
+  }, {
+      "name": "glass_ball",
+      "ambient_color": [0.0, 0.0, 0.0],
+      "diffuse_color": [0.1, 0.1, 0.1],
+      "specular_color": [1.0, 1.0, 1.0],
+      "specular_exponent": 1.5,
+      "refraction_coefficient": 1.37,
+      "reflection_coefficient": 0.2,
+      "illumination_model": "DiffuseSpecularRefractedFresnel"
+  }]
+}

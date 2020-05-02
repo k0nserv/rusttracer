@@ -1,3 +1,5 @@
+mod checkerboard;
+mod julia;
 mod mandelbrot;
 
 use std::clone::Clone;
@@ -41,6 +43,14 @@ where
 impl Procedural<fn(TextureCoord) -> Color> {
     pub fn mandelbrot() -> Self {
         Self::new(mandelbrot::mandelbrot)
+    }
+
+    pub fn julia() -> Self {
+        Self::new(julia::julia)
+    }
+
+    pub fn checkerboard() -> Self {
+        Self::new(checkerboard::checkerboard)
     }
 }
 
