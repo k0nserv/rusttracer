@@ -47,11 +47,13 @@ macro_rules! assert_eq_point3 {
     };
 }
 
+mod complex;
 mod matrix4;
 mod three_dimensions;
 mod transform;
 mod two_dimensions;
 
+pub use self::complex::Complex;
 pub use self::matrix4::Matrix4;
 pub use self::three_dimensions::{Point3, Vector3};
 pub use self::transform::Transform;
