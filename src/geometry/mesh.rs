@@ -98,7 +98,7 @@ impl<T: BoundingVolume> Mesh<T> {
                     vertices[i * 3 + 2],
                     Normal::Face(normal),
                     None,
-                    material.clone(),
+                    Rc::clone(&material),
                 )
             })
             .collect()
@@ -107,8 +107,8 @@ impl<T: BoundingVolume> Mesh<T> {
 
 impl<T: BoundingVolume> Transformable for Mesh<T> {
     fn transform(&mut self, transform: &Transform) {
-        for boxed_triangle in &mut self.triangles {
-            boxed_triangle.transform(transform);
+        for triangle in &mut self.triangles {
+            triangle.transform(transform);
         }
 
         self.bounding_volume = Box::new(T::new(&self.triangles));
@@ -123,17 +123,19 @@ impl<T: BoundingVolume> Intersectable for Mesh<T> {
 
         let mut nearest_intersection: Option<Intersection> = None;
 
-        for boxed_triangle in &self.triangles {
-            let potential_intersection = boxed_triangle.intersect(ray, cull);
+        for triangle in &self.triangles {
+            let potential_intersection = triangle.intersect(ray, cull);
 
-            if let Some(intersection) = potential_intersection {
-                if nearest_intersection.is_some() {
-                    if intersection.t < nearest_intersection.unwrap().t {
-                        nearest_intersection = Some(intersection);
+            match potential_intersection {
+                Some(intersection) => match nearest_intersection {
+                    Some(nearest) => {
+                        if intersection.t < nearest.t {
+                            nearest_intersection = Some(intersection)
+                        }
                     }
-                } else {
-                    nearest_intersection = Some(intersection);
-                }
+                    None => nearest_intersection = potential_intersection,
+                },
+                None => (),
             }
         }
 

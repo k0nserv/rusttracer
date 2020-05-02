@@ -18,7 +18,7 @@ impl BoundingVolume for AABB {
         let mut min = triangles[0].vertices[0];
         let mut max = triangles[0].vertices[0];
 
-        for triangle in triangles.iter() {
+        for triangle in triangles {
             for vertex in &triangle.vertices {
                 // Max
                 if vertex.x > max.x {

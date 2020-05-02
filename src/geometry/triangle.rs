@@ -181,6 +181,6 @@ impl Transformable for Triangle {
                 (n1 * normal_matrix).normalize(),
                 (n2 * normal_matrix).normalize(),
             ),
-        }
+        };
     }
 }
