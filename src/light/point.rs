@@ -11,15 +11,26 @@ pub struct Point {
     pub color: Color,
     intensity: f32,
     falloff: Falloff,
+    diffuse: bool,
+    specular: bool,
 }
 
 impl Point {
-    pub fn new(origin: Point3, color: Color, intensity: f32, falloff: Falloff) -> Self {
+    pub fn new(
+        origin: Point3,
+        color: Color,
+        intensity: f32,
+        falloff: Falloff,
+        diffuse: bool,
+        specular: bool,
+    ) -> Self {
         Self {
             origin,
             color,
             intensity,
             falloff,
+            diffuse,
+            specular,
         }
     }
 
@@ -57,6 +68,10 @@ impl Light for Point {
         material: &Material,
         distance_to_light: f32,
     ) -> Option<Color> {
+        if !self.diffuse {
+            return None;
+        }
+
         let light_direction = (self.origin - intersection.point).normalize();
         let dot = light_direction.dot(&intersection.normal);
 
@@ -78,6 +93,10 @@ impl Light for Point {
         ray: &Ray,
         distance_to_light: f32,
     ) -> Option<Color> {
+        if !self.specular {
+            return None;
+        }
+
         let light_direction = (self.origin - intersection.point).normalize();
         let dot = ray
             .direction

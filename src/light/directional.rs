@@ -14,16 +14,26 @@ pub struct Directional {
     inverse_direction: Vector3,
     pub color: Color,
     intensity: f32,
+    diffuse: bool,
+    specular: bool,
 }
 
 impl Directional {
-    pub fn new(direction: Vector3, color: Color, intensity: f32) -> Self {
+    pub fn new(
+        direction: Vector3,
+        color: Color,
+        intensity: f32,
+        diffuse: bool,
+        specular: bool,
+    ) -> Self {
         let normalized_direction = direction.normalize();
         Self {
             direction: normalized_direction,
             inverse_direction: -normalized_direction,
             color,
             intensity,
+            diffuse,
+            specular,
         }
     }
 
@@ -56,6 +66,10 @@ impl Light for Directional {
         material: &Material,
         distance_to_light: f32,
     ) -> Option<Color> {
+        if !self.diffuse {
+            return None;
+        }
+
         let dot = self.inverse_direction.dot(&intersection.normal);
 
         if dot > 0.0 {
@@ -76,6 +90,10 @@ impl Light for Directional {
         ray: &Ray,
         distance_to_light: f32,
     ) -> Option<Color> {
+        if !self.specular {
+            return None;
+        }
+
         let dot = ray
             .direction
             .dot(&self.inverse_direction.reflect(&intersection.normal));

@@ -163,21 +163,29 @@ impl Scene {
                     color,
                     intensity,
                     falloff,
+                    diffuse,
+                    specular,
                 } => Box::new(light::Point::new(
                     Point3::from(origin),
                     Color::from(color),
                     intensity,
                     falloff.unwrap_or(light::Falloff::InverseSquare),
+                    diffuse.unwrap_or(true),
+                    specular.unwrap_or(true),
                 )) as Box<dyn light::Light>,
 
                 config::Light::DirectionalLight {
                     direction,
                     color,
                     intensity,
+                    diffuse,
+                    specular,
                 } => Box::new(light::Directional::new(
                     Vector3::from(direction),
                     Color::from(color),
                     intensity,
+                    diffuse.unwrap_or(true),
+                    specular.unwrap_or(true),
                 )) as Box<dyn light::Light>,
             })
             .collect();

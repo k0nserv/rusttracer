@@ -8,10 +8,14 @@ pub enum Light {
         color: [f32; 3],
         intensity: f32,
         falloff: Option<Falloff>,
+        specular: Option<bool>,
+        diffuse: Option<bool>,
     },
     DirectionalLight {
         direction: [f32; 3],
         color: [f32; 3],
         intensity: f32,
+        specular: Option<bool>,
+        diffuse: Option<bool>,
     },
 }
