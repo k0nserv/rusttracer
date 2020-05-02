@@ -20,7 +20,7 @@ pub fn mandelbrot(coord: TextureCoord) -> Color {
         if z.dot() > 4.0 {
             let smooth_i = i as f64 + 1.0 - (z.abs().log2() / 2.0_f64.log2()).log2();
 
-            let hue = 320.0 + 360.0 * (smooth_i as f32 / MAX_ITERATIONS as f32);
+            let hue = 190.0 + 360.0 * (smooth_i as f32 / MAX_ITERATIONS as f32);
             let saturation = 1.0;
             let value = 1.0;
 

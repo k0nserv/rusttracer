@@ -82,11 +82,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             )
         })));
     }));
+
     let mut config_loader = ConfigLoader::new(fallback_material);
-    config_loader.register_named_texture(
-        "mandelbrot",
-        Rc::new(texture::Procedural::new(texture::mandelbrot)),
-    );
+    config_loader.register_named_texture("mandelbrot", Rc::new(texture::Procedural::mandelbrot()));
     let (renderer, config) = config_loader.load_renderer_from_config(&config_path)?;
     let camera_config = config.cameras.first().unwrap();
 

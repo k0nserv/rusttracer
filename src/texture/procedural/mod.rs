@@ -1,3 +1,5 @@
+mod mandelbrot;
+
 use std::clone::Clone;
 use std::fmt;
 
@@ -5,10 +7,7 @@ use super::{Texture, TextureCoord};
 use color::Color;
 
 #[derive(Clone)]
-pub struct Procedural<F>
-where
-    F: Fn(TextureCoord) -> Color,
-{
+pub struct Procedural<F> {
     callback: F,
 }
 
@@ -36,6 +35,12 @@ where
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Procedural {{ }}")
+    }
+}
+
+impl Procedural<fn(TextureCoord) -> Color> {
+    pub fn mandelbrot() -> Self {
+        Self::new(mandelbrot::mandelbrot)
     }
 }
 
