@@ -34,10 +34,14 @@ Options:
 
 ## Renders
 
-This was the first render produced.
 
 ![](docs/first-render.png)
+> This was the first render produced.
 
-This was rendered a while later, at this point there was support for diffuse colors, specular highlights, reflection, colored lights, and super sampling. This is 2560x1440 at 4x4 super sampling
 
 ![](docs/bit-later-render.png)
+> This was rendered a while later, at this point there was support for diffuse colors, specular highlights, reflection, colored lights, and super sampling. This is 2560x1440 at 4x4 super sampling
+
+![](docs/procedural-fractal-gallery.png)
+> This rendering uses procedural textures to render the fractal art works. This is 2560x1440 at 4x4 super sampling.
+
