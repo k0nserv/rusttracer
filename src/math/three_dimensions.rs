@@ -18,7 +18,7 @@ define_struct!(Point3);
 macro_rules! define_impl {
     ($T:ident) => {
         impl $T {
-            pub fn new(x: f32, y: f32, z: f32) -> $T {
+            pub const fn new(x: f32, y: f32, z: f32) -> $T {
                 $T { x, y, z }
             }
         }

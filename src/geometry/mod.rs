@@ -1,10 +1,12 @@
 mod aabb;
+mod extent_volume;
 mod mesh;
 mod plane;
 mod sphere;
 pub mod triangle;
 
 pub use self::aabb::AABB;
+pub use self::extent_volume::ExtentVolume;
 pub use self::mesh::Mesh;
 pub use self::plane::Plane;
 pub use self::sphere::Sphere;
