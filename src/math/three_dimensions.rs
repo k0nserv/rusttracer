@@ -50,8 +50,31 @@ define_from!(Point3);
 
 // Vector 3 specific
 impl Vector3 {
+    #[cfg(not(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "avx2"
+    )))]
     pub fn dot(&self, other: &Self) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z
+    }
+
+    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+    pub fn dot(&self, other: &Self) -> f32 {
+        #[cfg(target_arch = "x86_64")]
+        use std::arch::x86_64::{_mm256_dp_ps, _mm256_load_ps, _mm256_store_ps};
+        let v1 = [self.x, self.y, self.z, 0.0, 0.0, 0.0, 0.0, 0.0];
+        let v2 = [other.x, other.y, other.z, 0.0, 0.0, 0.0, 0.0, 0.0];
+
+        unsafe {
+            let op1 = _mm256_load_ps(v1.as_ptr());
+            let op2 = _mm256_load_ps(v2.as_ptr());
+
+            let result = _mm256_dp_ps(op1, op2, 0xFF);
+            let mut output = [0.0; 8];
+            _mm256_store_ps(output.as_mut_ptr(), result);
+
+            return output[0];
+        }
     }
 
     pub fn cross(&self, other: &Self) -> Self {
