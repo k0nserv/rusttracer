@@ -60,8 +60,8 @@ impl Intersectable for Sphere {
             let point: Point3 = (ray.origin + ray.direction * t.unwrap()).as_point();
             let normal = (point - self.origin).normalize();
             let texture_coord = TextureCoord::new(
-                normal.x.atan2(normal.z) / (2.0 * PI) + 0.5,
-                normal.y * 0.5 + 0.5,
+                normal.x().atan2(normal.z()) / (2.0 * PI) + 0.5,
+                normal.y() * 0.5 + 0.5,
             );
 
             let intersection = Intersection::new(

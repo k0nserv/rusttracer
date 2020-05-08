@@ -1,13 +1,11 @@
 use super::{Matrix4, EPSILON};
-use std::ops::{Add, Mul, Neg, Sub};
+use std::ops::{Add, Index, IndexMut, Mul, Neg, Sub};
 
 macro_rules! define_struct {
     ($T:ident) => {
         #[derive(Debug, Copy, Clone, Deserialize)]
         pub struct $T {
-            pub x: f32,
-            pub y: f32,
-            pub z: f32,
+            data: [f32; 4],
         }
     };
 }
@@ -19,11 +17,58 @@ macro_rules! define_impl {
     ($T:ident) => {
         impl $T {
             pub const fn new(x: f32, y: f32, z: f32) -> $T {
-                $T { x, y, z }
+                $T {
+                    data: [x, y, z, 0.0],
+                }
+            }
+
+            #[inline(always)]
+            pub const fn x(&self) -> f32 {
+                self.data[0]
+            }
+
+            #[inline(always)]
+            pub const fn y(&self) -> f32 {
+                self.data[1]
+            }
+
+            #[inline(always)]
+            pub const fn z(&self) -> f32 {
+                self.data[2]
             }
         }
     };
 }
+
+macro_rules! define_index {
+    ($T:ident) => {
+        impl Index<usize> for $T {
+            type Output = f32;
+
+            #[inline(always)]
+            fn index(&self, index: usize) -> &Self::Output {
+                &self.data[index]
+            }
+        }
+    };
+}
+
+macro_rules! define_index_mut {
+    ($T:ident) => {
+        impl IndexMut<usize> for $T {
+            #[inline(always)]
+            fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+                &mut self.data[index]
+            }
+        }
+    };
+}
+
+define_index!(Point3);
+define_index!(Vector3);
+
+define_index_mut!(Point3);
+define_index_mut!(Vector3);
 
 define_impl!(Vector3);
 define_impl!(Point3);
@@ -55,38 +100,32 @@ impl Vector3 {
         target_feature = "avx2"
     )))]
     pub fn dot(&self, other: &Self) -> f32 {
-        self.x * other.x + self.y * other.y + self.z * other.z
+        self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
     }
 
     #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
     pub fn dot(&self, other: &Self) -> f32 {
-        #[cfg(target_arch = "x86_64")]
-        use std::arch::x86_64::{_mm256_dp_ps, _mm256_load_ps, _mm256_store_ps};
-        let v1 = [self.x, self.y, self.z, 0.0, 0.0, 0.0, 0.0, 0.0];
-        let v2 = [other.x, other.y, other.z, 0.0, 0.0, 0.0, 0.0, 0.0];
+        self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
+        // #[cfg(target_arch = "x86_64")]
+        // use std::arch::x86_64::{_mm_dp_ps, _mm_load_ps, _mm_store_ps};
+        // unsafe {
+        //     let op1 = _mm_load_ps(self.data.as_ptr());
+        //     let op2 = _mm_load_ps(other.data.as_ptr());
 
-        unsafe {
-            let op1 = _mm256_load_ps(v1.as_ptr());
-            let op2 = _mm256_load_ps(v2.as_ptr());
+        //     let result = _mm_dp_ps(op1, op2, 0x71);
+        //     let mut output = [0.0; 4];
+        //     _mm_store_ps(output.as_mut_ptr(), result);
 
-            let result = _mm256_dp_ps(op1, op2, 0xFF);
-            let mut output = [0.0; 8];
-            _mm256_store_ps(output.as_mut_ptr(), result);
-
-            return output[0];
-        }
+        //     return output[0];
+        // }
     }
 
     pub fn cross(&self, other: &Self) -> Self {
-        let x0 = self.y * other.z - self.z * other.y;
-        let y0 = self.z * other.x - self.x * other.z;
-        let z0 = self.x * other.y - self.y * other.x;
+        let x0 = self.y() * other.z() - self.z() * other.y();
+        let y0 = self.z() * other.x() - self.x() * other.z();
+        let z0 = self.x() * other.y() - self.y() * other.x();
 
-        Vector3 {
-            x: x0,
-            y: y0,
-            z: z0,
-        }
+        Vector3::new(x0, y0, z0)
     }
 
     pub fn reflect(&self, normal: &Self) -> Self {
@@ -101,22 +140,14 @@ impl Vector3 {
         let l = self.length();
 
         if l == 0.0 {
-            return Vector3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            };
+            return Vector3::new(0.0, 0.0, 0.0);
         }
 
-        Vector3 {
-            x: self.x / l,
-            y: self.y / l,
-            z: self.z / l,
-        }
+        Vector3::new(self.x() / l, self.y() / l, self.z() / l)
     }
 
     pub fn as_point(&self) -> Point3 {
-        Point3::new(self.x, self.y, self.z)
+        Point3::new(self.x(), self.y(), self.z())
     }
 }
 
@@ -127,7 +158,7 @@ impl Point3 {
     }
 
     pub fn as_vector(&self) -> Vector3 {
-        Vector3::new(self.x, self.y, self.z)
+        Vector3::new(self.x(), self.y(), self.z())
     }
 }
 
@@ -138,11 +169,11 @@ macro_rules! define_scalar_add {
             type Output = Vector3;
 
             fn add(self, other: $T) -> Vector3 {
-                Vector3 {
-                    x: self.x + f32::from(other),
-                    y: self.y + f32::from(other),
-                    z: self.z + f32::from(other),
-                }
+                Vector3::new(
+                    self.x() + f32::from(other),
+                    self.y() + f32::from(other),
+                    self.z() + f32::from(other),
+                )
             }
         }
     };
@@ -154,11 +185,11 @@ macro_rules! define_add {
             type Output = $U;
 
             fn add(self, other: $V) -> $U {
-                $U {
-                    x: self.x + other.x,
-                    y: self.y + other.y,
-                    z: self.z + other.z,
-                }
+                $U::new(
+                    self.x() + other.x(),
+                    self.y() + other.y(),
+                    self.z() + other.z(),
+                )
             }
         }
     };
@@ -179,11 +210,11 @@ macro_rules! define_scalar_sub {
             type Output = Vector3;
 
             fn sub(self, other: $T) -> Vector3 {
-                Vector3 {
-                    x: self.x - f32::from(other),
-                    y: self.y - f32::from(other),
-                    z: self.z - f32::from(other),
-                }
+                Vector3::new(
+                    self.x() - f32::from(other),
+                    self.y() - f32::from(other),
+                    self.z() - f32::from(other),
+                )
             }
         }
     };
@@ -195,11 +226,11 @@ macro_rules! define_sub {
             type Output = $U;
 
             fn sub(self, other: $V) -> $U {
-                $U {
-                    x: self.x - other.x,
-                    y: self.y - other.y,
-                    z: self.z - other.z,
-                }
+                $U::new(
+                    self.x() - other.x(),
+                    self.y() - other.y(),
+                    self.z() - other.z(),
+                )
             }
         }
     };
@@ -218,11 +249,7 @@ impl Neg for Vector3 {
     type Output = Vector3;
 
     fn neg(self) -> Vector3 {
-        Vector3 {
-            x: -self.x,
-            y: -self.y,
-            z: -self.z,
-        }
+        Vector3::new(-self.x(), -self.y(), -self.z())
     }
 }
 
@@ -232,11 +259,11 @@ macro_rules! define_scalar_mul {
             type Output = Vector3;
 
             fn mul(self, other: $T) -> Vector3 {
-                Vector3 {
-                    x: self.x * f32::from(other),
-                    y: self.y * f32::from(other),
-                    z: self.z * f32::from(other),
-                }
+                Vector3::new(
+                    self.x() * f32::from(other),
+                    self.y() * f32::from(other),
+                    self.z() * f32::from(other),
+                )
             }
         }
     };
@@ -246,11 +273,11 @@ impl Mul for Vector3 {
     type Output = Vector3;
 
     fn mul(self, other: Vector3) -> Vector3 {
-        Vector3 {
-            x: self.x * other.x,
-            y: self.y * other.y,
-            z: self.z * other.z,
-        }
+        Vector3::new(
+            self.x() * other.x(),
+            self.y() * other.y(),
+            self.z() * other.z(),
+        )
     }
 }
 
@@ -265,9 +292,9 @@ impl Mul<Matrix4> for Vector3 {
 
     fn mul(self, other: Matrix4) -> Vector3 {
         Vector3::new(
-            other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z,
-            other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z,
-            other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z,
+            other[(0, 0)] * self.x() + other[(1, 0)] * self.y() + other[(2, 0)] * self.z(),
+            other[(0, 1)] * self.x() + other[(1, 1)] * self.y() + other[(2, 1)] * self.z(),
+            other[(0, 2)] * self.x() + other[(1, 2)] * self.y() + other[(2, 2)] * self.z(),
         )
     }
 }
@@ -276,21 +303,21 @@ impl Mul<Matrix4> for Point3 {
     type Output = Point3;
 
     fn mul(self, other: Matrix4) -> Point3 {
-        let mut x = other[(0, 0)] * self.x
-            + other[(1, 0)] * self.y
-            + other[(2, 0)] * self.z
+        let mut x = other[(0, 0)] * self.x()
+            + other[(1, 0)] * self.y()
+            + other[(2, 0)] * self.z()
             + other[(3, 0)];
-        let mut y = other[(0, 1)] * self.x
-            + other[(1, 1)] * self.y
-            + other[(2, 1)] * self.z
+        let mut y = other[(0, 1)] * self.x()
+            + other[(1, 1)] * self.y()
+            + other[(2, 1)] * self.z()
             + other[(3, 1)];
-        let mut z = other[(0, 2)] * self.x
-            + other[(1, 2)] * self.y
-            + other[(2, 2)] * self.z
+        let mut z = other[(0, 2)] * self.x()
+            + other[(1, 2)] * self.y()
+            + other[(2, 2)] * self.z()
             + other[(3, 2)];
-        let w = other[(0, 3)] * self.x
-            + other[(1, 3)] * self.y
-            + other[(2, 3)] * self.z
+        let w = other[(0, 3)] * self.x()
+            + other[(1, 3)] * self.y()
+            + other[(2, 3)] * self.z()
             + other[(3, 3)];
 
         if !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON)

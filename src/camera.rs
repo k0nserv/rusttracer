@@ -73,24 +73,24 @@ impl Camera {
         let mut result = Matrix4::identity();
 
         // right
-        result[(0, 0)] = right.x;
-        result[(0, 1)] = right.y;
-        result[(0, 2)] = right.z;
+        result[(0, 0)] = right.x();
+        result[(0, 1)] = right.y();
+        result[(0, 2)] = right.z();
 
         // up
-        result[(1, 0)] = up.x;
-        result[(1, 1)] = up.y;
-        result[(1, 2)] = up.z;
+        result[(1, 0)] = up.x();
+        result[(1, 1)] = up.y();
+        result[(1, 2)] = up.z();
 
         // direction
-        result[(2, 0)] = direction.x;
-        result[(2, 1)] = direction.y;
-        result[(2, 2)] = direction.z;
+        result[(2, 0)] = direction.x();
+        result[(2, 1)] = direction.y();
+        result[(2, 2)] = direction.z();
 
         // position
-        result[(3, 0)] = position.x;
-        result[(3, 1)] = position.y;
-        result[(3, 2)] = position.z;
+        result[(3, 0)] = position.x();
+        result[(3, 1)] = position.y();
+        result[(3, 2)] = position.z();
 
         result
     }

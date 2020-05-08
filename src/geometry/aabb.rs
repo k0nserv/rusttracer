@@ -15,29 +15,29 @@ impl BoundingVolume for AABB {
         for triangle in triangles {
             for vertex in &triangle.vertices {
                 // Max
-                if vertex.x > max.x {
-                    max.x = vertex.x;
+                if vertex.x() > max.x() {
+                    max[0] = vertex.x();
                 }
 
-                if vertex.y > max.y {
-                    max.y = vertex.y;
+                if vertex.y() > max.y() {
+                    max[1] = vertex.y();
                 }
 
-                if vertex.z > max.z {
-                    max.z = vertex.z;
+                if vertex.z() > max.z() {
+                    max[2] = vertex.z();
                 }
 
                 // Min
-                if vertex.x < min.x {
-                    min.x = vertex.x;
+                if vertex.x() < min.x() {
+                    min[0] = vertex.x();
                 }
 
-                if vertex.y < min.y {
-                    min.y = vertex.y;
+                if vertex.y() < min.y() {
+                    min[1] = vertex.y();
                 }
 
-                if vertex.z < min.z {
-                    min.z = vertex.z;
+                if vertex.z() < min.z() {
+                    min[2] = vertex.z();
                 }
             }
         }
@@ -46,11 +46,11 @@ impl BoundingVolume for AABB {
     }
 
     fn intersect(&self, ray: Ray) -> bool {
-        let mut tmin = (self.bounds[ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x;
-        let mut tmax = (self.bounds[1 - ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x;
+        let mut tmin = (self.bounds[ray.sign[0]].x() - ray.origin.x()) * ray.inv_direction.x();
+        let mut tmax = (self.bounds[1 - ray.sign[0]].x() - ray.origin.x()) * ray.inv_direction.x();
 
-        let tymin = (self.bounds[ray.sign[1]].y - ray.origin.y) * ray.inv_direction.y;
-        let tymax = (self.bounds[1 - ray.sign[1]].y - ray.origin.y) * ray.inv_direction.y;
+        let tymin = (self.bounds[ray.sign[1]].y() - ray.origin.y()) * ray.inv_direction.y();
+        let tymax = (self.bounds[1 - ray.sign[1]].y() - ray.origin.y()) * ray.inv_direction.y();
 
         if (tmin > tymax) || (tymin > tmax) {
             return false;
@@ -64,8 +64,8 @@ impl BoundingVolume for AABB {
             tmax = tymax;
         }
 
-        let tzmin = (self.bounds[ray.sign[2]].z - ray.origin.z) * ray.inv_direction.z;
-        let tzmax = (self.bounds[1 - ray.sign[2]].z - ray.origin.z) * ray.inv_direction.z;
+        let tzmin = (self.bounds[ray.sign[2]].z() - ray.origin.z()) * ray.inv_direction.z();
+        let tzmax = (self.bounds[1 - ray.sign[2]].z() - ray.origin.z()) * ray.inv_direction.z();
 
         if (tmin > tzmax) || (tzmin > tmax) {
             return false;
