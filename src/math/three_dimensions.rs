@@ -4,6 +4,7 @@ use std::ops::{Add, Index, IndexMut, Mul, Neg, Sub};
 macro_rules! define_struct {
     ($T:ident) => {
         #[derive(Debug, Copy, Clone, Deserialize)]
+        #[repr(align(16))]
         pub struct $T {
             data: [f32; 4],
         }
@@ -105,9 +106,12 @@ impl Vector3 {
 
     #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
     pub fn dot(&self, other: &Self) -> f32 {
-        self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
+        // self.data
+        //     .iter()
+        //     .zip(other.data.iter())
+        //     .fold(0.0, |acc, (a, b)| acc + a * b)
         // #[cfg(target_arch = "x86_64")]
-        // use std::arch::x86_64::{_mm_dp_ps, _mm_load_ps, _mm_store_ps};
+        // use std::arch::x86_64::{_mm_dp_ps, _mm_extract_ps, _mm_load_ps, _mm_store_ps};
         // unsafe {
         //     let op1 = _mm_load_ps(self.data.as_ptr());
         //     let op2 = _mm_load_ps(other.data.as_ptr());
@@ -118,6 +122,22 @@ impl Vector3 {
 
         //     return output[0];
         // }
+
+        #[cfg(target_arch = "x86_64")]
+        use std::arch::x86_64::{_mm_hadd_ps, _mm_load_ps, _mm_mul_ps, _mm_store_ps};
+        unsafe {
+            let op1 = _mm_load_ps(self.data.as_ptr());
+            let op2 = _mm_load_ps(other.data.as_ptr());
+
+            let mut result = _mm_mul_ps(op1, op2);
+            result = _mm_hadd_ps(result, result);
+            result = _mm_hadd_ps(result, result);
+
+            let mut output = [0.0; 4];
+            _mm_store_ps(output.as_mut_ptr(), result);
+
+            return output[0];
+        }
     }
 
     pub fn cross(&self, other: &Self) -> Self {
