@@ -12,7 +12,7 @@ impl BoundingVolume for AABB {
         let mut min = Point3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY);
         let mut max = Point3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY);
 
-        while let Some(triangle) = triangles.next() {
+        for triangle in triangles {
             for vertex in &triangle.vertices {
                 // Max
                 if vertex.x > max.x {
