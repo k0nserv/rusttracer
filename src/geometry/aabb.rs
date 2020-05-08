@@ -8,17 +8,11 @@ pub struct AABB {
 }
 
 impl BoundingVolume for AABB {
-    fn new(triangles: &[Triangle]) -> Self {
-        assert!(!triangles.is_empty(), "Creating AABB with 0 vertices");
-        if triangles.is_empty() {
-            return AABB {
-                bounds: [Point3::at_origin(), Point3::at_origin()],
-            };
-        }
-        let mut min = triangles[0].vertices[0];
-        let mut max = triangles[0].vertices[0];
+    fn new(triangles: &mut dyn Iterator<Item = &Triangle>) -> Self {
+        let mut min = Point3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY);
+        let mut max = Point3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY);
 
-        for triangle in triangles {
+        while let Some(triangle) = triangles.next() {
             for vertex in &triangle.vertices {
                 // Max
                 if vertex.x > max.x {

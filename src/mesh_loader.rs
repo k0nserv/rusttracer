@@ -9,7 +9,7 @@ use std::rc::Rc;
 
 use color::Color;
 use geometry::triangle::Normal;
-use geometry::{ExtentVolume, Mesh, Triangle};
+use geometry::{ExtentVolume, Mesh, SimpleTriangleStorage, Triangle};
 use material::{IllumninationModel, IllumninationModelParsingError, Material, OptionalTexture};
 use math::{Point3, Vector3};
 use texture;
@@ -71,7 +71,7 @@ impl MeshLoader {
         &self,
         path: &Path,
         fallback_material: Rc<Material>,
-    ) -> Result<Vec<Box<Mesh<ExtentVolume>>>, MeshLoadError> {
+    ) -> Result<Vec<Box<Mesh<ExtentVolume, SimpleTriangleStorage>>>, MeshLoadError> {
         let final_path = self.root_path.join(path);
         let result = tobj::load_obj(&final_path);
         if let Err(ref error) = result {

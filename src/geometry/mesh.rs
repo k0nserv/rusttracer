@@ -1,22 +1,24 @@
 use std::rc::Rc;
 
 use geometry::triangle::Normal;
-use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle};
+use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle, TriangleStorage};
 use intersection::Intersection;
 use math::{Point3, Transform};
 use ray::Ray;
 
 #[derive(Debug)]
-pub struct Mesh<T: BoundingVolume> {
-    triangles: Vec<Triangle>,
-    bounding_volume: Box<T>,
+pub struct Mesh<V, S> {
+    storage: S,
+    bounding_volume: Box<V>,
 }
 
-impl<T: BoundingVolume> Mesh<T> {
+impl<'a, V: BoundingVolume, S: TriangleStorage<'a>> Mesh<V, S> {
     pub fn new(triangles: Vec<Triangle>) -> Self {
-        let bounding_volume = Box::new(T::new(&triangles));
+        let bounding_volume = Box::new(V::new(&mut triangles.iter()));
+        let storage = S::new(triangles);
+
         Self {
-            triangles,
+            storage,
             bounding_volume,
         }
     }
@@ -105,17 +107,15 @@ impl<T: BoundingVolume> Mesh<T> {
     }
 }
 
-impl<T: BoundingVolume> Transformable for Mesh<T> {
+impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Transformable for Mesh<V, S> {
     fn transform(&mut self, transform: &Transform) {
-        for triangle in &mut self.triangles {
-            triangle.transform(transform);
-        }
+        self.storage.transform(transform);
 
-        self.bounding_volume = Box::new(T::new(&self.triangles));
+        self.bounding_volume = Box::new(V::new(&mut self.storage.all()));
     }
 }
 
-impl<T: BoundingVolume> Intersectable for Mesh<T> {
+impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Intersectable for Mesh<V, S> {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection> {
         if !self.bounding_volume.intersect(ray) {
             return None;
@@ -123,7 +123,7 @@ impl<T: BoundingVolume> Intersectable for Mesh<T> {
 
         let mut nearest_intersection: Option<Intersection> = None;
 
-        for triangle in &self.triangles {
+        for triangle in self.storage.intersect(ray, cull) {
             let potential_intersection = triangle.intersect(ray, cull);
 
             match potential_intersection {

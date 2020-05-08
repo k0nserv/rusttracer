@@ -3,6 +3,10 @@ use std::mem;
 use super::{BoundingVolume, Ray, Triangle};
 use math::Vector3;
 
+// This approach is based on Ray Tracing Complex Scenes, Kay and Kajiya, 1986[0].
+//
+// 0: https://dl.acm.org/doi/pdf/10.1145/15886.15916
+
 const NUM_PLANE_SET_NORMALS: usize = 7;
 const PLAN_SET_NORMALS: &'static [Vector3; NUM_PLANE_SET_NORMALS] = &[
     Vector3::new(1.0, 0.0, 0.0),
@@ -21,16 +25,8 @@ pub struct ExtentVolume {
 }
 
 impl BoundingVolume for ExtentVolume {
-    fn new(triangles: &[Triangle]) -> Self {
+    fn new(triangles: &mut dyn Iterator<Item = &Triangle>) -> Self {
         let mut distances = [[std::f32::INFINITY, std::f32::NEG_INFINITY]; NUM_PLANE_SET_NORMALS];
-
-        assert!(
-            !triangles.is_empty(),
-            "Creating ExtentVolume with 0 vertices"
-        );
-        if triangles.is_empty() {
-            return Self { distances };
-        }
 
         for triangle in triangles {
             for point in &triangle.vertices {
