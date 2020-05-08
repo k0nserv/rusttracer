@@ -49,21 +49,7 @@ impl BoundingVolume for ExtentVolume {
     }
 
     fn intersect(&self, ray: Ray) -> bool {
-        let origin_vector = ray.origin.as_vector();
-
-        let (precomputed_numerator, precomputed_denominator) = {
-            let mut precomputed_numerator: [f32; NUM_PLANE_SET_NORMALS] =
-                [std::f32::NAN; NUM_PLANE_SET_NORMALS];
-            let mut precomputed_denominator: [f32; NUM_PLANE_SET_NORMALS] =
-                [std::f32::NAN; NUM_PLANE_SET_NORMALS];
-
-            for i in 0..NUM_PLANE_SET_NORMALS {
-                precomputed_numerator[i] = PLAN_SET_NORMALS[i].dot(&origin_vector);
-                precomputed_denominator[i] = PLAN_SET_NORMALS[i].dot(&ray.direction);
-            }
-
-            (precomputed_numerator, precomputed_denominator)
-        };
+        let (precomputed_numerator, precomputed_denominator) = Self::precompute(&ray);
 
         let mut t_near = std::f32::NEG_INFINITY;
         let mut t_far = std::f32::INFINITY;
@@ -87,5 +73,23 @@ impl BoundingVolume for ExtentVolume {
         }
 
         true
+    }
+}
+
+impl ExtentVolume {
+    fn precompute(ray: &Ray) -> ([f32; NUM_PLANE_SET_NORMALS], [f32; NUM_PLANE_SET_NORMALS]) {
+        let origin_vector = ray.origin.as_vector();
+
+        let mut precomputed_numerator: [f32; NUM_PLANE_SET_NORMALS] =
+            [std::f32::NAN; NUM_PLANE_SET_NORMALS];
+        let mut precomputed_denominator: [f32; NUM_PLANE_SET_NORMALS] =
+            [std::f32::NAN; NUM_PLANE_SET_NORMALS];
+
+        for i in 0..NUM_PLANE_SET_NORMALS {
+            precomputed_numerator[i] = PLAN_SET_NORMALS[i].dot(&origin_vector);
+            precomputed_denominator[i] = PLAN_SET_NORMALS[i].dot(&ray.direction);
+        }
+
+        (precomputed_numerator, precomputed_denominator)
     }
 }
