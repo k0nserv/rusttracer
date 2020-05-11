@@ -1,6 +1,7 @@
 mod aabb;
 mod extent_volume;
 mod mesh;
+mod octtree;
 mod plane;
 mod simple_triangle_storage;
 mod sphere;
@@ -10,9 +11,11 @@ pub use self::aabb::AABB;
 pub use self::extent_volume::ExtentVolume;
 pub use self::mesh::Mesh;
 pub use self::plane::Plane;
-pub use self::simple_triangle_storage::SimpleTriangleStorage;
 pub use self::sphere::Sphere;
 pub use self::triangle::Triangle;
+
+pub use self::octtree::Octree;
+pub use self::simple_triangle_storage::SimpleTriangleStorage;
 
 use intersection::Intersection;
 use material::Material;
@@ -32,27 +35,17 @@ pub trait Shape: Intersectable {
 }
 
 pub trait BoundingVolume {
-    fn new(triangles: &mut dyn Iterator<Item = &Triangle>) -> Self;
+    fn from_triangles(triangles: &mut dyn Iterator<Item = &Triangle>) -> Self;
     fn intersect(&self, ray: Ray) -> bool;
 }
 
-pub trait TriangleStorage<'a> {
+pub trait TriangleStorage<'a>: Transformable {
     type Iterator: Iterator<Item = &'a Triangle>;
     type IteratorMut: Iterator<Item = &'a mut Triangle>;
+    type IntersectionIterator: Iterator<Item = &'a Triangle>;
 
     fn new(triangles: Vec<Triangle>) -> Self;
-    fn intersect(&'a self, ray: Ray, cull: bool) -> Self::Iterator;
+    fn intersect(&'a self, ray: Ray, cull: bool) -> Self::IntersectionIterator;
     fn all(&'a self) -> Self::Iterator;
     fn all_mut(&'a mut self) -> Self::IteratorMut;
-}
-
-impl<T> Transformable for T
-where
-    T: for<'a> TriangleStorage<'a>,
-{
-    fn transform(&mut self, transform: &Transform) {
-        for triangle in self.all_mut() {
-            triangle.transform(&transform);
-        }
-    }
 }

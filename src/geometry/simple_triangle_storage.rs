@@ -7,9 +7,18 @@ pub struct SimpleTriangleStorage {
     triangles: Vec<Triangle>,
 }
 
+impl Transformable for SimpleTriangleStorage {
+    fn transform(&mut self, transform: &Transform) {
+        for triangle in self.all_mut() {
+            triangle.transform(&transform);
+        }
+    }
+}
+
 impl<'a> TriangleStorage<'a> for SimpleTriangleStorage {
     type Iterator = std::slice::Iter<'a, Triangle>;
     type IteratorMut = std::slice::IterMut<'a, Triangle>;
+    type IntersectionIterator = std::slice::Iter<'a, Triangle>;
 
     fn new(triangles: Vec<Triangle>) -> Self {
         Self { triangles }

@@ -50,7 +50,7 @@ impl Light for Directional {
     ) -> Ray {
         let direction = self.inverse_direction;
         Ray::new(
-            (intersection.point + direction * EPSILON).as_point(),
+            (intersection.point + direction * 1e-3).as_point(),
             direction,
             medium_refraction,
         )

@@ -52,7 +52,7 @@ impl Light for Point {
     ) -> Ray {
         let light_direction = (self.origin - intersection.point).normalize();
         Ray::new(
-            (intersection.point + light_direction * EPSILON).as_point(),
+            (intersection.point + light_direction * 1e-3).as_point(),
             light_direction,
             medium_refraction,
         )

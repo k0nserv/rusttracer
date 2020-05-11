@@ -1,4 +1,4 @@
-pub const EPSILON: f32 = 1e-4;
+pub const EPSILON: f32 = 1e-6;
 
 #[cfg(test)]
 macro_rules! assert_eq_within_bound {

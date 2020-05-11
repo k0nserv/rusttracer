@@ -2,12 +2,14 @@ use camera::Camera;
 use color::Color;
 use intersection::Intersection;
 use material::{IllumninationModel, Material};
-use math::{Vector3, EPSILON};
+use math::Vector3;
 use ray::Ray;
 use scene::Scene;
 
 use rayon::prelude::*;
 use std::ops::Range;
+
+const RAY_OFFSET: f32 = 1e-3;
 
 #[derive(Deserialize, Debug, Copy, Clone)]
 pub enum SuperSampling {
@@ -230,7 +232,7 @@ impl Renderer {
             .normalize();
 
         let new_ray = Ray::new(
-            (intersection.point + new_direction * EPSILON).as_point(),
+            (intersection.point + new_direction * RAY_OFFSET).as_point(),
             new_direction,
             Some(original_ray.medium_refraction),
         );
@@ -269,7 +271,7 @@ impl Renderer {
                 (original_ray.direction * n + normal * (n * cos_i - c2.sqrt())).normalize();
 
             let new_ray = Ray::new(
-                (intersection.point + direction * EPSILON).as_point(),
+                (intersection.point + direction * RAY_OFFSET).as_point(),
                 direction,
                 Some(n2),
             );

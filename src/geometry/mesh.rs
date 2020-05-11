@@ -14,7 +14,7 @@ pub struct Mesh<V, S> {
 
 impl<'a, V: BoundingVolume, S: TriangleStorage<'a>> Mesh<V, S> {
     pub fn new(triangles: Vec<Triangle>) -> Self {
-        let bounding_volume = Box::new(V::new(&mut triangles.iter()));
+        let bounding_volume = Box::new(V::from_triangles(&mut triangles.iter()));
         let storage = S::new(triangles);
 
         Self {
@@ -111,7 +111,7 @@ impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Transformable for Mesh<V
     fn transform(&mut self, transform: &Transform) {
         self.storage.transform(transform);
 
-        self.bounding_volume = Box::new(V::new(&mut self.storage.all()));
+        self.bounding_volume = Box::new(V::from_triangles(&mut self.storage.all()));
     }
 }
 

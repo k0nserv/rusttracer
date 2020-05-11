@@ -25,7 +25,7 @@ pub struct ExtentVolume {
 }
 
 impl BoundingVolume for ExtentVolume {
-    fn new(triangles: &mut dyn Iterator<Item = &Triangle>) -> Self {
+    fn from_triangles(triangles: &mut dyn Iterator<Item = &Triangle>) -> Self {
         let mut distances = [[std::f32::INFINITY, std::f32::NEG_INFINITY]; NUM_PLANE_SET_NORMALS];
 
         for triangle in triangles {
