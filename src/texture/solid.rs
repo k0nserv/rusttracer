@@ -30,8 +30,8 @@ mod test {
         let c2 = TextureCoord::new(1.0, 0.0);
         let c3 = TextureCoord::new(0.0, 0.0);
 
-        assert_eq!(t.lookup(&c1), c);
-        assert_eq!(t.lookup(&c2), c);
-        assert_eq!(t.lookup(&c3), c);
+        assert_eq!(t.lookup(c1), c);
+        assert_eq!(t.lookup(c2), c);
+        assert_eq!(t.lookup(c3), c);
     }
 }

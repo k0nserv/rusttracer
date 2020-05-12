@@ -192,8 +192,9 @@ macro_rules! assert_eq_matrix4 {
 #[cfg(test)]
 mod tests {
     use super::Matrix4;
-    use math::EPSILON;
     use std::f32::consts::PI;
+
+    const EPSILON: f32 = 1e-3;
 
     #[test]
     fn test_identity() {

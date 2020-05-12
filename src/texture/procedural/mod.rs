@@ -65,8 +65,8 @@ mod test {
         let c2 = TextureCoord::new(1.0, 0.0);
         let c3 = TextureCoord::new(0.0, 0.0);
 
-        assert_eq!(t.lookup(&c1), Color::new(0, 255, 0));
-        assert_eq!(t.lookup(&c2), Color::new(255, 0, 0));
-        assert_eq!(t.lookup(&c3), Color::new(0, 0, 0));
+        assert_eq!(t.lookup(c1), Color::new(0, 255, 0));
+        assert_eq!(t.lookup(c2), Color::new(255, 0, 0));
+        assert_eq!(t.lookup(c3), Color::new(0, 0, 0));
     }
 }
