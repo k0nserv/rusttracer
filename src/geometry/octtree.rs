@@ -23,16 +23,14 @@ impl From<usize> for NodeId {
 
 #[derive(Debug)]
 struct Node<M, T> {
-    parent: Option<NodeId>,
     metadata: M,
     data: T,
 }
 
 impl<M: Default, T> Node<M, T> {
-    fn new(data: T, parent: Option<NodeId>) -> Self {
+    fn new(data: T) -> Self {
         Self {
             data,
-            parent,
             metadata: M::default(),
         }
     }
@@ -51,13 +49,9 @@ impl<M: Default, T> Arena<M, T> {
     }
 
     fn new_node(&mut self, data: T) -> NodeId {
-        self.new_node_with_parent(data, None)
-    }
-
-    fn new_node_with_parent(&mut self, data: T, parent_id: Option<NodeId>) -> NodeId {
         let next_index = self.nodes.len();
 
-        let node = Node::new(data, parent_id);
+        let node = Node::new(data);
 
         self.nodes.push(node);
 
@@ -265,9 +259,7 @@ impl Octree {
         };
 
         for i in 0..8 {
-            let id = self
-                .arena
-                .new_node_with_parent(child_nodes.pop_front().unwrap(), Some(node_id));
+            let id = self.arena.new_node(child_nodes.pop_front().unwrap());
             self.arena[id].metadata.bounding_box = child_bounding_volumes.pop_front().unwrap();
 
             self.arena[node_id].metadata.children[i] = id;
@@ -344,7 +336,6 @@ impl<'a> TriangleStorage<'a> for Octree {
         };
 
         tree.rebuild();
-        // panic!();
 
         tree
     }
@@ -358,7 +349,7 @@ impl<'a> TriangleStorage<'a> for Octree {
             let child_node = &self.arena[id];
 
             if child_node.metadata.bounding_box.intersect(ray) {
-                if !child_node.metadata.is_leaf && !child_node.metadata.is_empty {
+                if !child_node.metadata.is_leaf {
                     for octant_id in child_node.metadata.children.iter().cloned() {
                         node_ids.push_back(octant_id);
                     }
