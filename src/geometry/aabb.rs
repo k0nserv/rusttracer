@@ -1,4 +1,3 @@
-use super::triangle;
 use super::{BoundingVolume, Triangle};
 use math::{Point3, Vector3};
 use ray::Ray;
@@ -63,7 +62,15 @@ impl AABB {
         self.bounds[1]
     }
 
-    pub fn intersects_triangle(&self, triangle: &Triangle) -> bool {
+    pub fn half(&self) -> Point3 {
+        ((self.max() - self.min()) * 0.5).as_point()
+    }
+
+    pub fn center(&self) -> Point3 {
+        (self.min() + self.half().as_vector()).as_point()
+    }
+
+    pub fn intersects_triangle_aabb(&self, triangle: &Triangle) -> bool {
         let bounding_box = Self::from_triangle(triangle);
 
         let min = self.min();
@@ -78,294 +85,6 @@ impl AABB {
             && max.y >= b_min.y
             && min.z <= b_max.z
             && max.z >= b_min.z;
-
-        // TODO: Finish this and make it work based on
-        // http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/tribox_tam.pdf
-        let center = self.max() - self.min();
-        let half = center * 0.5;
-
-        let v0 = triangle.vertices[0].as_vector() - center;
-        let v1 = triangle.vertices[1].as_vector() - center;
-        let v2 = triangle.vertices[2].as_vector() - center;
-
-        // Triangle vectors
-        let f0 = v1 - v0;
-        let f1 = v2 - v1;
-        let f2 = v0 - v2;
-
-        // 0, 0
-        {
-            let p0 = f0.y * v0.z - f0.z * v0.y;
-            let p2 = f0.y * v2.z - f0.z * v2.y;
-            let r = half.y * f0.y.abs() + half.z * f0.z.abs();
-
-            if f32::min(p0, p2) > r || f32::max(p0, p2) < -r {
-                return false;
-            }
-        }
-
-        // 0, 1
-        {
-            let p0 = f1.y * v0.z - f1.z * v0.y;
-            let p1 = f1.y * v1.z - f1.z * v1.y;
-            let r = half.y * f1.y.abs() + half.z * f1.z.abs();
-
-            if f32::min(p0, p1) > r || f32::max(p0, p1) < -r {
-                return false;
-            }
-        }
-
-        // 0, 2
-        {
-            let p0 = f2.x * v0.y - f2.y * v0.x;
-            let p1 = f2.x * v1.y - f2.y * v1.x;
-            let r = half.x * f2.x.abs() + half.y * f2.y.abs();
-
-            if f32::min(p0, p1) > r || f32::max(p0, p1) < -r {
-                return false;
-            }
-        }
-
-        // 1, 0
-        {
-            let p0 = f0.z * v0.x - f0.x * v0.z;
-            let p2 = f0.z * v2.x - f0.x * v2.z;
-            let r = half.x * f0.x.abs() + half.z * f0.z.abs();
-
-            if f32::min(p0, p2) > r || f32::max(p0, p2) < -r {
-                return false;
-            }
-        }
-
-        // 1, 1
-        {
-            let p0 = f1.z * v0.x - f1.x * v0.x;
-            let p1 = f1.z * v1.x - f1.x * v1.x;
-            let r = half.x * f1.x.abs() + half.z * f1.z.abs();
-
-            if f32::min(p0, p1) > r || f32::max(p0, p1) < -r {
-                return false;
-            }
-        }
-
-        // 1, 2
-        {
-            let p0 = f2.z * v0.x - f2.x * v0.z;
-            let p1 = f2.z * v1.x - f2.x * v1.z;
-            let r = half.x * f2.x.abs() + half.z * f2.z.abs();
-
-            if f32::min(p0, p1) > r || f32::max(p0, p1) < -r {
-                return false;
-            }
-        }
-
-        // 2, 0
-        {
-            let p0 = f0.x * v0.y - f0.y * v0.x;
-            let p2 = f0.x * v2.y - f0.y * v2.x;
-            let r = half.x * f0.x.abs() + half.y * f0.y.abs();
-
-            if f32::min(p0, p2) > r || f32::max(p0, p2) < -r {
-                return false;
-            }
-        }
-
-        // 1, 2
-        {
-            let p0 = f1.z * v0.x - f1.x * v0.z;
-            let p1 = f1.z * v1.x - f1.x * v1.z;
-            let r = half.x * f1.x.abs() + half.z * f1.z.abs();
-
-            if f32::min(p0, p1) > r || f32::max(p0, p1) < -r {
-                return false;
-            }
-        }
-
-        // 2, 2
-        {
-            let p0 = f2.x * v0.y - f2.y * v0.x;
-            let p1 = f2.x * v1.y - f2.y * v1.x;
-            let r = half.x * f2.x.abs() + half.z * f2.z.abs();
-
-            if f32::min(p0, p1) > r || f32::max(p0, p1) < -r {
-                return false;
-            }
-        }
-
-        let max_x = v0.x.max(v1.x.max(v2.x));
-        let min_x = v0.x.min(v1.x.min(v2.x));
-
-        if min_x > half.x || max_x < -half.x {
-            return false;
-        }
-
-        let max_y = v0.y.max(v1.y.max(v2.y));
-        let min_y = v0.y.min(v1.y.min(v2.y));
-
-        if min_y > half.y || max_y < -half.y {
-            return false;
-        }
-
-        let max_z = v0.z.max(v1.z.max(v2.z));
-        let min_z = v0.z.min(v1.z.min(v2.z));
-
-        if min_z > half.z || max_z < -half.z {
-            return false;
-        }
-
-        match triangle.normal {
-            triangle::Normal::Face(normal) => {
-                if !Self::plane_box_overlap(normal, v0, half) {
-                    return false;
-                }
-            }
-            triangle::Normal::Vertex(n0, n1, n2) => {
-                if !Self::plane_box_overlap(n0, v0, half)
-                    && !Self::plane_box_overlap(n1, v1, half)
-                    && !Self::plane_box_overlap(n2, v2, half)
-                {
-                    return false;
-                }
-            }
-        }
-
-        // // Box  normals
-        // let u0 = Vector3::new(1.0, 0.0, 0.0);
-        // let u1 = Vector3::new(0.0, 1.0, 0.0);
-        // let u2 = Vector3::new(0.0, 0.0, 1.0);
-
-        // // 9 Axis separating triangle and box
-        // let axis_u0_f0 = u0.cross(&f0);
-        // let axis_u0_f1 = u0.cross(&f1);
-        // let axis_u0_f2 = u0.cross(&f2);
-
-        // let axis_u1_f0 = u1.cross(&f0);
-        // let axis_u1_f1 = u1.cross(&f1);
-        // let axis_u1_f2 = u1.cross(&f2);
-
-        // let axis_u2_f0 = u2.cross(&f0);
-        // let axis_u2_f1 = u2.cross(&f1);
-        // let axis_u2_f2 = u2.cross(&f2);
-
-        // // Edge 0
-        // if Self::separted_on_triangle_edge_0(v0, v2, axis_u0_f0, half) {
-        //     return true;
-        // }
-
-        // if Self::separted_on_triangle_edge_0(v0, v2, axis_u0_f1, half) {
-        //     return true;
-        // }
-
-        // if Self::separted_on_triangle_edge_0(v0, v2, axis_u0_f2, half) {
-        //     return true;
-        // }
-
-        // // Edge 1
-        // if Self::separted_on_triangle_edge_1(v0, v1, axis_u1_f0, half) {
-        //     return true;
-        // }
-
-        // if Self::separted_on_triangle_edge_1(v0, v1, axis_u1_f1, half) {
-        //     return true;
-        // }
-
-        // if Self::separted_on_triangle_edge_1(v0, v1, axis_u1_f2, half) {
-        //     return true;
-        // }
-
-        // // Edge 2
-        // if Self::separted_on_triangle_edge_2(v1, v2, axis_u2_f0, half) {
-        //     return true;
-        // }
-
-        // if Self::separted_on_triangle_edge_2(v1, v2, axis_u2_f1, half) {
-        //     return true;
-        // }
-
-        // if Self::separted_on_triangle_edge_2(v1, v2, axis_u2_f2, half) {
-        //     return true;
-        // }
-        true
-
-        // for vertex in &triangle.vertices {
-        //     if vertex.x <= self.max().x
-        //         && vertex.x >= self.min().x
-        //         && vertex.y <= self.max().y
-        //         && vertex.y >= self.min().y
-        //         && vertex.z <= self.max().z
-        //         && vertex.z >= self.min().z
-        //     {
-        //         return true;
-        //     }
-        // }
-
-        // false
-    }
-
-    fn plane_box_overlap(normal: Vector3, vertex: Vector3, half: Vector3) -> bool {
-        let mut min = Point3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY);
-        let mut max = Point3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY);
-
-        if normal.x > 0.0 {
-            min.x = -half.x - vertex.x;
-            max.x = half.x - vertex.x;
-        } else {
-            min.x = half.x - vertex.x;
-            max.x = -half.x - vertex.x;
-        }
-
-        if normal.y > 0.0 {
-            min.y = -half.y - vertex.y;
-            max.y = half.y - vertex.y;
-        } else {
-            min.y = half.y - vertex.y;
-            max.y = -half.y - vertex.y;
-        }
-
-        if normal.z > 0.0 {
-            min.z = -half.z - vertex.z;
-            max.z = half.z - vertex.z;
-        } else {
-            min.z = half.z - vertex.z;
-            max.z = -half.z - vertex.z;
-        }
-
-        if normal.dot(&min.as_vector()) > 0.0 {
-            return false;
-        }
-
-        if normal.dot(&max.as_vector()) >= 0.0 {
-            return true;
-        }
-
-        false
-    }
-
-    fn axis_test0(v0: Vector3, v2: Vector3, axis: Vector3, half: Vector3) -> bool {
-        let p0 = v0.dot(&axis);
-        let p2 = v2.dot(&axis);
-
-        let r = half.x * &axis.x.abs() + half.y * &axis.y.abs() + half.z * &axis.z.abs();
-
-        f32::min(p0, p2) > r || f32::max(p0, p2) < -r
-    }
-
-    fn separted_on_triangle_edge_1(v0: Vector3, v1: Vector3, axis: Vector3, half: Vector3) -> bool {
-        let p0 = v0.dot(&axis);
-        let p1 = v1.dot(&axis);
-
-        let r = half.x * &axis.x.abs() + half.y * &axis.y.abs() + half.z * &axis.z.abs();
-
-        f32::min(p0, p1) > r || f32::max(p0, p1) < -r
-    }
-
-    fn separted_on_triangle_edge_2(v1: Vector3, v2: Vector3, axis: Vector3, half: Vector3) -> bool {
-        let p1 = v1.dot(&axis);
-        let p2 = v2.dot(&axis);
-
-        let r = half.x * &axis.x.abs() + half.y * &axis.y.abs() + half.z * &axis.z.abs();
-
-        f32::min(p1, p2) > r || f32::max(p1, p2) < -r
     }
 }
 
@@ -426,5 +145,132 @@ impl BoundingVolume for AABB {
         }
 
         true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::rc::Rc;
+
+    use super::AABB;
+    use color::Color;
+    use geometry::triangle::{Normal, Triangle};
+    use material::{IllumninationModel, Material};
+    use math::{Point3, Vector3};
+
+    fn make_material() -> Material {
+        Material::new(
+            Color::black(),
+            Color::black(),
+            Color::black(),
+            0.0,
+            IllumninationModel::Constant,
+            None,
+            None,
+        )
+    }
+
+    #[test]
+    fn test_intersects_triangle_aabb_vertex_inside() {
+        let aabb = AABB::new(Point3::new(-2.0, -2.0, -2.0), Point3::new(2.0, 2.0, 2.0));
+
+        let triangle = Triangle::new(
+            Point3::at_origin(),
+            Point3::new(3.0, 0.0, 0.0),
+            Point3::new(0.0, 0.0, 3.0),
+            Normal::Face(Vector3::new(0.0, 1.0, 0.0)),
+            None,
+            Rc::new(make_material()),
+        );
+
+        assert!(aabb.intersects_triangle_aabb(&triangle));
+    }
+
+    #[test]
+    fn test_intersects_triangle_aabb_edge() {
+        let aabb = AABB::new(Point3::new(-2.0, -2.0, -2.0), Point3::new(2.0, 2.0, 2.0));
+
+        let triangle = Triangle::new(
+            Point3::new(3.0, 0.0, 0.0),
+            Point3::new(0.0, 0.0, 3.0),
+            Point3::new(3.0, 0.0, 3.0),
+            Normal::Face(Vector3::new(0.0, 1.0, 0.0)),
+            None,
+            Rc::new(make_material()),
+        );
+
+        assert!(aabb.intersects_triangle_aabb(&triangle));
+    }
+
+    #[test]
+    fn test_intersects_triangle_aabb_realistic_trivial() {
+        // This case is entirely trivial: The triangle beeing tested is tested
+        // against the bounding box of the whole mesh.
+
+        let aabb = AABB::new(
+            Point3::new(-0.23978, -0.282958, -0.472247),
+            Point3::new(0.207395, 0.422022, 0.527753),
+        );
+
+        let triangle = Triangle::new(
+            Point3::new(-0.0148929, -0.270744, 0.213293),
+            Point3::new(-0.0132528, -0.270767, 0.213397),
+            Point3::new(-0.0146446, -0.270253, 0.214432),
+            Normal::Vertex(
+                Vector3::new(-0.0331532, -0.915051, 0.401972),
+                Vector3::new(-0.056424, -0.938723, 0.340022),
+                Vector3::new(-0.114637, -0.897883, 0.425047),
+            ),
+            None,
+            Rc::new(make_material()),
+        );
+
+        assert!(aabb.intersects_triangle_aabb(&triangle));
+    }
+
+    #[test]
+    fn test_intersects_triangle_aabb_realistic_1() {
+        let aabb = AABB::new(
+            Point3::new(-0.23978, -0.282958, -0.472247),
+            Point3::new(0.207395, 0.422022, 0.527753),
+        );
+
+        let triangle = Triangle::new(
+            Point3::new(-0.219407, -0.248815, -0.229673),
+            Point3::new(-0.218334, -0.252232, -0.224549),
+            Point3::new(-0.219816, -0.248815, -0.219424),
+            Normal::Vertex(
+                Vector3::new(-0.93934, -0.338087, -0.0577654),
+                Vector3::new(-0.935684, -0.351144, -0.0345402),
+                Vector3::new(-0.943101, -0.331952, -0.019191),
+            ),
+            None,
+            Rc::new(make_material()),
+        );
+
+        assert!(aabb.intersects_triangle_aabb(&triangle));
+    }
+
+    #[test]
+    fn test_intersects_triangle_aabb_realistic_2() {
+        let aabb = AABB::new(
+            Point3::new(-0.23978, -0.282958, -0.472247),
+            Point3::new(0.207395, 0.422022, 0.527753),
+        );
+
+        let triangle = Triangle::new(
+            Point3::new(0.136228, 0.217532, -0.149386),
+            Point3::new(0.135274, 0.217532, -0.150971),
+            Point3::new(0.136983, 0.21924, -0.149388),
+            Normal::Vertex(
+                Vector3::new(0.85279, -0.201127, -0.481972),
+                Vector3::new(0.820284, -0.230435, -0.523482),
+                Vector3::new(0.732158, -0.430477, -0.527859),
+            ),
+            None,
+            Rc::new(make_material()),
+        );
+
+        assert!(aabb.intersects_triangle_aabb(&triangle));
     }
 }

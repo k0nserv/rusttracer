@@ -21,6 +21,15 @@ macro_rules! define_impl {
             pub const fn new(x: f32, y: f32, z: f32) -> $T {
                 $T { x, y, z }
             }
+
+            pub fn fuzzy_equal(&self, other: &Point3) -> bool {
+                self.x >= other.x - 1e-3
+                    && self.x <= other.x + 1e-3
+                    && self.y >= other.y - 1e-3
+                    && self.y <= other.y + 1e-3
+                    && self.z >= other.z - 1e-3
+                    && self.z <= other.z + 1e-3
+            }
         }
     };
 }

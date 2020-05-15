@@ -61,10 +61,6 @@ impl<M: Default, T> Arena<M, T> {
     fn clear(&mut self) {
         self.nodes.clear();
     }
-
-    fn num_nodes(&self) -> usize {
-        self.nodes.len()
-    }
 }
 
 impl<M, T> Index<NodeId> for Arena<M, T> {
@@ -143,7 +139,7 @@ impl Default for Metadata {
 }
 
 const MAX_DEPTH: usize = 6;
-const MIN_SIZE: f32 = 0.0005;
+const MIN_SIZE: f32 = 0.00005;
 const MIN_TRIANGLES_PER_NODE: usize = 1;
 
 #[derive(Debug)]
@@ -165,40 +161,6 @@ impl Octree {
         self.root = root_id;
         self.arena[root_id].metadata.bounding_box = AABB::from_triangles(&mut iterator);
         self.build(root_id, 1);
-
-        dbg!(self.arena.num_nodes());
-        dbg!(&self.arena[self.root].metadata);
-        dbg!(&self.arena[root_id].metadata.bounding_box);
-
-        let all_triangle_ids: HashSet<TriangleId> =
-            (0..self.triangles.len()).map(TriangleId::from).collect();
-
-        let mut triangle_ids_in_nodes: HashSet<TriangleId> = HashSet::default();
-        let mut to_visit: VecDeque<NodeId> = VecDeque::new();
-        let mut num_nodes = 1;
-        let mut num_triangles = self.arena[self.root].data.len();
-        to_visit.push_back(self.root);
-
-        while let Some(id) = to_visit.pop_back() {
-            let child_node = &self.arena[id];
-            num_triangles += child_node.data.len();
-
-            if !child_node.metadata.is_leaf {
-                for octant_id in child_node.metadata.children.iter().cloned() {
-                    to_visit.push_back(octant_id);
-                }
-            }
-
-            for triangle_id in child_node.data.iter().cloned() {
-                triangle_ids_in_nodes.insert(triangle_id);
-            }
-
-            num_nodes += 1;
-        }
-
-        dbg!(num_triangles / num_nodes);
-
-        assert!(triangle_ids_in_nodes == all_triangle_ids, "Found orphans");
     }
 
     fn build(&mut self, node_id: NodeId, depth: usize) {
@@ -227,7 +189,7 @@ impl Octree {
                 return;
             }
 
-            let child_bounding_volumes = Self::build_octants_for(bounding_box, dimensions);
+            let child_bounding_volumes = Self::build_octants(bounding_box);
             let mut to_delete: HashSet<TriangleId> = HashSet::default();
             let mut child_nodes: VecDeque<HashSet<TriangleId>> = VecDeque::with_capacity(8);
             for _ in 0..8 {
@@ -238,23 +200,15 @@ impl Octree {
                 for i in 0..8 {
                     let triangle = &self.triangles[triangle_id.value()];
 
-                    if child_bounding_volumes[i].intersects_triangle(&triangle) {
+                    if child_bounding_volumes[i].intersects_triangle_aabb(&triangle) {
                         to_delete.insert(*triangle_id);
                         child_nodes[i].insert(*triangle_id);
-                        // TODO: Think about this break, is it enough if a triangle is in a single
-                        // node or should it be in all that it intersects with?
-                        // break;
                     }
                 }
             }
 
             node.data = node.data.difference(&to_delete).cloned().collect();
             assert!(node.data.len() == 0);
-            // println!(
-            //     "Triangles left in parent({}): {}",
-            //     node_id.0,
-            //     node.data.len()
-            // );
             (child_nodes, child_bounding_volumes)
         };
 
@@ -270,11 +224,10 @@ impl Octree {
         }
     }
 
-    fn build_octants_for(bounding_box: &AABB, dimensions: Vector3) -> VecDeque<AABB> {
-        let half = (dimensions * 0.5).as_point();
-        let center = (bounding_box.min() + half.as_vector()).as_point();
-
+    fn build_octants(bounding_box: &AABB) -> VecDeque<AABB> {
+        let center = bounding_box.center();
         let (min, max) = (bounding_box.min(), bounding_box.max());
+
         let mut child_bounding_volumes = VecDeque::with_capacity(8);
         // Left
         child_bounding_volumes.push_back(AABB::new(min, center));
@@ -370,5 +323,40 @@ impl<'a> TriangleStorage<'a> for Octree {
 
     fn all_mut(&'a mut self) -> Self::IteratorMut {
         self.triangles.iter_mut()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Octree;
+    use geometry::AABB;
+    use math::Point3;
+
+    #[test]
+    fn test_build_octants() {
+        let aabb = AABB::new(Point3::at_origin(), Point3::new(1.0, 1.0, 1.0));
+        let expected: [(Point3, Point3); 8] = [
+            (Point3::at_origin(), Point3::new(0.5, 0.5, 0.5)),
+            (Point3::new(0.0, 0.0, 0.5), Point3::new(0.5, 0.5, 1.0)),
+            (Point3::new(0.5, 0.0, 0.0), Point3::new(1.0, 0.5, 0.5)),
+            (Point3::new(0.5, 0.0, 0.5), Point3::new(1.0, 0.5, 1.0)),
+            (Point3::new(0.0, 0.5, 0.0), Point3::new(0.5, 1.0, 0.5)),
+            (Point3::new(0.0, 0.5, 0.5), Point3::new(0.5, 1.0, 1.0)),
+            (Point3::new(0.5, 0.5, 0.0), Point3::new(1.0, 1.0, 0.5)),
+            (Point3::new(0.5, 0.5, 0.5), Point3::new(1.0, 1.0, 1.0)),
+        ];
+
+        let result = Octree::build_octants(&aabb);
+
+        for r in &result {
+            let equal = expected
+                .iter()
+                .map(|(min, max)| r.min().fuzzy_equal(min) && r.max().fuzzy_equal(max))
+                .filter(|x| *x)
+                .count()
+                == 1;
+
+            assert!(equal, "Unexpected bounding box {:?}", r);
+        }
     }
 }
