@@ -80,7 +80,6 @@ impl MeshLoader {
         assert!(result.is_ok());
 
         let (models, materials) = result.unwrap();
-        tobj::print_model_info(&models, &materials);
         let mut meshes = vec![];
         let mut material_cache = HashMap::new();
 

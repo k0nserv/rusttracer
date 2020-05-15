@@ -203,9 +203,12 @@ impl Scene {
         transforms: &Option<Vec<config::Transform>>,
     ) {
         if let Some(ref transforms_to_apply) = *transforms {
-            for transform in transforms_to_apply {
-                transform.perform(shape);
-            }
+            let converted_transforms: Vec<_> = transforms_to_apply
+                .iter()
+                .map(|t| t.to_transform())
+                .collect();
+
+            shape.apply_transforms(&converted_transforms);
         }
     }
 

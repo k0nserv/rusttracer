@@ -28,6 +28,11 @@ pub trait Intersectable {
 
 pub trait Transformable {
     fn transform(&mut self, transform: &Transform);
+    fn apply_transforms(&mut self, transforms: &[Transform]) {
+        for transform in transforms {
+            self.transform(transform);
+        }
+    }
 }
 
 pub trait Shape: Intersectable {
@@ -45,6 +50,7 @@ pub trait TriangleStorage<'a>: Transformable {
     type IntersectionIterator: Iterator<Item = &'a Triangle>;
 
     fn new(triangles: Vec<Triangle>) -> Self;
+    fn build(&'a mut self);
     fn intersect(&'a self, ray: Ray, cull: bool) -> Self::IntersectionIterator;
     fn all(&'a self) -> Self::Iterator;
     fn all_mut(&'a mut self) -> Self::IteratorMut;

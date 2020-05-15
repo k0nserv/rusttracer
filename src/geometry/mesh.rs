@@ -113,6 +113,11 @@ impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Transformable for Mesh<V
 
         self.bounding_volume = Box::new(V::from_triangles(&mut self.storage.all()));
     }
+
+    fn apply_transforms(&mut self, transforms: &[Transform]) {
+        self.storage.apply_transforms(transforms);
+        self.bounding_volume = Box::new(V::from_triangles(&mut self.storage.all()));
+    }
 }
 
 impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Intersectable for Mesh<V, S> {

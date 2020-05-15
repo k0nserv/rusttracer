@@ -2,8 +2,8 @@ use std::collections::{HashSet, VecDeque};
 use std::ops::{Index, IndexMut};
 
 use super::{BoundingVolume, Transformable, Triangle, TriangleStorage, AABB};
+use math::Point3;
 use math::Transform;
-use math::{Point3, Vector3};
 use ray::Ray;
 
 #[derive(Debug, Clone, Copy)]
@@ -48,6 +48,12 @@ impl<M: Default, T> Arena<M, T> {
         }
     }
 
+    fn with_capacity(capacity: usize) -> Self {
+        Self {
+            nodes: Vec::with_capacity(capacity),
+        }
+    }
+
     fn new_node(&mut self, data: T) -> NodeId {
         let next_index = self.nodes.len();
 
@@ -60,6 +66,10 @@ impl<M: Default, T> Arena<M, T> {
 
     fn clear(&mut self) {
         self.nodes.clear();
+    }
+
+    fn num_nodes(&self) -> usize {
+        self.nodes.len()
     }
 }
 
@@ -138,9 +148,9 @@ impl Default for Metadata {
     }
 }
 
-const MAX_DEPTH: usize = 6;
-const MIN_SIZE: f32 = 0.00005;
-const MIN_TRIANGLES_PER_NODE: usize = 1;
+const MAX_DEPTH: usize = 10;
+const MIN_SIZE: f32 = 0.00001;
+const MIN_TRIANGLES_PER_NODE: usize = 10;
 
 #[derive(Debug)]
 pub struct Octree {
@@ -150,6 +160,43 @@ pub struct Octree {
 }
 
 impl Octree {
+    fn visit_nodes<F>(&self, mut callback: F)
+    where
+        F: FnMut(NodeId) -> (),
+    {
+        let mut to_visit = VecDeque::new();
+        to_visit.push_back(self.root);
+
+        while let Some(node_id) = to_visit.pop_back() {
+            callback(node_id);
+
+            if !self.arena[node_id].metadata.is_leaf {
+                for child_id in &self.arena[node_id].metadata.children {
+                    to_visit.push_back(*child_id);
+                }
+            }
+        }
+    }
+
+    fn print_stats(&self) {
+        println!("Octree depth: {}", (self.arena.num_nodes() as f64).log(8.0));
+        println!("Octree number of nodes: {}", self.arena.num_nodes());
+
+        let mut leaf_count = 0.0;
+        let mut leaf_triangle_count = 0.0;
+        self.visit_nodes(|node_id| {
+            if self.arena[node_id].metadata.is_leaf {
+                leaf_count += 1.0;
+                leaf_triangle_count += self.arena[node_id].data.len() as f64;
+            }
+        });
+
+        println!(
+            "Octree average triangle count in leaf nodes: {}",
+            leaf_triangle_count / leaf_count
+        );
+    }
+
     fn rebuild(&mut self) {
         self.arena.clear();
 
@@ -161,6 +208,7 @@ impl Octree {
         self.root = root_id;
         self.arena[root_id].metadata.bounding_box = AABB::from_triangles(&mut iterator);
         self.build(root_id, 1);
+        self.print_stats();
     }
 
     fn build(&mut self, node_id: NodeId, depth: usize) {
@@ -270,6 +318,16 @@ impl Transformable for Octree {
 
         self.rebuild();
     }
+
+    fn apply_transforms(&mut self, transforms: &[Transform]) {
+        for transform in transforms {
+            for triangle in self.all_mut() {
+                triangle.transform(&transform);
+            }
+        }
+
+        self.rebuild();
+    }
 }
 
 impl<'a> TriangleStorage<'a> for Octree {
@@ -279,18 +337,19 @@ impl<'a> TriangleStorage<'a> for Octree {
         IntersectionIterator<'a, std::collections::hash_set::IntoIter<TriangleId>>;
 
     fn new(triangles: Vec<Triangle>) -> Self {
-        let mut arena = Arena::new();
+        let mut arena = Arena::with_capacity((triangles.len() as f64).log(8.0) as usize);
+        // let mut arena = Arena::new();
         let root_id = arena.new_node((0..triangles.len()).map(TriangleId::from).collect());
 
-        let mut tree = Self {
+        Self {
             triangles,
             arena,
             root: root_id,
-        };
+        }
+    }
 
-        tree.rebuild();
-
-        tree
+    fn build(&'a mut self) {
+        self.rebuild();
     }
 
     fn intersect(&'a self, ray: Ray, _cull: bool) -> Self::IntersectionIterator {
