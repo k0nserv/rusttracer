@@ -54,7 +54,7 @@ impl Intersectable for Plane {
 
 impl Transformable for Plane {
     fn transform(&mut self, transform: &Transform) {
-        self.origin = self.origin * transform.matrix;
-        self.normal = (self.normal * transform.normal_matrix).normalize();
+        self.origin = transform.matrix * self.origin;
+        self.normal = (transform.normal_matrix * self.normal).normalize();
     }
 }

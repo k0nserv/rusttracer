@@ -169,17 +169,17 @@ impl Transformable for Triangle {
         let normal_matrix = transform.matrix;
 
         // TODO: Consider doing this as a 4x4 matrix calculation instead
-        self.vertices[0] = self.vertices[0] * matrix;
-        self.vertices[1] = self.vertices[1] * matrix;
-        self.vertices[2] = self.vertices[2] * matrix;
+        self.vertices[0] = matrix * self.vertices[0];
+        self.vertices[1] = matrix * self.vertices[1];
+        self.vertices[2] = matrix * self.vertices[2];
         self.ab = self.vertices[1] - self.vertices[0];
         self.ac = self.vertices[2] - self.vertices[0];
         self.normal = match self.normal {
-            Normal::Face(normal) => Normal::Face((normal * normal_matrix).normalize()),
+            Normal::Face(normal) => Normal::Face((normal_matrix * normal).normalize()),
             Normal::Vertex(n0, n1, n2) => Normal::Vertex(
-                (n0 * normal_matrix).normalize(),
-                (n1 * normal_matrix).normalize(),
-                (n2 * normal_matrix).normalize(),
+                (normal_matrix * n0).normalize(),
+                (normal_matrix * n1).normalize(),
+                (normal_matrix * n2).normalize(),
             ),
         };
     }

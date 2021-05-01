@@ -246,43 +246,33 @@ define_scalar_mul!(i16);
 define_scalar_mul!(u8);
 define_scalar_mul!(u16);
 
-impl Mul<Matrix4> for Vector3 {
+impl Mul<Vector3> for Matrix4 {
     type Output = Vector3;
 
-    fn mul(self, other: Matrix4) -> Vector3 {
+    fn mul(self, other: Vector3) -> Vector3 {
         Vector3::new(
-            other[(0, 0)] * self.x + other[(1, 0)] * self.y + other[(2, 0)] * self.z,
-            other[(0, 1)] * self.x + other[(1, 1)] * self.y + other[(2, 1)] * self.z,
-            other[(0, 2)] * self.x + other[(1, 2)] * self.y + other[(2, 2)] * self.z,
+            self[(0, 0)] * other.x + self[(1, 0)] * other.y + self[(2, 0)] * other.z,
+            self[(0, 1)] * other.x + self[(1, 1)] * other.y + self[(2, 1)] * other.z,
+            self[(0, 2)] * other.x + self[(1, 2)] * other.y + self[(2, 2)] * other.z,
         )
     }
 }
 
-impl Mul<Matrix4> for Point3 {
+impl Mul<Point3> for Matrix4 {
     type Output = Point3;
 
-    fn mul(self, other: Matrix4) -> Point3 {
-        let mut x = other[(0, 0)] * self.x
-            + other[(1, 0)] * self.y
-            + other[(2, 0)] * self.z
-            + other[(3, 0)];
-        let mut y = other[(0, 1)] * self.x
-            + other[(1, 1)] * self.y
-            + other[(2, 1)] * self.z
-            + other[(3, 1)];
-        let mut z = other[(0, 2)] * self.x
-            + other[(1, 2)] * self.y
-            + other[(2, 2)] * self.z
-            + other[(3, 2)];
-        let w = other[(0, 3)] * self.x
-            + other[(1, 3)] * self.y
-            + other[(2, 3)] * self.z
-            + other[(3, 3)];
+    fn mul(self, other: Point3) -> Point3 {
+        let mut x =
+            self[(0, 0)] * other.x + self[(1, 0)] * other.y + self[(2, 0)] * other.z + self[(3, 0)];
+        let mut y =
+            self[(0, 1)] * other.x + self[(1, 1)] * other.y + self[(2, 1)] * other.z + self[(3, 1)];
+        let mut z =
+            self[(0, 2)] * other.x + self[(1, 2)] * other.y + self[(2, 2)] * other.z + self[(3, 2)];
+        let w =
+            self[(0, 3)] * other.x + self[(1, 3)] * other.y + self[(2, 3)] * other.z + self[(3, 3)];
 
-        if !(w > (0.0 - EPSILON) && w < (0.0 + EPSILON)
-            || w > (1.0 - EPSILON) && w < (1.0 + EPSILON))
-        {
-            assert!(false, "Bad value for w {}", w);
+        if !(w > (0.0 - 1e-3) && w < (0.0 + 1e-3) || w > (1.0 - 1e-3) && w < (1.0 + 1e-3)) {
+            // assert!(false, "Bad value for w {}", w);
             x /= w;
             y /= w;
             z /= w;
@@ -428,7 +418,7 @@ mod tests {
     fn test_vector3_mul_simple() {
         let m = Matrix4::identity();
 
-        let result = Vector3::new(2.4, 3.1, 9.0) * m;
+        let result = m * Vector3::new(2.4, 3.1, 9.0);
 
         assert_eq_vector3!(result, Vector3::new(2.4, 3.1, 9.0), EPSILON);
     }
@@ -442,7 +432,7 @@ mod tests {
             [12.3, 9.1, -1.2, 1.0],
         ]);
 
-        let result = Vector3::new(2.4, 3.2, -1.0) * m;
+        let result = m * Vector3::new(2.4, 3.2, -1.0);
 
         assert_eq_vector3!(result, Vector3::new(26.52, 31.68, 3.48), EPSILON);
     }
@@ -454,7 +444,17 @@ mod tests {
 
         let expected = Point3::new(&v.x - 2.0, &v.y + 3.0, &v.z + 5.0);
 
-        assert_eq_point3!(v * m, expected, EPSILON);
+        assert_eq_point3!(m * v, expected, EPSILON);
+    }
+
+    #[test]
+    fn test_vector_translation() {
+        let v = Vector3::new(0.0, 0.0, -1.0);
+        let m = Matrix4::translate(10.0, 0.0, 0.0);
+
+        let expected = Point3::new(0.0, 0.0, -1.0);
+
+        assert_eq_point3!(m * v, expected, EPSILON);
     }
 
     #[test]
@@ -464,7 +464,7 @@ mod tests {
 
         let expected = Vector3::new(&v.x * -2.0, &v.y * 3.0, &v.z * 5.0);
 
-        assert_eq_vector3!(v * m, expected, EPSILON);
+        assert_eq_vector3!(m * v, expected, EPSILON);
     }
 
     #[test]
@@ -472,7 +472,7 @@ mod tests {
         let v = Vector3::new(1.0, 0.0, 1.0);
         let m = Matrix4::rot_x(PI / 2.0);
 
-        assert_eq_vector3!(Vector3::new(1.0, -1.0, 0.0), v * m, EPSILON);
+        assert_eq_vector3!(Vector3::new(1.0, -1.0, 0.0), m * v, EPSILON);
     }
 
     #[test]
@@ -480,7 +480,7 @@ mod tests {
         let v = Vector3::new(0.0, 1.0, 1.0);
         let m = Matrix4::rot_y(PI / 2.0);
 
-        assert_eq_vector3!(Vector3::new(1.0, 1.0, 0.0), v * m, EPSILON);
+        assert_eq_vector3!(Vector3::new(1.0, 1.0, 0.0), m * v, EPSILON);
     }
 
     #[test]
@@ -488,7 +488,7 @@ mod tests {
         let v = Vector3::new(1.0, 0.0, 1.0);
         let m = Matrix4::rot_z(PI / 2.0);
 
-        assert_eq_vector3!(Vector3::new(0.0, 1.0, 1.0), v * m, EPSILON);
+        assert_eq_vector3!(Vector3::new(0.0, 1.0, 1.0), m * v, EPSILON);
     }
 
     #[test]
