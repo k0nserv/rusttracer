@@ -23,6 +23,10 @@ impl<'a, V: BoundingVolume, S: TriangleStorage<'a>> Mesh<V, S> {
         }
     }
 
+    pub fn rebuild_accelleration_structure(&mut self) {
+        self.storage.build();
+    }
+
     pub fn cube(material: Rc<Material>) -> Self {
         let vertices = [
             Point3::new(-1.0, -1.0, 1.0),

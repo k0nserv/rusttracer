@@ -101,7 +101,7 @@ impl Intersectable for Triangle {
             return None;
         }
 
-        if !cull && det.abs() < 1e-7 {
+        if det.abs() < 1e-7 {
             return None;
         }
 

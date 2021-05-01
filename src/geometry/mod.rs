@@ -1,5 +1,6 @@
 mod aabb;
 mod extent_volume;
+mod instance;
 mod mesh;
 mod octtree;
 mod plane;
@@ -9,6 +10,7 @@ pub mod triangle;
 
 pub use self::aabb::AABB;
 pub use self::extent_volume::ExtentVolume;
+pub use self::instance::Instance;
 pub use self::mesh::Mesh;
 pub use self::plane::Plane;
 pub use self::sphere::Sphere;
@@ -50,7 +52,7 @@ pub trait TriangleStorage<'a>: Transformable {
     type IntersectionIterator: Iterator<Item = &'a Triangle>;
 
     fn new(triangles: Vec<Triangle>) -> Self;
-    fn build(&'a mut self);
+    fn build(&mut self);
     fn intersect(&'a self, ray: Ray, cull: bool) -> Self::IntersectionIterator;
     fn all(&'a self) -> Self::Iterator;
     fn all_mut(&'a mut self) -> Self::IteratorMut;

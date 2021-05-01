@@ -34,7 +34,7 @@ impl ConfigLoader {
     ) -> Result<(renderer::Renderer, config::Config), Box<dyn std::error::Error>> {
         let parsed_config = config::Config::new_from_file(path)?;
         let scene_path = Path::new(path).parent().unwrap();
-        let mesh_loader = MeshLoader::new(scene_path.to_path_buf());
+        let mut mesh_loader = MeshLoader::new(scene_path.to_path_buf());
 
         let materials = parsed_config
             .materials
@@ -65,7 +65,7 @@ impl ConfigLoader {
         let scene = scene::Scene::new_from_config(
             &parsed_config.scenes.first().unwrap(),
             &materials,
-            &mesh_loader,
+            &mut mesh_loader,
             Rc::clone(&self.fallback_material),
         )?;
         let camera_config = parsed_config

@@ -348,7 +348,7 @@ impl<'a> TriangleStorage<'a> for Octree {
         }
     }
 
-    fn build(&'a mut self) {
+    fn build(&mut self) {
         self.rebuild();
     }
 

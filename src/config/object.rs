@@ -18,4 +18,9 @@ pub enum Object {
         transforms: Option<Vec<Transform>>,
         material_name: Option<String>,
     },
+    MeshInstance {
+        path: String,
+        transforms: Option<Vec<Transform>>,
+        material_name: Option<String>,
+    },
 }
