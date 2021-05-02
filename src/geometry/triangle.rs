@@ -97,11 +97,11 @@ impl Intersectable for Triangle {
         let pvec = ray.direction.cross(&self.ac);
         let det = self.ab.dot(&pvec);
 
-        if cull && det < EPSILON {
+        if cull && det < 1e-7 {
             return None;
         }
 
-        if det.abs() < EPSILON {
+        if !cull && det.abs() < 1e-7 {
             return None;
         }
 
