@@ -58,8 +58,8 @@ impl Camera {
         let py =
             ((2.0 * (((y * samples) as f32) + y_sample_offset) / sample_height) - 1.0) * self.scale;
 
-        let direction = Vector3::new(px, py, -1.0) * self.camera_to_world;
-        let origin = Point3::at_origin() * self.camera_to_world;
+        let direction = self.camera_to_world * Vector3::new(px, py, -1.0);
+        let origin = self.camera_to_world * Point3::at_origin();
 
         Ray::new(origin, direction.normalize(), None)
     }

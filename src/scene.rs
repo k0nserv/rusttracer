@@ -7,7 +7,7 @@ use std::rc::Rc;
 use color::Color;
 use config;
 use config::Object;
-use geometry::{Intersectable, Transformable};
+use geometry::{ExtentVolume, Intersectable, Octree, Transformable};
 use geometry::{Plane, Sphere};
 use intersection::Intersection;
 use light;
@@ -64,7 +64,7 @@ impl Scene {
     pub fn new_from_config(
         scene: &config::Scene,
         materials: &HashMap<String, Rc<Material>>,
-        mesh_loader: &MeshLoader,
+        mesh_loader: &mut MeshLoader<ExtentVolume, Octree>,
         fallback_material: Rc<Material>,
     ) -> Result<Scene, SceneConfigLoadError> {
         let mut objects: Vec<Box<dyn Intersectable>> = vec![];
@@ -134,6 +134,41 @@ impl Scene {
                     };
 
                     let mut meshes = match mesh_loader.load(Path::new(&path), material) {
+                        Ok(meshes) => meshes,
+                        Err(error) => {
+                            println!("Failed to load scene: {}", error);
+                            return Err(SceneConfigLoadError::new(error.to_string()));
+                        }
+                    };
+
+                    for mesh in &mut meshes {
+                        Self::apply_transforms(mesh.as_mut() as &mut dyn Transformable, transforms);
+                    }
+                    let mut intersectables = meshes
+                        .into_iter()
+                        .map(|mesh| mesh as Box<dyn Intersectable>)
+                        .collect();
+
+                    objects.append(&mut intersectables);
+                }
+                Object::MeshInstance {
+                    ref path,
+                    ref transforms,
+                    ref material_name,
+                } => {
+                    let material = match material_name {
+                        None => fallback_material.clone(),
+                        Some(name) => {
+                            assert!(
+                                materials.contains_key(name),
+                                "Invalid material name: {}",
+                                name
+                            );
+                            materials[name].clone()
+                        }
+                    };
+
+                    let mut meshes = match mesh_loader.load_instance(Path::new(&path), material) {
                         Ok(meshes) => meshes,
                         Err(error) => {
                             println!("Failed to load scene: {}", error);

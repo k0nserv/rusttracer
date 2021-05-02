@@ -24,7 +24,7 @@ impl<'a> TriangleStorage<'a> for SimpleTriangleStorage {
         Self { triangles }
     }
 
-    fn build(&'a mut self) {
+    fn build(&mut self) {
         // Not much to build when you have no acceleration structure
     }
 

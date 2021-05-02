@@ -83,7 +83,7 @@ impl Intersectable for Sphere {
 
 impl Transformable for Sphere {
     fn transform(&mut self, transform: &Transform) {
-        self.origin = self.origin * transform.matrix;
+        self.origin = transform.matrix * self.origin;
     }
 }
 
