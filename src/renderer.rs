@@ -103,7 +103,7 @@ impl Renderer {
         };
 
         // TODO: Get rid of this vec in favour of just accumulating the sums directly?
-        let mut sample_colors = vec![Color::black(); (samples * samples) as usize];
+        let mut color = [0.0; 3];
 
         for x_sample in 0..samples {
             for y_sample in 0..samples {
@@ -114,25 +114,19 @@ impl Renderer {
                     y_sample,
                     samples,
                 );
-                sample_colors[(y_sample * samples + x_sample) as usize] =
-                    self.trace(ray, max_depth, true);
+                let result = self.trace(ray, max_depth, true);
+
+                color[0] += result.r_f32();
+                color[1] += result.g_f32();
+                color[2] += result.b_f32();
             }
         }
 
-        let mut sum_r: f32 = 0.0;
-        let mut sum_g: f32 = 0.0;
-        let mut sum_b: f32 = 0.0;
-
-        for color in &sample_colors {
-            sum_r += color.r_f32();
-            sum_g += color.g_f32();
-            sum_b += color.b_f32();
-        }
-
+        let num_samples = (samples * samples) as f32;
         Color::new_f32(
-            sum_r / sample_colors.len() as f32,
-            sum_g / sample_colors.len() as f32,
-            sum_b / sample_colors.len() as f32,
+            color[0] / num_samples,
+            color[1] / num_samples,
+            color[2] / num_samples,
         )
     }
 
