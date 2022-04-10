@@ -10,6 +10,7 @@ use rayon::prelude::*;
 use std::ops::Range;
 
 const RAY_OFFSET: f32 = 1e-3;
+const GAMMA: f32 = 1.8;
 
 #[derive(Deserialize, Debug, Copy, Clone)]
 pub enum SuperSampling {
@@ -102,7 +103,6 @@ impl Renderer {
             SuperSampling::On(samples) => samples,
         };
 
-        // TODO: Get rid of this vec in favour of just accumulating the sums directly?
         let mut color = [0.0; 3];
 
         for x_sample in 0..samples {
@@ -123,11 +123,11 @@ impl Renderer {
         }
 
         let num_samples = (samples * samples) as f32;
-        Color::new_f32(
-            color[0] / num_samples,
-            color[1] / num_samples,
-            color[2] / num_samples,
-        )
+        let r = (color[0] / num_samples).powf(GAMMA);
+        let g = (color[1] / num_samples).powf(GAMMA);
+        let b = (color[2] / num_samples).powf(GAMMA);
+
+        Color::new_f32(r, g, b)
     }
 
     fn trace(&self, ray: Ray, depth: u32, cull: bool) -> Color {
