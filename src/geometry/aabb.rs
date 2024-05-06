@@ -79,12 +79,12 @@ impl AABB {
         let b_min = bounding_box.min();
         let b_max = bounding_box.max();
 
-        return min.x <= b_max.x
+        min.x <= b_max.x
             && max.x >= b_min.x
             && min.y <= b_max.y
             && max.y >= b_min.y
             && min.z <= b_max.z
-            && max.z >= b_min.z;
+            && max.z >= b_min.z
     }
 }
 

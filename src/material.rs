@@ -131,6 +131,7 @@ impl Material {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn new_with_textures(
         ambient_color: Color,
         ambient_texture: OptionalTexture,

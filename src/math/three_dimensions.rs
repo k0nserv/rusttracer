@@ -1,4 +1,4 @@
-use super::{Matrix4, EPSILON};
+use super::Matrix4;
 use std::ops::{Add, Mul, Neg, Sub};
 
 macro_rules! define_struct {
@@ -76,11 +76,11 @@ impl Vector3 {
     }
 
     pub fn reflect(&self, normal: &Self) -> Self {
-        *self - *normal * (2.0 * self.dot(&normal))
+        *self - *normal * (2.0 * self.dot(normal))
     }
 
     pub fn length(&self) -> f32 {
-        self.dot(&self).sqrt()
+        self.dot(self).sqrt()
     }
 
     pub fn normalize(&self) -> Self {
@@ -339,7 +339,7 @@ mod tests {
     fn test_length() {
         let vectors = vec![
             (Vector3::new(0.0, 0.0, 0.0), 0.0),
-            (Vector3::new(2.3, -2.1, 2.1), 3.756327994),
+            (Vector3::new(2.3, -2.1, 2.1), 3.756_328),
             (Vector3::new(1.0, 0.0, 0.0), 1.0),
             (Vector3::new(0.80181, 0.26921, 0.53351), 1.0),
         ];
@@ -361,7 +361,7 @@ mod tests {
         let vec = Vector3::new(4.0, 63.0, 0.5);
 
         let result = vec.normalize();
-        let expected = Vector3::new(0.063362486, 0.99795915, 0.007920311);
+        let expected = Vector3::new(0.063_362_49, 0.99795915, 0.007920311);
 
         assert_eq_vector3!(result, expected, EPSILON);
         assert_eq_within_bound!(result.length(), 1.0, EPSILON);
@@ -462,7 +462,7 @@ mod tests {
         let v = Vector3::new(1.0, 1.0, 1.0);
         let m = Matrix4::scale(-2.0, 3.0, 5.0);
 
-        let expected = Vector3::new(&v.x * -2.0, &v.y * 3.0, &v.z * 5.0);
+        let expected = Vector3::new(v.x * -2.0, v.y * 3.0, v.z * 5.0);
 
         assert_eq_vector3!(m * v, expected, EPSILON);
     }

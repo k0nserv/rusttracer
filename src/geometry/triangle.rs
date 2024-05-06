@@ -110,6 +110,8 @@ impl Intersectable for Triangle {
         let tvec = ray.origin - self.vertices[0];
         let u = tvec.dot(&pvec) * inv_det;
 
+        // This is clearer that what clippy suggests
+        #[allow(clippy::manual_range_contains)]
         if u < 0.0 || u > 1.0 {
             return None;
         }
@@ -128,8 +130,8 @@ impl Intersectable for Triangle {
                 let w = 1.0 - v - u;
 
                 Some(TextureCoord::new(
-                    w * (ta.x as f32) + u * (tb.x as f32) + v * (tc.x as f32),
-                    w * (ta.y as f32) + u * (tb.y as f32) + v * (tc.y as f32),
+                    w * ta.x + u * tb.x + v * tc.x,
+                    w * ta.y + u * tb.y + v * tc.y,
                 ))
             } else {
                 None

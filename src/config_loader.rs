@@ -63,7 +63,7 @@ impl ConfigLoader {
             .collect();
 
         let scene = scene::Scene::new_from_config(
-            &parsed_config.scenes.first().unwrap(),
+            parsed_config.scenes.first().unwrap(),
             &materials,
             &mut mesh_loader,
             Rc::clone(&self.fallback_material),

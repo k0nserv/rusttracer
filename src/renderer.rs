@@ -83,7 +83,7 @@ impl Renderer {
     }
 
     pub fn render(&self, max_depth: u32) -> Vec<u8> {
-        let range: Range<usize> = (0 as usize)..(self.camera.height as usize);
+        let range: Range<usize> = 0..(self.camera.height as usize);
         let width = self.camera.width as usize;
 
         range
@@ -191,7 +191,7 @@ impl Renderer {
         // TODO: Move lights iteration to Scene
         for light in &self.scene.lights {
             let ray = light.create_shadow_ray(intersection, Some(original_ray.medium_refraction));
-            let distance_to_light = light.distance_to_light(&intersection);
+            let distance_to_light = light.distance_to_light(intersection);
             if self
                 .scene
                 .first_intersection(ray, false, distance_to_light)

@@ -3,7 +3,7 @@ use std::f32;
 use color::Color;
 use intersection::Intersection;
 use material::Material;
-use math::{Vector3, EPSILON};
+use math::{Vector3};
 
 use ray::Ray;
 

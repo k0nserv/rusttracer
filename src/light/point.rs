@@ -1,7 +1,7 @@
 use color::Color;
 use intersection::Intersection;
 use material::Material;
-use math::{Point3, EPSILON};
+use math::{Point3};
 use ray::Ray;
 
 use super::{Falloff, Light};

@@ -125,7 +125,7 @@ mod tests {
             None,
         );
 
-        let intersection = (&sphere as &Shape).intersect(ray, false);
+        let intersection = (&sphere as &dyn Shape).intersect(ray, false);
 
         assert!(intersection.is_none());
     }
@@ -140,7 +140,7 @@ mod tests {
             None,
         );
 
-        let i = (&sphere as &Shape).intersect(ray, false);
+        let i = (&sphere as &dyn Shape).intersect(ray, false);
         assert!(i.is_some());
 
         let intersection = i.unwrap();

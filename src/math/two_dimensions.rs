@@ -237,7 +237,7 @@ mod tests {
     fn test_vector2_length() {
         let v = Vector2::new(29.2, 12.0);
 
-        assert_eq_within_bound!(v.length(), 31.569605636, EPSILON);
+        assert_eq_within_bound!(v.length(), 31.569_605, EPSILON);
     }
 
     #[test]
@@ -258,8 +258,8 @@ mod tests {
         assert_eq_vector2!(
             normalized,
             Vector2 {
-                x: 0.924940284,
-                y: 0.380112445
+                x: 0.924_940_3,
+                y: 0.380_112_44
             },
             EPSILON
         );

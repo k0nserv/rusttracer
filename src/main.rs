@@ -51,7 +51,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => m,
-        Err(f) => panic!(f.to_string()),
+        Err(f) => panic!("{}", f),
     };
 
     if matches.opt_present("h") {
@@ -109,7 +109,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let timestamp = now.duration_since(SystemTime::UNIX_EPOCH)?.as_secs();
     let filename = format!("images/{}.png", timestamp);
     image::save_buffer(
-        &Path::new(&filename),
+        Path::new(&filename),
         &buffer[..],
         camera_config.width,
         camera_config.height,

@@ -84,7 +84,7 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
         let obj = self.load_obj(&final_path);
         let (models, materials) = obj.as_ref();
         let mut meshes = vec![];
-        let material_cache = self.build_material_cache(&final_path, &materials)?;
+        let material_cache = self.build_material_cache(&final_path, materials)?;
 
         for m in models.iter() {
             if let Some(mesh) = self.prepare_mesh(m, &material_cache, &fallback_material) {
@@ -104,7 +104,7 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
         let obj = self.load_obj(&final_path);
         let (models, materials) = obj.as_ref();
         let mut meshes = vec![];
-        let material_cache = self.build_material_cache(&final_path, &materials)?;
+        let material_cache = self.build_material_cache(&final_path, materials)?;
 
         for m in models.iter() {
             let cache_key = Self::build_cache_key(&final_path.to_string_lossy(), &m.name);
@@ -236,7 +236,7 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
             self.obj_cache
                 .entry(path.to_string_lossy().to_string())
                 .or_insert_with(|| {
-                    let result = tobj::load_obj(&path);
+                    let result = tobj::load_obj(path);
                     // TODO: Better error handling
                     if let Err(ref error) = result {
                         println!("Load error: {}", error);
