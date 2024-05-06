@@ -1,4 +1,4 @@
-use material::IllumninationModel;
+use crate::material::IllumninationModel;
 
 #[derive(Deserialize, Debug, Clone)]
 pub enum Texture {

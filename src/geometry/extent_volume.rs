@@ -1,7 +1,7 @@
 use std::mem;
 
 use super::{BoundingVolume, Ray, Triangle};
-use math::Vector3;
+use crate::math::Vector3;
 
 // This approach is based on Ray Tracing Complex Scenes, Kay and Kajiya, 1986[0].
 //

@@ -1,6 +1,6 @@
 use super::{Transformable, Triangle, TriangleStorage};
-use math::Transform;
-use ray::Ray;
+use crate::math::Transform;
+use crate::ray::Ray;
 
 #[derive(Debug)]
 pub struct SimpleTriangleStorage {

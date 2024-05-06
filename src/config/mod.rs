@@ -21,7 +21,7 @@ use std::io::Read;
 
 use serde_json;
 
-use renderer::SuperSampling;
+use crate::renderer::SuperSampling;
 
 #[derive(Debug)]
 pub struct ConfigError {

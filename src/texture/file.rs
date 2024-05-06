@@ -5,8 +5,9 @@ use std::path::PathBuf;
 use image;
 use image::GenericImageView;
 
+use crate::color::Color;
+
 use super::{Texture, TextureCoord};
-use color::Color;
 
 #[derive(Debug)]
 pub struct FileError {

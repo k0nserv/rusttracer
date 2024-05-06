@@ -1,6 +1,6 @@
-use config;
-use math::{Matrix4, Point3, Vector3};
-use ray::Ray;
+use crate::config;
+use crate::math::{Matrix4, Point3, Vector3};
+use crate::ray::Ray;
 
 #[derive(Debug)]
 pub struct Camera {

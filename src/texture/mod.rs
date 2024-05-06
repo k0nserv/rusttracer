@@ -1,6 +1,7 @@
-use color::Color;
-use math::Point2;
 use std::fmt::Debug;
+
+use crate::color::Color;
+use crate::math::Point2;
 
 pub mod file;
 pub mod procedural;

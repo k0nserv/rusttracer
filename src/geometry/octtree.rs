@@ -2,9 +2,9 @@ use std::collections::{HashSet, VecDeque};
 use std::ops::{Index, IndexMut};
 
 use super::{BoundingVolume, Transformable, Triangle, TriangleStorage, AABB};
-use math::Point3;
-use math::Transform;
-use ray::Ray;
+use crate::math::Point3;
+use crate::math::Transform;
+use crate::ray::Ray;
 
 #[derive(Debug, Clone, Copy)]
 struct NodeId(usize);
@@ -381,9 +381,7 @@ impl<'a> TriangleStorage<'a> for Octree {
 
 #[cfg(test)]
 mod tests {
-    use super::Octree;
-    use geometry::AABB;
-    use math::Point3;
+    use super::*;
 
     #[test]
     fn test_build_octants() {

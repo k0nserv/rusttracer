@@ -1,5 +1,5 @@
-use geometry::Transformable;
-use math;
+use crate::geometry::Transformable;
+use crate::math;
 
 #[derive(Deserialize, Debug)]
 #[serde(tag = "type")]

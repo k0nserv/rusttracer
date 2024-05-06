@@ -1,5 +1,6 @@
+use crate::color::Color;
+
 use super::{Texture, TextureCoord};
-use color::Color;
 
 #[derive(Debug, Clone)]
 pub struct Solid {

@@ -283,8 +283,7 @@ impl Mul<Point3> for Matrix4 {
 }
 #[cfg(test)]
 mod tests {
-    use super::{Point3, Vector3};
-    use math::Matrix4;
+    use super::*;
     use std::f32::consts::PI;
     const EPSILON: f32 = 1e-3;
 

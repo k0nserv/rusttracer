@@ -7,12 +7,14 @@ use std::fmt;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
-use color::Color;
-use geometry::triangle::Normal;
-use geometry::{BoundingVolume, Instance, Mesh, Triangle, TriangleStorage};
-use material::{IllumninationModel, IllumninationModelParsingError, Material, OptionalTexture};
-use math::{Point3, Vector3};
-use texture;
+use crate::color::Color;
+use crate::geometry::triangle::Normal;
+use crate::geometry::{BoundingVolume, Instance, Mesh, Triangle, TriangleStorage};
+use crate::material::{
+    IllumninationModel, IllumninationModelParsingError, Material, OptionalTexture,
+};
+use crate::math::{Point3, Vector3};
+use crate::texture;
 
 #[derive(Debug)]
 pub enum MeshLoadError {

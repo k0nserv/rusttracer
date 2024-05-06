@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
 
-use camera;
-use color::Color;
-use config;
-use material;
-use mesh_loader::MeshLoader;
-use renderer;
-use scene;
-use texture;
+use crate::camera;
+use crate::color::Color;
+use crate::config;
+use crate::material;
+use crate::mesh_loader::MeshLoader;
+use crate::renderer;
+use crate::scene;
+use crate::texture;
 
 pub struct ConfigLoader {
     fallback_material: Rc<material::Material>,

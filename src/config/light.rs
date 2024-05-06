@@ -1,4 +1,4 @@
-use light::Falloff;
+use crate::light::Falloff;
 
 #[derive(Deserialize, Debug)]
 #[serde(tag = "type")]

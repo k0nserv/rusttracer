@@ -4,17 +4,17 @@ use std::fmt;
 use std::path::Path;
 use std::rc::Rc;
 
-use color::Color;
-use config;
-use config::Object;
-use geometry::{ExtentVolume, Intersectable, Octree, Transformable};
-use geometry::{Plane, Sphere};
-use intersection::Intersection;
-use light;
-use material::Material;
-use math::{Point3, Vector3};
-use mesh_loader::MeshLoader;
-use ray::Ray;
+use crate::color::Color;
+use crate::config;
+use crate::config::Object;
+use crate::geometry::{ExtentVolume, Intersectable, Octree, Transformable};
+use crate::geometry::{Plane, Sphere};
+use crate::intersection::Intersection;
+use crate::light;
+use crate::material::Material;
+use crate::math::{Point3, Vector3};
+use crate::mesh_loader::MeshLoader;
+use crate::ray::Ray;
 
 #[derive(Debug, Clone)]
 pub struct SceneConfigLoadError {

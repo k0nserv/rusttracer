@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
-use geometry::triangle::Normal;
-use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle, TriangleStorage};
-use intersection::Intersection;
-use math::{Point3, Transform};
-use ray::Ray;
+use super::triangle::Normal;
+use super::{BoundingVolume, Intersectable, Material, Transformable, Triangle, TriangleStorage};
+use crate::intersection::Intersection;
+use crate::math::{Point3, Transform};
+use crate::ray::Ray;
 
 #[derive(Debug)]
 pub struct Mesh<V, S> {

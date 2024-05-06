@@ -210,8 +210,8 @@ impl Neg for Vector2 {
 
 #[cfg(test)]
 mod tests {
-    use super::{Point2, Vector2};
-    use math::EPSILON;
+    use super::super::EPSILON;
+    use super::*;
 
     #[test]
     fn test_new() {

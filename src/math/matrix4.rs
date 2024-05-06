@@ -1,5 +1,6 @@
-use math::EPSILON;
 use std::ops::{Index, IndexMut, Mul};
+
+use super::EPSILON;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Matrix4 {

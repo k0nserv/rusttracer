@@ -1,6 +1,6 @@
 use super::{BoundingVolume, Triangle};
-use math::{Point3, Vector3};
-use ray::Ray;
+use crate::math::{Point3, Vector3};
+use crate::ray::Ray;
 
 #[derive(Debug, Clone)]
 pub struct AABB {
@@ -153,10 +153,10 @@ mod tests {
     use std::rc::Rc;
 
     use super::AABB;
-    use color::Color;
-    use geometry::triangle::{Normal, Triangle};
-    use material::{IllumninationModel, Material};
-    use math::{Point3, Vector3};
+    use crate::color::Color;
+    use crate::geometry::triangle::{Normal, Triangle};
+    use crate::material::{IllumninationModel, Material};
+    use crate::math::{Point3, Vector3};
 
     fn make_material() -> Material {
         Material::new(

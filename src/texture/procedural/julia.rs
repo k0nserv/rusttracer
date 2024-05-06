@@ -1,6 +1,6 @@
 use super::TextureCoord;
-use color::Color;
-use math::Complex;
+use crate::color::Color;
+use crate::math::Complex;
 
 const MAX: Complex = Complex::new(2.0, 2.0);
 const MIN: Complex = Complex::new(-2.0, -2.0);

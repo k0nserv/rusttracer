@@ -3,8 +3,8 @@ use std::error::Error;
 use std::fmt;
 use std::rc::Rc;
 
-use color::Color;
-use texture::{Texture, TextureCoord};
+use crate::color::Color;
+use crate::texture::{Texture, TextureCoord};
 
 #[derive(Debug)]
 pub struct IllumninationModelParsingError {

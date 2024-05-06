@@ -1,11 +1,11 @@
 use std::rc::Rc;
 
-use geometry::mesh::Mesh;
-use geometry::{BoundingVolume, Intersectable, Shape, Transformable, TriangleStorage};
-use intersection::Intersection;
-use material::Material;
-use math::{Matrix4, Transform};
-use ray::Ray;
+use crate::geometry::mesh::Mesh;
+use crate::geometry::{BoundingVolume, Intersectable, Shape, Transformable, TriangleStorage};
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::{Matrix4, Transform};
+use crate::ray::Ray;
 
 pub struct Instance<V, S> {
     mesh: Rc<Mesh<V, S>>,

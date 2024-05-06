@@ -1,19 +1,20 @@
 use std::rc::Rc;
 
-use geometry::{Intersectable, Shape, Transformable};
-use intersection::Intersection;
-use material::Material;
-use math::EPSILON;
-use math::{Point3, Transform, Vector3};
-use ray::Ray;
-use texture::TextureCoord;
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::EPSILON;
+use crate::math::{Point3, Transform, Vector3};
+use crate::ray::Ray;
+use crate::texture::TextureCoord;
+
+use super::{Intersectable, Shape, Transformable};
 
 #[cfg(feature = "stats")]
 pub mod stats {
-    use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
+    use std::sync::atomic::{AtomicUsize, Ordering};
 
-    static TRIANGLE_INTERSECTION_TEST_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
-    static TRIANGLE_INTERSECTION_HIT_COUNT: AtomicUsize = ATOMIC_USIZE_INIT;
+    static TRIANGLE_INTERSECTION_TEST_COUNT: AtomicUsize = AtomicUsize::new(0);
+    static TRIANGLE_INTERSECTION_HIT_COUNT: AtomicUsize = AtomicUsize::new(0);
 
     pub fn record_triangle_intersection() {
         TRIANGLE_INTERSECTION_TEST_COUNT.fetch_add(1, Ordering::SeqCst);

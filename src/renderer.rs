@@ -1,13 +1,14 @@
-use camera::Camera;
-use color::Color;
-use intersection::Intersection;
-use material::{IllumninationModel, Material};
-use math::Vector3;
-use ray::Ray;
-use scene::Scene;
+use std::ops::Range;
 
 use rayon::prelude::*;
-use std::ops::Range;
+
+use crate::camera::Camera;
+use crate::color::Color;
+use crate::intersection::Intersection;
+use crate::material::{IllumninationModel, Material};
+use crate::math::Vector3;
+use crate::ray::Ray;
+use crate::scene::Scene;
 
 const RAY_OFFSET: f32 = 1e-3;
 const GAMMA: f32 = 1.8;
