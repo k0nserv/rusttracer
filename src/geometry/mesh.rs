@@ -9,12 +9,12 @@ use ray::Ray;
 #[derive(Debug)]
 pub struct Mesh<V, S> {
     storage: S,
-    bounding_volume: Box<V>,
+    bounding_volume: V,
 }
 
 impl<'a, V: BoundingVolume, S: TriangleStorage<'a>> Mesh<V, S> {
     pub fn new(triangles: Vec<Triangle>) -> Self {
-        let bounding_volume = Box::new(V::from_triangles(&mut triangles.iter()));
+        let bounding_volume = V::from_triangles(&mut triangles.iter());
         let storage = S::new(triangles);
 
         Self {
@@ -115,12 +115,12 @@ impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Transformable for Mesh<V
     fn transform(&mut self, transform: &Transform) {
         self.storage.transform(transform);
 
-        self.bounding_volume = Box::new(V::from_triangles(&mut self.storage.all()));
+        self.bounding_volume = V::from_triangles(&mut self.storage.all());
     }
 
     fn apply_transforms(&mut self, transforms: &[Transform]) {
         self.storage.apply_transforms(transforms);
-        self.bounding_volume = Box::new(V::from_triangles(&mut self.storage.all()));
+        self.bounding_volume = V::from_triangles(&mut self.storage.all());
     }
 }
 
