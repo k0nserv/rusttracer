@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 use crate::color::Color;
 use crate::intersection::Intersection;
 use crate::material::Material;

@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 use super::light::Light;
 use super::object::Object;
 

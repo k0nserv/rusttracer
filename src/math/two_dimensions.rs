@@ -1,5 +1,7 @@
 use std::ops::{Add, Mul, Neg, Sub};
 
+use serde::Deserialize;
+
 macro_rules! define_struct {
     ($T:ident) => {
         #[derive(Debug, Copy, Clone, Deserialize)]

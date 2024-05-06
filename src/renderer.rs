@@ -1,6 +1,7 @@
 use std::ops::Range;
 
 use rayon::prelude::*;
+use serde::Deserialize;
 
 use crate::camera::Camera;
 use crate::color::Color;

@@ -5,6 +5,8 @@ mod object;
 mod scene;
 mod transform;
 
+use serde::Deserialize;
+
 pub use self::camera::Camera;
 pub use self::light::Light;
 pub use self::material::Material;

@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 #[derive(Deserialize, Debug)]
 pub struct Camera {
     pub fov: f32,

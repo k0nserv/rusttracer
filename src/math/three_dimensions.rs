@@ -1,5 +1,8 @@
-use super::Matrix4;
 use std::ops::{Add, Mul, Neg, Sub};
+
+use serde::Deserialize;
+
+use super::Matrix4;
 
 macro_rules! define_struct {
     ($T:ident) => {

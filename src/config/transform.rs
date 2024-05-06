@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 use crate::geometry::Transformable;
 use crate::math;
 

@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 use crate::light::Falloff;
 
 #[derive(Deserialize, Debug)]

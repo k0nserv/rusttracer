@@ -3,6 +3,8 @@ use std::error::Error;
 use std::fmt;
 use std::rc::Rc;
 
+use serde::Deserialize;
+
 use crate::color::Color;
 use crate::texture::{Texture, TextureCoord};
 

@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 use crate::material::IllumninationModel;
 
 #[derive(Deserialize, Debug, Clone)]
