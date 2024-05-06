@@ -1,8 +1,3 @@
-extern crate getopts;
-extern crate image;
-
-extern crate rusttracer;
-
 use std::env;
 use std::f32::consts::PI;
 use std::path::Path;
@@ -18,12 +13,14 @@ use rusttracer::{Color, ConfigLoader, IllumninationModel, MaterialTemplate};
 
 #[cfg(feature = "stats")]
 fn print_triangle_stats() {
+    use tracing::info;
+
     let number_of_tests = stats::number_of_triangle_intersections();
     let number_of_hits = stats::number_of_triangle_hits();
 
-    println!("Total number of ray-triangle tests: {}", number_of_tests);
-    println!("Total number of ray-triangle hits: {}", number_of_hits);
-    println!(
+    info!("Total number of ray-triangle tests: {}", number_of_tests);
+    info!("Total number of ray-triangle hits: {}", number_of_hits);
+    info!(
         "Efficiency: {:.5}%",
         (f64::from(number_of_hits as u32) / f64::from(number_of_tests as u32)) * 100.0
     );
@@ -35,6 +32,8 @@ fn print_usage(program: &str, opts: &Options) {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    tracing_subscriber::fmt::init();
+
     let args: Vec<String> = env::args().collect();
 
     let program = args[0].clone();

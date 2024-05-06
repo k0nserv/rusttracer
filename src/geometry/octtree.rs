@@ -1,6 +1,8 @@
 use std::collections::{HashSet, VecDeque};
 use std::ops::{Index, IndexMut};
 
+use tracing::debug;
+
 use super::{BoundingVolume, Transformable, Triangle, TriangleStorage, AABB};
 use crate::math::Point3;
 use crate::math::Transform;
@@ -173,8 +175,8 @@ impl Octree {
     }
 
     fn print_stats(&self) {
-        println!("Octree depth: {}", (self.arena.num_nodes() as f64).log(8.0));
-        println!("Octree number of nodes: {}", self.arena.num_nodes());
+        debug!("Octree depth: {}", (self.arena.num_nodes() as f64).log(8.0));
+        debug!("Octree number of nodes: {}", self.arena.num_nodes());
 
         let mut leaf_count = 0.0;
         let mut leaf_triangle_count = 0.0;
@@ -185,7 +187,7 @@ impl Octree {
             }
         });
 
-        println!(
+        debug!(
             "Octree average triangle count in leaf nodes: {}",
             leaf_triangle_count / leaf_count
         );

@@ -4,6 +4,8 @@ use std::fmt;
 use std::path::Path;
 use std::rc::Rc;
 
+use tracing::warn;
+
 use crate::color::Color;
 use crate::config;
 use crate::config::Object;
@@ -136,7 +138,7 @@ impl Scene {
                     let mut meshes = match mesh_loader.load(Path::new(&path), material) {
                         Ok(meshes) => meshes,
                         Err(error) => {
-                            println!("Failed to load scene: {}", error);
+                            warn!("Failed to load scene: {}", error);
                             return Err(SceneConfigLoadError::new(error.to_string()));
                         }
                     };
@@ -171,7 +173,7 @@ impl Scene {
                     let mut meshes = match mesh_loader.load_instance(Path::new(&path), material) {
                         Ok(meshes) => meshes,
                         Err(error) => {
-                            println!("Failed to load scene: {}", error);
+                            warn!("Failed to load scene: {}", error);
                             return Err(SceneConfigLoadError::new(error.to_string()));
                         }
                     };

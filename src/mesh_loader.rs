@@ -7,6 +7,8 @@ use std::fmt;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
+use tracing::{debug, info, warn};
+
 use crate::color::Color;
 use crate::geometry::triangle::Normal;
 use crate::geometry::{BoundingVolume, Instance, Mesh, Triangle, TriangleStorage};
@@ -148,20 +150,22 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
         }
 
         let mut triangles = Vec::with_capacity(mesh.indices.len() / 3);
-        println!("Mesh name {}", model.name);
-        println!("Num indices: {}", mesh.indices.len());
-        println!("Num vertices: {}", mesh.positions.len());
-        println!("Num normals: {}", mesh.normals.len());
-        println!("Num texture coords: {}", mesh.texcoords.len());
+        info!("Mesh name {}", model.name);
+        debug!("Num indices: {}", mesh.indices.len());
+        debug!("Num vertices: {}", mesh.positions.len());
+        debug!("Num normals: {}", mesh.normals.len());
+        debug!("Num texture coords: {}", mesh.texcoords.len());
         let use_vertex_normals = !mesh.normals.is_empty();
         let has_texture_coords = !mesh.texcoords.is_empty();
 
         if use_vertex_normals {
-            println!("Using vertex normals");
+            debug!("Using vertex normals");
+        } else {
+            debug!("Using face normals")
         }
 
         if has_texture_coords {
-            println!("Using textures");
+            debug!("Using textures");
         }
 
         for f in 0..mesh.indices.len() / 3 {
@@ -256,7 +260,7 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
                         )
                     });
                     let materials = materials.unwrap_or_else(|e| {
-                        println!("Failed to load materials for {:?} with error: {}", path, e);
+                        warn!("Failed to load materials for {:?} with error: {}", path, e);
 
                         Vec::default()
                     });
