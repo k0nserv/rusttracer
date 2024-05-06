@@ -2,9 +2,9 @@ use std::collections::{HashSet, VecDeque};
 use std::ops::{Index, IndexMut};
 
 use super::{BoundingVolume, Transformable, Triangle, TriangleStorage, AABB};
-use math::Point3;
-use math::Transform;
-use ray::Ray;
+use crate::math::Point3;
+use crate::math::Transform;
+use crate::ray::Ray;
 
 #[derive(Debug, Clone, Copy)]
 struct NodeId(usize);
@@ -42,12 +42,6 @@ struct Arena<M, T> {
 }
 
 impl<M: Default, T> Arena<M, T> {
-    fn new() -> Self {
-        Self {
-            nodes: Vec::default(),
-        }
-    }
-
     fn with_capacity(capacity: usize) -> Self {
         Self {
             nodes: Vec::with_capacity(capacity),
@@ -162,7 +156,7 @@ pub struct Octree {
 impl Octree {
     fn visit_nodes<F>(&self, mut callback: F)
     where
-        F: FnMut(NodeId) -> (),
+        F: FnMut(NodeId),
     {
         let mut to_visit = VecDeque::new();
         to_visit.push_back(self.root);
@@ -248,7 +242,7 @@ impl Octree {
                 for i in 0..8 {
                     let triangle = &self.triangles[triangle_id.value()];
 
-                    if child_bounding_volumes[i].intersects_triangle_aabb(&triangle) {
+                    if child_bounding_volumes[i].intersects_triangle_aabb(triangle) {
                         to_delete.insert(*triangle_id);
                         child_nodes[i].insert(*triangle_id);
                     }
@@ -256,7 +250,7 @@ impl Octree {
             }
 
             node.data = node.data.difference(&to_delete).cloned().collect();
-            assert!(node.data.len() == 0);
+            assert!(node.data.is_empty());
             (child_nodes, child_bounding_volumes)
         };
 
@@ -313,7 +307,7 @@ impl Octree {
 impl Transformable for Octree {
     fn transform(&mut self, transform: &Transform) {
         for triangle in self.all_mut() {
-            triangle.transform(&transform);
+            triangle.transform(transform);
         }
 
         self.rebuild();
@@ -322,7 +316,7 @@ impl Transformable for Octree {
     fn apply_transforms(&mut self, transforms: &[Transform]) {
         for transform in transforms {
             for triangle in self.all_mut() {
-                triangle.transform(&transform);
+                triangle.transform(transform);
             }
         }
 
@@ -387,9 +381,7 @@ impl<'a> TriangleStorage<'a> for Octree {
 
 #[cfg(test)]
 mod tests {
-    use super::Octree;
-    use geometry::AABB;
-    use math::Point3;
+    use super::*;
 
     #[test]
     fn test_build_octants() {

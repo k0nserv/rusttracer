@@ -5,8 +5,9 @@ use std::path::PathBuf;
 use image;
 use image::GenericImageView;
 
+use crate::color::Color;
+
 use super::{Texture, TextureCoord};
-use color::Color;
 
 #[derive(Debug)]
 pub struct FileError {
@@ -16,7 +17,7 @@ pub struct FileError {
 
 impl From<image::ImageError> for FileError {
     fn from(cause: image::ImageError) -> Self {
-        let description = String::from(cause.to_string());
+        let description = cause.to_string();
         FileError { cause, description }
     }
 }

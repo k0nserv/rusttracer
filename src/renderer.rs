@@ -1,13 +1,15 @@
-use camera::Camera;
-use color::Color;
-use intersection::Intersection;
-use material::{IllumninationModel, Material};
-use math::Vector3;
-use ray::Ray;
-use scene::Scene;
+use std::ops::Range;
 
 use rayon::prelude::*;
-use std::ops::Range;
+use serde::Deserialize;
+
+use crate::camera::Camera;
+use crate::color::Color;
+use crate::intersection::Intersection;
+use crate::material::{IllumninationModel, Material};
+use crate::math::Vector3;
+use crate::ray::Ray;
+use crate::scene::Scene;
 
 const RAY_OFFSET: f32 = 1e-3;
 const GAMMA: f32 = 1.8;
@@ -83,7 +85,7 @@ impl Renderer {
     }
 
     pub fn render(&self, max_depth: u32) -> Vec<u8> {
-        let range: Range<usize> = (0 as usize)..(self.camera.height as usize);
+        let range: Range<usize> = 0..(self.camera.height as usize);
         let width = self.camera.width as usize;
 
         range
@@ -191,7 +193,7 @@ impl Renderer {
         // TODO: Move lights iteration to Scene
         for light in &self.scene.lights {
             let ray = light.create_shadow_ray(intersection, Some(original_ray.medium_refraction));
-            let distance_to_light = light.distance_to_light(&intersection);
+            let distance_to_light = light.distance_to_light(intersection);
             if self
                 .scene
                 .first_intersection(ray, false, distance_to_light)

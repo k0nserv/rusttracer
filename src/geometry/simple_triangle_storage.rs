@@ -1,6 +1,6 @@
 use super::{Transformable, Triangle, TriangleStorage};
-use math::Transform;
-use ray::Ray;
+use crate::math::Transform;
+use crate::ray::Ray;
 
 #[derive(Debug)]
 pub struct SimpleTriangleStorage {
@@ -10,7 +10,7 @@ pub struct SimpleTriangleStorage {
 impl Transformable for SimpleTriangleStorage {
     fn transform(&mut self, transform: &Transform) {
         for triangle in self.all_mut() {
-            triangle.transform(&transform);
+            triangle.transform(transform);
         }
     }
 }

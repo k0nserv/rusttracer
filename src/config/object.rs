@@ -1,4 +1,6 @@
-use config::Transform;
+use serde::Deserialize;
+
+use super::Transform;
 
 #[derive(Deserialize, Debug)]
 #[serde(tag = "type")]

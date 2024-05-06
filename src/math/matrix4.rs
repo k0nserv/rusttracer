@@ -1,5 +1,6 @@
-use math::EPSILON;
 use std::ops::{Index, IndexMut, Mul};
+
+use super::EPSILON;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Matrix4 {
@@ -263,13 +264,9 @@ mod tests {
     fn inverse_identity() {
         let m = Matrix4::identity();
 
-        let result = m.inverse();
+        let inverse = m.inverse().expect("Identity matrix should be invertible");
 
-        if let Ok(matrix) = result {
-            assert_eq_matrix4!(matrix, m, EPSILON);
-        } else {
-            assert!(false, "Identity matrix should be invertible");
-        }
+        assert_eq_matrix4!(inverse, m, EPSILON);
     }
 
     #[test]
@@ -290,13 +287,11 @@ mod tests {
 
         assert_eq_matrix4!(m * expected, Matrix4::identity(), 1e-4);
 
-        let result = m.inverse();
+        let inverse = m
+            .inverse()
+            .unwrap_or_else(|e| panic!("{:?} should be invertible: {}", m, e));
 
-        if let Ok(inverse) = result {
-            assert_eq_matrix4!(inverse, expected, 1e-4);
-        } else {
-            assert!(false, "{:?} should be invertible");
-        }
+        assert_eq_matrix4!(inverse, expected, 1e-4);
     }
 
     #[test]
@@ -320,14 +315,12 @@ mod tests {
         let identity = Matrix4::identity();
 
         for matrix in matrices.iter() {
-            let result = matrix.inverse();
+            let inverse = matrix
+                .inverse()
+                .unwrap_or_else(|e| panic!("{:?} should be invertible: {}", matrix, e));
             println!("Testing {:?}", matrix);
 
-            if let Ok(inverse) = result {
-                assert_eq_matrix4!((inverse * *matrix), identity, EPSILON);
-            } else {
-                assert!(false, "{:?} should be invertible", matrix);
-            }
+            assert_eq_matrix4!((inverse * *matrix), identity, EPSILON);
         }
     }
 
@@ -337,8 +330,8 @@ mod tests {
 
         let rows = [m[0], m[1], m[2], m[3]];
 
-        for i in 0..4 {
-            assert_eq_within_bound!(rows[i][i], 1.0, EPSILON);
+        for (i, item) in rows.iter().enumerate() {
+            assert_eq_within_bound!(item[i], 1.0, EPSILON);
         }
     }
 

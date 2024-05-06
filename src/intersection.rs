@@ -1,7 +1,7 @@
-use geometry::Shape;
-use math::{Point3, Vector3};
-use ray::Ray;
-use texture::TextureCoord;
+use crate::geometry::Shape;
+use crate::math::{Point3, Vector3};
+use crate::ray::Ray;
+use crate::texture::TextureCoord;
 
 #[derive(Copy, Clone)]
 pub struct Intersection<'a> {

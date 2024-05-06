@@ -1,23 +1,23 @@
 use std::mem;
 
 use super::{BoundingVolume, Ray, Triangle};
-use math::Vector3;
+use crate::math::Vector3;
 
 // This approach is based on Ray Tracing Complex Scenes, Kay and Kajiya, 1986[0].
 //
 // 0: https://dl.acm.org/doi/pdf/10.1145/15886.15916
 
 const NUM_PLANE_SET_NORMALS: usize = 7;
-const PLAN_SET_NORMALS: &'static [Vector3; NUM_PLANE_SET_NORMALS] = &[
+const PLAN_SET_NORMALS: &[Vector3; NUM_PLANE_SET_NORMALS] = &[
     Vector3::new(1.0, 0.0, 0.0),
     Vector3::new(0.0, 1.0, 0.0),
     Vector3::new(0.0, 0.0, 1.0),
     // 0.577350269 = 3.0_f32.sqrt() / 3.0 but alas `sqrt` isn't a const fn
     // so it cannot be used in this context.
-    Vector3::new(0.577350269, 0.577350269, 0.577350269),
-    Vector3::new(-0.577350269, 0.577350269, 0.577350269),
-    Vector3::new(-0.577350269, -0.577350269, 0.577350269),
-    Vector3::new(0.577350269, -0.577350269, 0.577350269),
+    Vector3::new(0.577_350_26, 0.577_350_26, 0.577_350_26),
+    Vector3::new(-0.577_350_26, 0.577_350_26, 0.577_350_26),
+    Vector3::new(-0.577_350_26, -0.577_350_26, 0.577_350_26),
+    Vector3::new(0.577_350_26, -0.577_350_26, 0.577_350_26),
 ];
 
 pub struct ExtentVolume {

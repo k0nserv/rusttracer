@@ -1,4 +1,6 @@
-use light::Falloff;
+use serde::Deserialize;
+
+use crate::light::Falloff;
 
 #[derive(Deserialize, Debug)]
 #[serde(tag = "type")]

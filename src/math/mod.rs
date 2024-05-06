@@ -57,4 +57,4 @@ pub use self::complex::Complex;
 pub use self::matrix4::Matrix4;
 pub use self::three_dimensions::{Point3, Vector3};
 pub use self::transform::Transform;
-pub use self::two_dimensions::{Point2, Vector2};
+pub use self::two_dimensions::Point2;

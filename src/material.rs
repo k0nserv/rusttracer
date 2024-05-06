@@ -3,8 +3,10 @@ use std::error::Error;
 use std::fmt;
 use std::rc::Rc;
 
-use color::Color;
-use texture::{Texture, TextureCoord};
+use serde::Deserialize;
+
+use crate::color::Color;
+use crate::texture::{Texture, TextureCoord};
 
 #[derive(Debug)]
 pub struct IllumninationModelParsingError {
@@ -131,6 +133,7 @@ impl Material {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn new_with_textures(
         ambient_color: Color,
         ambient_texture: OptionalTexture,

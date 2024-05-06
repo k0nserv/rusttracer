@@ -1,5 +1,6 @@
+use crate::color::Color;
+
 use super::TextureCoord;
-use color::Color;
 
 const SCALE: f32 = 5.0;
 const ROTATION: f32 = std::f32::consts::PI / 4.0;

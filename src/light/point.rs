@@ -1,8 +1,8 @@
-use color::Color;
-use intersection::Intersection;
-use material::Material;
-use math::{Point3, EPSILON};
-use ray::Ray;
+use crate::color::Color;
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::Point3;
+use crate::ray::Ray;
 
 use super::{Falloff, Light};
 

@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
-use geometry::triangle::Normal;
-use geometry::{BoundingVolume, Intersectable, Material, Transformable, Triangle, TriangleStorage};
-use intersection::Intersection;
-use math::{Point3, Transform};
-use ray::Ray;
+use super::triangle::Normal;
+use super::{BoundingVolume, Intersectable, Material, Transformable, Triangle, TriangleStorage};
+use crate::intersection::Intersection;
+use crate::math::{Point3, Transform};
+use crate::ray::Ray;
 
 #[derive(Debug)]
 pub struct Mesh<V, S> {
@@ -133,18 +133,13 @@ impl<V: BoundingVolume, S: for<'a> TriangleStorage<'a>> Intersectable for Mesh<V
         let mut nearest_intersection: Option<Intersection> = None;
 
         for triangle in self.storage.intersect(ray, cull) {
-            let potential_intersection = triangle.intersect(ray, cull);
+            let Some(intersection) = triangle.intersect(ray, cull) else {
+                continue;
+            };
 
-            match potential_intersection {
-                Some(intersection) => match nearest_intersection {
-                    Some(nearest) => {
-                        if intersection.t < nearest.t {
-                            nearest_intersection = Some(intersection)
-                        }
-                    }
-                    None => nearest_intersection = potential_intersection,
-                },
-                None => (),
+            let nearest = nearest_intersection.get_or_insert(intersection);
+            if intersection.t < nearest.t {
+                *nearest = intersection;
             }
         }
 

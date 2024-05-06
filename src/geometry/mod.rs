@@ -19,10 +19,10 @@ pub use self::triangle::Triangle;
 pub use self::octtree::Octree;
 pub use self::simple_triangle_storage::SimpleTriangleStorage;
 
-use intersection::Intersection;
-use material::Material;
-use math::Transform;
-use ray::Ray;
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::Transform;
+use crate::ray::Ray;
 
 pub trait Intersectable {
     fn intersect(&self, ray: Ray, cull: bool) -> Option<Intersection>;

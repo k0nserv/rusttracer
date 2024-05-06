@@ -1,7 +1,9 @@
-use color::Color;
-use intersection::Intersection;
-use material::Material;
-use ray::Ray;
+use serde::Deserialize;
+
+use crate::color::Color;
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::ray::Ray;
 
 pub mod directional;
 pub mod point;

@@ -5,6 +5,8 @@ mod object;
 mod scene;
 mod transform;
 
+use serde::Deserialize;
+
 pub use self::camera::Camera;
 pub use self::light::Light;
 pub use self::material::Material;
@@ -19,9 +21,7 @@ use std::fs::File;
 use std::io;
 use std::io::Read;
 
-use serde_json;
-
-use renderer::SuperSampling;
+use crate::renderer::SuperSampling;
 
 #[derive(Debug)]
 pub struct ConfigError {

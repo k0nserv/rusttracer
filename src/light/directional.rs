@@ -1,11 +1,10 @@
 use std::f32;
 
-use color::Color;
-use intersection::Intersection;
-use material::Material;
-use math::{Vector3, EPSILON};
-
-use ray::Ray;
+use crate::color::Color;
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::Vector3;
+use crate::ray::Ray;
 
 use super::Light;
 

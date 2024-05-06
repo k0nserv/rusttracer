@@ -5,8 +5,9 @@ mod mandelbrot;
 use std::clone::Clone;
 use std::fmt;
 
+use crate::color::Color;
+
 use super::{Texture, TextureCoord};
-use color::Color;
 
 #[derive(Clone)]
 pub struct Procedural<F> {

@@ -1,11 +1,11 @@
 use std::rc::Rc;
 
-use geometry::{Intersectable, Shape, Transformable};
-use intersection::Intersection;
-use material::Material;
-use math::EPSILON;
-use math::{Point3, Transform, Vector3};
-use ray::Ray;
+use super::{Intersectable, Shape, Transformable};
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::EPSILON;
+use crate::math::{Point3, Transform, Vector3};
+use crate::ray::Ray;
 
 pub struct Plane {
     pub origin: Point3,

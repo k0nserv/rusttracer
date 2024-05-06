@@ -68,7 +68,7 @@ impl Color {
         let x = chroma * (1.0 - ((hue_d % 2.0) - 1.0).abs());
 
         let color = match hue_d {
-            v if v >= 0.0 && v <= 1.0 => (chroma, x, 0.0),
+            v if (0.0..=1.0).contains(&v) => (chroma, x, 0.0),
             v if v > 1.0 && v <= 2.0 => (x, chroma, 0.0),
             v if v > 2.0 && v <= 3.0 => (0.0, chroma, x),
             v if v > 3.0 && v <= 4.0 => (0.0, x, chroma),

@@ -1,4 +1,4 @@
-use math::Matrix4;
+use super::Matrix4;
 
 pub struct Transform {
     pub matrix: Matrix4,

@@ -1,12 +1,13 @@
 use std::f32::consts::PI;
 use std::rc::Rc;
 
-use geometry::{Intersectable, Shape, Transformable};
-use intersection::Intersection;
-use material::Material;
-use math::{Point3, Transform};
-use ray::Ray;
-use texture::TextureCoord;
+use crate::intersection::Intersection;
+use crate::material::Material;
+use crate::math::{Point3, Transform};
+use crate::ray::Ray;
+use crate::texture::TextureCoord;
+
+use super::{Intersectable, Shape, Transformable};
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -91,12 +92,12 @@ impl Transformable for Sphere {
 mod tests {
     use std::rc::Rc;
 
-    use super::Sphere;
-    use color::Color;
-    use geometry::Shape;
-    use material::{IllumninationModel, Material, MaterialTemplate};
-    use math::{Point3, Vector3, EPSILON};
-    use ray::Ray;
+    use super::*;
+    use crate::color::Color;
+    use crate::geometry::Shape;
+    use crate::material::{IllumninationModel, Material, MaterialTemplate};
+    use crate::math::{Vector3, EPSILON};
+    use crate::ray::Ray;
 
     fn build_test_material() -> Rc<Material> {
         let color = Color::new(0, 0, 0);
@@ -125,7 +126,7 @@ mod tests {
             None,
         );
 
-        let intersection = (&sphere as &Shape).intersect(ray, false);
+        let intersection = (&sphere as &dyn Shape).intersect(ray, false);
 
         assert!(intersection.is_none());
     }
@@ -140,7 +141,7 @@ mod tests {
             None,
         );
 
-        let i = (&sphere as &Shape).intersect(ray, false);
+        let i = (&sphere as &dyn Shape).intersect(ray, false);
         assert!(i.is_some());
 
         let intersection = i.unwrap();
