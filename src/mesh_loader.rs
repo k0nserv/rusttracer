@@ -238,14 +238,30 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
             self.obj_cache
                 .entry(path.to_string_lossy().to_string())
                 .or_insert_with(|| {
-                    let result = tobj::load_obj(path);
+                    let result = tobj::load_obj(
+                        path,
+                        &tobj::LoadOptions {
+                            single_index: false,
+                            triangulate: true,
+                            ignore_points: true,
+                            ignore_lines: true,
+                        },
+                    );
                     // TODO: Better error handling
-                    if let Err(ref error) = result {
-                        println!("Load error: {}", error);
-                    }
-                    assert!(result.is_ok());
+                    let (models, materials) = result.unwrap_or_else(|e| {
+                        panic!(
+                            "Failed to load data from {} with error: {}",
+                            path.display(),
+                            e
+                        )
+                    });
+                    let materials = materials.unwrap_or_else(|e| {
+                        println!("Failed to load materials for {:?} with error: {}", path, e);
 
-                    Rc::new(result.unwrap())
+                        Vec::default()
+                    });
+
+                    Rc::new((models, materials))
                 }),
         )
     }
@@ -262,21 +278,28 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
                 None => IllumninationModel::DiffuseSpecular,
             };
 
-            let ambient_texture = self.load_texture_from_file(path, &m.ambient_texture)?;
-            let diffuse_texture = self.load_texture_from_file(path, &m.diffuse_texture)?;
-            let specular_texture = self.load_texture_from_file(path, &m.specular_texture)?;
+            let ambient_texture =
+                self.load_texture_from_file(path, m.ambient_texture.as_deref())?;
+            let diffuse_texture =
+                self.load_texture_from_file(path, m.diffuse_texture.as_deref())?;
+            let specular_texture =
+                self.load_texture_from_file(path, m.specular_texture.as_deref())?;
+
+            let ambient = m.ambient.unwrap_or([0.0; 3]);
+            let diffuse = m.diffuse.unwrap_or([0.0; 3]);
+            let specular = m.specular.unwrap_or([0.0; 3]);
 
             let mat = Rc::new(Material::new_with_textures(
-                Color::new_f32(m.ambient[0], m.ambient[1], m.ambient[2]),
+                Color::new_f32(ambient[0], ambient[1], ambient[2]),
                 ambient_texture,
-                Color::new_f32(m.diffuse[0], m.diffuse[1], m.diffuse[2]),
+                Color::new_f32(diffuse[0], diffuse[1], diffuse[2]),
                 diffuse_texture,
-                Color::new_f32(m.specular[0], m.specular[1], m.specular[2]),
+                Color::new_f32(specular[0], specular[1], specular[2]),
                 specular_texture,
-                m.shininess,
+                m.shininess.unwrap_or(0.0),
                 illumination_model,
-                Some(1000.0 / m.shininess),
-                Some(m.optical_density),
+                m.shininess.map(|s| 1000.0 / s),
+                m.optical_density,
             ));
 
             material_cache.insert(i, mat);
@@ -288,16 +311,17 @@ impl<'a, V: BoundingVolume, S: 'a + TriangleStorage<'a>> MeshLoader<V, S> {
     fn load_texture_from_file(
         &self,
         obj_path: &Path,
-        texture: &str,
+        texture: Option<&str>,
     ) -> Result<OptionalTexture, MeshLoadError> {
-        if texture.is_empty() {
+        let Some(path) = texture else { return Ok(None) };
+        if path.is_empty() {
             return Ok(None);
         }
 
         let full_path = if let Some(resolve_path) = obj_path.parent() {
-            resolve_path.join(texture)
+            resolve_path.join(path)
         } else {
-            PathBuf::from(texture)
+            PathBuf::from(path)
         };
         let texture = texture::file::File::new(full_path)?;
 
