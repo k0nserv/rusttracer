@@ -19,8 +19,6 @@ use std::fs::File;
 use std::io;
 use std::io::Read;
 
-use serde_json;
-
 use crate::renderer::SuperSampling;
 
 #[derive(Debug)]
